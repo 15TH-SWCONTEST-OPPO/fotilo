@@ -1,18 +1,17 @@
-
 import React from 'react';
-import {
-  Text,
-  View,
-} from 'react-native';
-
+import {NativeBaseProvider} from 'native-base';
+import {NativeRouter} from 'react-router-native';
+import Routers from './src/Router';
 
 const App = () => {
+
+
   return (
-        <View>
-          <Text>
-            hello world
-          </Text>
-        </View>
+    <NativeBaseProvider>
+      <NativeRouter>
+        <Routers/>
+      </NativeRouter>
+    </NativeBaseProvider>
   );
 };
 
