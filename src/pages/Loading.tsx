@@ -1,11 +1,10 @@
 import { View, Text } from 'react-native'
 import React from 'react'
-import Front from './Front';
 
-export default function LoggedOut() {
+export default function Loading() {
   return (
     <View>
-      <Text>LoggedOut</Text>
+      <Text>Loading</Text>
     </View>
   )
 }
