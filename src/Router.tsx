@@ -1,31 +1,35 @@
 import React, {lazy, Suspense} from 'react';
-import {RouteObject, useRoutes,Navigate} from 'react-router-native';
+import {RouteObject, useRoutes, Navigate} from 'react-router-native';
 
 import StartP from './pages/StartP';
 import Loading from './pages/Loading';
-const Login = lazy(() => import('./pages/Login'));
-const Register = lazy(() => import('./pages/Register'));
-const Forget = lazy(() => import('./pages/Forget'));
-const Home = lazy(() => import('./pages/Home'));
+import Login from './pages/StartP/Login';
+import StartP_Home from './pages/StartP/Home';
+import Register from './pages/StartP/Register';
+import Forget from './pages/StartP/Forget';
+import Home from './pages/StartP/Home';
 
 const routes: RouteObject[] = [
   {
     path: '/StartP',
     element: <StartP />,
-  },
-  {
-    path: '/login',
-    element: <Login />,
-    children: [
+    children:[
       {
-        path: 'foget',
-        element: <Forget />,
+        path: 'login',
+        element: <Login />,
       },
-    ],
-  },
-  {
-    path: '/register',
-    element: <Register />,
+      {
+        path: 'register',
+        element: <Register />,
+      },
+      {
+        path: 'forget',
+        element: <Forget />,
+      },{
+        path:'',
+        element:  <StartP_Home/>
+      }
+    ]
   },
   {
     path: '/home',
@@ -33,7 +37,7 @@ const routes: RouteObject[] = [
   },
   {
     path: '/',
-    element: <Navigate to="startP"/>,
+    element: <Navigate to="startP" />,
   },
 ];
 
