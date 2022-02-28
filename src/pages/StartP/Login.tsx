@@ -1,19 +1,17 @@
 import {
   View,
   Text,
-  TouchableHighlight,
   StyleSheet,
-  Animated,
   Dimensions,
   TextInput,
 } from 'react-native';
-import React, { useRef} from 'react';
+import React from 'react';
 import {useNavigate} from 'react-router-native';
-import {ArrowBackIcon, Button} from 'native-base';
+import { Button} from 'native-base';
 
-import StatusBarSpace from '../../components/StatusBarSpace';
 import debounce from '../../utils/debounce';
 import {QQ, Wechat, Weibo} from '../../static/myIcon';
+import {basicColor} from '../../static/color';
 
 /* 
   基础信息
@@ -140,10 +138,10 @@ export const styles = StyleSheet.create({
   },
   othersT: {
     fontSize: 20,
-    color: '#2d9cdb',
+    color: basicColor,
   },
   loginBtn: {
-    backgroundColor: '#2d9cdb',
+    backgroundColor: basicColor,
     width: centerWidth,
   },
   btnContainer: {

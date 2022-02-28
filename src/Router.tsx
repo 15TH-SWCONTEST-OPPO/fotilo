@@ -7,7 +7,7 @@ import Login from './pages/StartP/Login';
 import StartP_Home from './pages/StartP/Home';
 import Register from './pages/StartP/Register';
 import Forget from './pages/StartP/Forget';
-import Home from './pages/StartP/Home';
+import Home from './pages/Home';
 
 const routes: RouteObject[] = [
   {
