@@ -2,14 +2,13 @@ import {View, Text, TextInput, StyleSheet} from 'react-native';
 import React from 'react';
 import {styles} from './Login';
 import debounce from '../../utils/debounce';
-import {Button} from 'native-base';
+import Button from '../../components/Button';
 
 let info: {[key: string]: string} = {};
 
 export default function Register() {
   return (
     <View style={styles.container}>
-
       <View style={rstyles.center}>
         <TextInput
           style={styles.input}
@@ -57,18 +56,20 @@ export default function Register() {
 
       <View style={styles.btnContainer}>
         <Button onPress={() => {}} style={styles.loginBtn}>
-          注册
+          <Text style={rstyles.reT}>注册</Text>
         </Button>
       </View>
-
     </View>
   );
 }
 
 const rstyles = StyleSheet.create({
-  center:{
+  center: {
     alignItems: 'center',
     justifyContent: 'space-evenly',
     height: 500,
+  },
+  reT:{
+    color: 'white',
   }
-})
+});

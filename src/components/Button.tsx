@@ -10,15 +10,38 @@ import React, {useRef} from 'react';
 import {basicColor} from '../static/color';
 
 const defaultRadius = 5;
+const timeout = 1;
 
 interface BtnProps extends PressableProps {
   clickColor?: string;
+  textColor?: string;
 }
 
 export default function Button(props: BtnProps) {
   const shadow = useRef(new Animated.Value(0)).current;
 
-  const {style: userStyle, onPress, children} = props;
+  /* 
+    动画
+  */
+  //  手指移入
+  const moveIn = () => {
+    Animated.timing(shadow, {
+      toValue: 0.3,
+      duration: timeout,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  //  手指移出
+  const moveOut = () => {
+    Animated.timing(shadow, {
+      toValue: 0,
+      duration: timeout,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const {style: userStyle, onPressIn, onPressOut, children} = props;
 
   // 获取用户自定义style
   const uStyle: {[key: string]: any} =
@@ -29,34 +52,43 @@ export default function Button(props: BtnProps) {
   return (
     <Pressable
       {...props}
-      style={{...style.container, ...uStyle}}
-      onPress={e => {
-        Animated.timing(shadow, {
-          toValue: 0.5,
-          duration: 300,
-          useNativeDriver: false,
-        }).start();
-        onPress && onPress(e);
+      style={{...ownstyles.container, ...uStyle}}
+      onPressIn={e => {
+        moveIn();
+        onPressIn && onPressIn(e);
+      }}
+      onPressOut={e => {
+        moveOut();
+        onPressOut && onPressOut(e);
       }}>
-      <View
-        style={{
-          backgroundColor: 'black',
-          width: '100%',
-          zIndex:999,
-          borderRadius: uStyle?.borderRadius || defaultRadius,
-        }}
-      />
-      {children}
+        {children}
+      <Animated.View
+        style={[
+          {
+            ...ownstyles.back,
+            borderRadius: uStyle?.borderRadius || defaultRadius,
+          },
+          {opacity: shadow},
+        ]}>
+        <View />
+      </Animated.View>
     </Pressable>
   );
 }
 
-const style = StyleSheet.create({
+const ownstyles = StyleSheet.create({
   container: {
     borderRadius: defaultRadius,
     textAlign: 'center',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: basicColor,
+  },
+  back: {
+    backgroundColor: 'black',
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    zIndex: -999,
   },
 });

@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import React, {useEffect, useRef} from 'react';
 import {Link, useNavigate} from 'react-router-native';
-import {Button} from 'native-base';
+import Button from '../../components/Button';
 
 // 文字logo大小&缩放比
 const logoTSize = {width: 208, height: 56};

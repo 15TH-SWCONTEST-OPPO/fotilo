@@ -1,18 +1,12 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  TextInput,
-} from 'react-native';
+import {View, Text, StyleSheet, Dimensions, TextInput} from 'react-native';
 import React from 'react';
 import {useNavigate} from 'react-router-native';
-import { Button} from 'native-base';
+import {Button} from 'native-base';
 
 import debounce from '../../utils/debounce';
 import {QQ, Wechat, Weibo} from '../../static/myIcon';
 import {basicColor} from '../../static/color';
-
+import MyBtn from '../../components/Button';
 /* 
   基础信息
 */
@@ -34,15 +28,15 @@ const ThirdLogin = () => {
   return (
     <View style={threeStyle.container}>
       <View style={threeStyle.iconContainer}>
-        <View style={threeStyle.line}/>
-        <View style={threeStyle.space}/>
+        <View style={threeStyle.line} />
+        <View style={threeStyle.space} />
         <Wechat />
-        <View style={threeStyle.space}/>
+        <View style={threeStyle.space} />
         <QQ />
-        <View style={threeStyle.space}/>
+        <View style={threeStyle.space} />
         <Weibo />
-        <View style={threeStyle.space}/>
-        <View style={threeStyle.line}/>
+        <View style={threeStyle.space} />
+        <View style={threeStyle.line} />
       </View>
       <Text style={threeStyle.text}>第三方登录</Text>
     </View>
@@ -50,13 +44,11 @@ const ThirdLogin = () => {
 };
 
 export default function Login() {
-  
   const navigation = useNavigate();
 
   return (
     <View style={styles.container}>
       <View style={styles.center}>
-
         <TextInput
           style={styles.input}
           placeholderTextColor="#c0c0c0"
@@ -76,14 +68,18 @@ export default function Login() {
         />
 
         <View style={styles.others}>
-          <Button onPress={()=>{
-            navigation('../register')
-          }} variant="ghost">
+          <Button
+            onPress={() => {
+              navigation('../register');
+            }}
+            variant="ghost">
             <Text style={styles.othersT}>立即注册！</Text>
           </Button>
-          <Button onPress={()=>{
-            navigation('../forget')
-          }} variant="ghost">
+          <Button
+            onPress={() => {
+              navigation('../forget');
+            }}
+            variant="ghost">
             <Text style={styles.othersT}>忘记密码？</Text>
           </Button>
         </View>
@@ -94,17 +90,15 @@ export default function Login() {
       </View>
 
       <View style={styles.btnContainer}>
-        <Button
+        <MyBtn
           onPress={() => {
             console.log(username);
             console.log(password);
           }}
           style={styles.loginBtn}>
-          登录
-        </Button>
+          <Text style={styles.loginT}>登录</Text>
+        </MyBtn>
       </View>
-
-      
     </View>
   );
 }
@@ -143,6 +137,10 @@ export const styles = StyleSheet.create({
   loginBtn: {
     backgroundColor: basicColor,
     width: centerWidth,
+    height: 50,
+  },
+  loginT: {
+    color: 'white',
   },
   btnContainer: {
     width: '100%',
@@ -151,28 +149,28 @@ export const styles = StyleSheet.create({
   },
 });
 
-const threeStyle= StyleSheet.create({
-  container:{
-    width:'100%',
+const threeStyle = StyleSheet.create({
+  container: {
+    width: '100%',
     alignItems: 'center',
     justifyContent: 'space-between',
-    height:60
+    height: 60,
   },
-  iconContainer:{
+  iconContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     width: centerWidth,
   },
-  line:{
-    height:1,
-    width:20,
+  line: {
+    height: 1,
+    width: 20,
     backgroundColor: 'white',
-    flexGrow:1
+    flexGrow: 1,
   },
-  space:{
-    width:10
+  space: {
+    width: 10,
   },
-  text:{
+  text: {
     color: 'white',
-  }
-})
+  },
+});
