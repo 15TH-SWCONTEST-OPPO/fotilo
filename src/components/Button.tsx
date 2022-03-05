@@ -42,12 +42,7 @@ export default function Button(props: BtnProps) {
   };
 
   const {style: userStyle, onPressIn, onPressOut, children} = props;
-
-  // 获取用户自定义style
-  const uStyle: {[key: string]: any} =
-    userStyle?.valueOf().constructor === Object
-      ? {...(userStyle?.valueOf() as Object)}
-      : {};
+  const uStyle: {[key: string]: any} = {...(userStyle?.valueOf() as Object)};
 
   return (
     <Pressable
@@ -61,7 +56,7 @@ export default function Button(props: BtnProps) {
         moveOut();
         onPressOut && onPressOut(e);
       }}>
-        {children}
+      {children}
       <Animated.View
         style={[
           {

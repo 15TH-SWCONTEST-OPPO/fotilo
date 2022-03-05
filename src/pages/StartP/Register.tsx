@@ -3,6 +3,7 @@ import React from 'react';
 import {styles} from './Login';
 import debounce from '../../utils/debounce';
 import Button from '../../components/Button';
+import Input from '../../components/Input'
 
 let info: {[key: string]: string} = {};
 
@@ -26,8 +27,9 @@ export default function Register() {
           }, 600)}
           placeholder="手机号码"
         />
-        <TextInput
-          style={styles.input}
+        <Input
+          containerStyle={styles.input}
+          textStyle={rstyles.inputT}
           placeholderTextColor="#c0c0c0"
           onChangeText={debounce(function (e: string) {
             info.phoneNumber = e;
@@ -71,5 +73,8 @@ const rstyles = StyleSheet.create({
   },
   reT:{
     color: 'white',
+  },
+  inputT:{
+    color: 'white'
   }
 });

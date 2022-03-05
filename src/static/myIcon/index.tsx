@@ -1,6 +1,6 @@
 import React from 'react';
-import {Icon} from 'native-base';
-import {G, Path} from 'react-native-svg';
+import {createIcon, Icon} from 'native-base';
+import {Circle, G, Line, Path} from 'react-native-svg';
 
 interface IconProps {
   size?: number | string;
@@ -54,4 +54,55 @@ export const Weibo = (props: IconProps) => {
       </G>
     </Icon>
   );
+};
+
+export const Yes = (props: IconProps) => {
+  const {opacity, size, color} = props;
+  const CustomIcon = createIcon({
+    viewBox: '-1 -1 16 16',
+    path: [
+      <>
+        <Circle cx="7.2" cy="7.2" r="6.95" stroke={color} stroke-width="0.5" />
+        <Path
+          d="M2.95938 7.20852C2.95938 7.20852 5.77552 9.40858 6.30174 9.48407C6.82797 9.55955 12.2493 4.39139 12.2493 4.39139"
+          stroke={color}
+          stroke-width="0.5"
+          stroke-linecap="round"
+        />
+      </>,
+    ],
+  });
+  return <CustomIcon size={size} opacity={opacity} />;
+};
+
+export const No = (props: IconProps) => {
+  const {opacity, size, color} = props;
+  const CustomIcon = createIcon({
+    viewBox: '-1 -1 16 16',
+    path: [
+      <>
+        <Circle cx="7.2" cy="7.2" r="6.95" stroke={color} stroke-width="0.5" />
+        <Line
+          x1="0.25"
+          y1="-0.25"
+          x2="6.96249"
+          y2="-0.25"
+          transform="matrix(-0.707107 0.707107 0.707107 0.707107 9.80005 4.8)"
+          stroke={color}
+          stroke-width="0.5"
+          stroke-linecap="round"
+        />
+        <Line
+          x1="9.4465"
+          y1="9.5"
+          x2="4.70005"
+          y2="4.75355"
+          stroke={color}
+          stroke-width="0.5"
+          stroke-linecap="round"
+        />
+      </>,
+    ],
+  });
+  return <CustomIcon size={size} opacity={opacity} />;
 };
