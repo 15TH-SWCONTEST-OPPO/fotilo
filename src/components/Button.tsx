@@ -5,7 +5,7 @@ import {
   Animated,
   View,
 } from 'react-native';
-import React, {useRef} from 'react';
+import React, {useRef, useState} from 'react';
 
 import {basicColor} from '../static/color';
 
@@ -18,6 +18,8 @@ interface BtnProps extends PressableProps {
 }
 
 export default function Button(props: BtnProps) {
+  const [size, setSize] = useState({width: 0, height: 0});
+
   const shadow = useRef(new Animated.Value(0)).current;
 
   /* 
@@ -41,7 +43,7 @@ export default function Button(props: BtnProps) {
     }).start();
   };
 
-  const {style: userStyle, onPressIn, onPressOut, children} = props;
+  const {style: userStyle, onPressIn, onPressOut, children, onLayout} = props;
   const uStyle: {[key: string]: any} = {...(userStyle?.valueOf() as Object)};
 
   return (
@@ -52,6 +54,13 @@ export default function Button(props: BtnProps) {
         moveIn();
         onPressIn && onPressIn(e);
       }}
+      onLayout={a => {
+        setSize({
+          height: a.nativeEvent.layout.height,
+          width: a.nativeEvent.layout.width,
+        });
+        onLayout && onLayout(a);
+      }}
       onPressOut={e => {
         moveOut();
         onPressOut && onPressOut(e);
@@ -61,6 +70,8 @@ export default function Button(props: BtnProps) {
         style={[
           {
             ...ownstyles.back,
+            height: size.height,
+            width: size.width,
             borderRadius: uStyle?.borderRadius || defaultRadius,
           },
           {opacity: shadow},

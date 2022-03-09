@@ -3,7 +3,7 @@ import React, {useEffect} from 'react';
 import {Link} from 'react-router-native';
 import Input from '../components/Input';
 import {test} from '../api'
-import {password} from '../static/regex';
+import {passwordRule} from '../static/regex';
 
 export default function Home() {
   useEffect(() => {
@@ -20,7 +20,7 @@ export default function Home() {
         <Text>login</Text>
       </Link>
       <View style={{flexDirection: 'row'}}>
-        <Input rules={[true,password]} errText={['用户名或密码错误','密码格式错误']}/>
+        <Input rules={[true,passwordRule]} errText={['用户名或密码错误','密码格式错误']}/>
       </View>
     </View>
   );

@@ -6,9 +6,10 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {No, Yes} from '../static/myIcon';
 import {Text} from 'native-base';
+import deepClone from '../utils/deepClone'
 
 interface InputProps extends Omit<TextInputProps, 'style'> {
   iconSide: 'none' | 'left' | 'right';
@@ -17,7 +18,13 @@ interface InputProps extends Omit<TextInputProps, 'style'> {
   icon?: any;
   // 正则规则
   rules?: RegExp | boolean | Array<RegExp | boolean>;
-  errText?: Array<string>;
+  errText?: Array<string> | string;
+  /* 
+    对于文本确认，无法使用change函数进行判断，因此需要通过直接传入文本信息进行校验
+  */
+  confirm?: boolean;
+  confirmText?: string;
+  confirmErrorText?: string;
 }
 
 const defaultSize = {height: 40, width: 200};
@@ -48,7 +55,9 @@ const getRules = (
   }
 };
 
+
 export default function Input(props: InputProps) {
+
   const defaultColor = {
     default: '#c0c0c0',
     accept: '#6dbe4b',
@@ -57,6 +66,7 @@ export default function Input(props: InputProps) {
 
   const [situ, setSitu] = useState<keyof typeof defaultColor>('default');
   const [errNo, setErrNo] = useState<number>(-1);
+  const [text, setText] = useState<string>('');
 
   const {
     iconSide,
@@ -66,21 +76,56 @@ export default function Input(props: InputProps) {
     rules,
     errText,
     icon,
+    confirm,
+    confirmText,
+    confirmErrorText,
   } = props;
 
   const cStyle = {...(containerStyle as Object)};
   const tStyle = {...(textStyle as Object)};
 
+  // rule判断（为数组）
+  let userRules=deepClone(rules)
+  useEffect(()=>{
+    if (rules !== undefined&&text) {
+      const res = getRules(rules, text);
+      if (typeof res === 'boolean') {
+        setSitu(res ? 'accept' : 'error');
+        setErrNo(res ? -1 : 0);
+      } else {
+        setSitu(res.length === 0 ? 'accept' : 'error');
+        setErrNo(res[0] !== undefined ? res[0] : -1);
+      }
+    }
+  },[userRules])
+
+  // 倒计时
+  let arrived=true;
+  let clicked=false;
+  useEffect(()=>{
+    if (clicked&&arrived) {
+      clicked = false;
+      const timer=setInterval(()=>{
+        
+      },60000)
+    }
+  },[])
+
+  // borderColor
+  let borderColor =
+    situ === 'default' && containerStyle?.borderColor
+      ? containerStyle?.borderColor
+      : defaultColor[situ];
+
   return (
     <View>
-
       {/* input容器 */}
       <View
         style={{
-          borderColor: defaultColor[situ],
           ...styles.container,
           ...cStyle,
           flexDirection: iconSide === 'right' ? 'row-reverse' : 'row',
+          borderColor: borderColor,
         }}>
         {/* icon */}
         {icon ||
@@ -99,33 +144,44 @@ export default function Input(props: InputProps) {
           {...props}
           style={{...styles.input, ...tStyle, height: containerStyle?.height}}
           onChangeText={e => {
+            setText(e);
+            onChangeText && onChangeText(e);
             if (rules !== undefined) {
               const res = getRules(rules, e);
-              if (typeof res === 'boolean') setSitu(res ? 'accept' : 'error');
-              else {
+              if (typeof res === 'boolean') {
+                setSitu(res ? 'accept' : 'error');
+                setErrNo(res ? -1 : 0);
+              } else {
                 setSitu(res.length === 0 ? 'accept' : 'error');
                 setErrNo(res[0] !== undefined ? res[0] : -1);
               }
             }
-            onChangeText && onChangeText(e);
+            if (confirm) {
+              setSitu(confirmText === e ? 'accept' : 'error');
+            }
           }}
         />
       </View>
-
       {/* 错误信息 */}
       {errNo != -1 && (
         <Text style={{color: defaultColor['error']}}>
-          {errText![errNo] || 'error'}
+          *
+          { confirmErrorText ||
+            (typeof errText === 'string' && errText) ||
+            errText![errNo] ||
+            'error'}
         </Text>
       )}
-      
     </View>
   );
 }
 
 Input.defaultProps = {
   iconSide: 'left',
-  errText: [],
+  errText: ['error'],
+  confirm: false,
+  confirmText: '',
+  confirmErrorText: '',
 };
 
 const styles = StyleSheet.create({

@@ -10,10 +10,6 @@ import MyBtn from '../../components/Button';
 /* 
   基础信息
 */
-// 背景
-const backWidth = Dimensions.get('screen').width;
-const backHeight = Dimensions.get('screen').height;
-
 // 组件中部宽度
 const centerWidth = 320;
 
