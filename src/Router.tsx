@@ -6,14 +6,14 @@ import Loading from './pages/Loading';
 import Login from './pages/StartP/Login';
 import StartP_Home from './pages/StartP/Home';
 import Register from './pages/StartP/Register';
-import Forget from './pages/StartP/Forget';
+import Code from './pages/StartP/Code';
 import Home from './pages/Home';
 
 const routes: RouteObject[] = [
   {
     path: '/StartP',
     element: <StartP />,
-    children:[
+    children: [
       {
         path: 'login',
         element: <Login />,
@@ -23,13 +23,14 @@ const routes: RouteObject[] = [
         element: <Register />,
       },
       {
-        path: 'forget',
-        element: <Forget />,
-      },{
-        path:'',
-        element:  <StartP_Home/>
-      }
-    ]
+        path: 'code',
+        element: <Code />,
+      },
+      {
+        path: '',
+        element: <StartP_Home />,
+      },
+    ],
   },
   {
     path: '/home',

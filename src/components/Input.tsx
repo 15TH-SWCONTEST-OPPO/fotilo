@@ -6,18 +6,18 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {No, Yes} from '../static/myIcon';
 import {Text} from 'native-base';
-import deepClone from '../utils/deepClone'
+import {defaultColor as deColor,errorColor,acceptColor, defaultColor} from '../static/color'
 
 interface InputProps extends Omit<TextInputProps, 'style'> {
   iconSide: 'none' | 'left' | 'right';
   containerStyle?: ViewStyle;
   textStyle?: TextStyle;
-  icon?: any;
+  icon?: object | Array<object>;
   // 正则规则
-  rules?: RegExp | boolean | Array<RegExp | boolean>;
+  rules?: RegExp | boolean | Array<RegExp | boolean | undefined>;
   errText?: Array<string> | string;
   /* 
     对于文本确认，无法使用change函数进行判断，因此需要通过直接传入文本信息进行校验
@@ -25,48 +25,65 @@ interface InputProps extends Omit<TextInputProps, 'style'> {
   confirm?: boolean;
   confirmText?: string;
   confirmErrorText?: string;
+
+  getState?: (e: {[key: string]: any}) => void;
 }
 
 const defaultSize = {height: 40, width: 200};
 
 // 判断rules形式
 const getRules = (
-  // rules的形式（可以匹配正则，布尔变量，以及rule数组）
-  rules: RegExp | boolean | Array<RegExp | boolean>,
+  // rules的形式（可以匹配正则，布尔变量，以及rule数组，如果有undefined则按默认显示）
+  rules: RegExp | boolean | Array<RegExp | boolean | undefined>,
 
   // 正则匹配时的字符串
   text?: string,
-): boolean | Array<number> => {
+): boolean | Array<number> | undefined => {
   // boolean形式
-  if (typeof rules === 'boolean') return rules;
+  if (typeof rules === 'boolean') {
+    return !!(rules as boolean);
+  }
   // 数组形式
   else if (rules.constructor === Array) {
-    let res: number[] = [];
-    rules.map((e, index) => {
-      if (!getRules(e, text)) {
-        res.push(index);
+    let res: number[] | undefined = [];
+    let index = 0;
+    for (const e of rules) {
+      if (e === undefined) {
+        return undefined;
+      } else if (!getRules(e, text)) {
+        res!.push(index);
       }
-    });
+      index++;
+    }
     return res;
 
     // 正则形式
   } else {
-    return (rules as RegExp).test(text!);
+    return (rules as RegExp).test(text!) as boolean;
   }
 };
-
 
 export default function Input(props: InputProps) {
 
   const defaultColor = {
-    default: '#c0c0c0',
-    accept: '#6dbe4b',
-    error: '#d75246',
+    default: deColor,
+    accept: acceptColor,
+    error: errorColor,
   };
 
+  const number={
+    default:0,
+    accept: 1,
+    error:2    
+  }
+
+  // input的不同模式
   const [situ, setSitu] = useState<keyof typeof defaultColor>('default');
+
+  // 正则判断错误所显示的文本
   const [errNo, setErrNo] = useState<number>(-1);
   const [text, setText] = useState<string>('');
+  const didMount = useRef(false);
 
   const {
     iconSide,
@@ -75,41 +92,37 @@ export default function Input(props: InputProps) {
     onChangeText,
     rules,
     errText,
+
+    // 类型为数组，传入默认、正确、错误的icon图标
     icon,
     confirm,
     confirmText,
     confirmErrorText,
+    getState,
   } = props;
 
   const cStyle = {...(containerStyle as Object)};
   const tStyle = {...(textStyle as Object)};
 
   // rule判断（为数组）
-  let userRules=deepClone(rules)
-  useEffect(()=>{
-    if (rules !== undefined&&text) {
+  useEffect(() => {
+    if (rules !== undefined && didMount.current) {
       const res = getRules(rules, text);
       if (typeof res === 'boolean') {
         setSitu(res ? 'accept' : 'error');
         setErrNo(res ? -1 : 0);
-      } else {
+      } else if (typeof res === 'object') {
         setSitu(res.length === 0 ? 'accept' : 'error');
         setErrNo(res[0] !== undefined ? res[0] : -1);
       }
     }
-  },[userRules])
+    didMount.current = true;
+  });
 
-  // 倒计时
-  let arrived=true;
-  let clicked=false;
-  useEffect(()=>{
-    if (clicked&&arrived) {
-      clicked = false;
-      const timer=setInterval(()=>{
-        
-      },60000)
-    }
-  },[])
+  // layout
+  useEffect(() => {
+    getState && getState({err: errNo !== -1});
+  }, [errNo]);
 
   // borderColor
   let borderColor =
@@ -128,7 +141,7 @@ export default function Input(props: InputProps) {
           borderColor: borderColor,
         }}>
         {/* icon */}
-        {icon ||
+        {(icon && ((icon.constructor === Array &&(icon as Array<object>)[number[situ]])||icon)) ||
           (iconSide !== 'none' && (
             <View style={styles.icon}>
               {situ === 'error' ? (
@@ -151,13 +164,14 @@ export default function Input(props: InputProps) {
               if (typeof res === 'boolean') {
                 setSitu(res ? 'accept' : 'error');
                 setErrNo(res ? -1 : 0);
-              } else {
+              } else if (typeof res === 'object') {
                 setSitu(res.length === 0 ? 'accept' : 'error');
                 setErrNo(res[0] !== undefined ? res[0] : -1);
               }
             }
             if (confirm) {
               setSitu(confirmText === e ? 'accept' : 'error');
+              setErrNo(confirmText === e ? -1 : errText?.length || 0);
             }
           }}
         />
@@ -166,7 +180,7 @@ export default function Input(props: InputProps) {
       {errNo != -1 && (
         <Text style={{color: defaultColor['error']}}>
           *
-          { confirmErrorText ||
+          {confirmErrorText ||
             (typeof errText === 'string' && errText) ||
             errText![errNo] ||
             'error'}

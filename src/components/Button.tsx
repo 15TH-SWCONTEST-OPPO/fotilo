@@ -5,16 +5,17 @@ import {
   Animated,
   View,
 } from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 
 import {basicColor} from '../static/color';
 
 const defaultRadius = 5;
-const timeout = 1;
+const timeout = 0;
 
 interface BtnProps extends PressableProps {
   clickColor?: string;
   textColor?: string;
+  unable?: boolean;
 }
 
 export default function Button(props: BtnProps) {
@@ -24,7 +25,7 @@ export default function Button(props: BtnProps) {
 
   /* 
     动画
-  */
+    */
   //  手指移入
   const moveIn = () => {
     Animated.timing(shadow, {
@@ -43,16 +44,29 @@ export default function Button(props: BtnProps) {
     }).start();
   };
 
-  const {style: userStyle, onPressIn, onPressOut, children, onLayout} = props;
+  const {
+    style: userStyle,
+    onPressIn,
+    onPressOut,
+    children,
+    onLayout,
+    unable,
+  } = props;
+
   const uStyle: {[key: string]: any} = {...(userStyle?.valueOf() as Object)};
+
+  useEffect(() => {
+    unable ? moveIn() : moveOut();
+  }, [unable]);
 
   return (
     <Pressable
       {...props}
       style={{...ownstyles.container, ...uStyle}}
+      
       onPressIn={e => {
-        moveIn();
-        onPressIn && onPressIn(e);
+        !unable && moveIn();
+        !unable && onPressIn && onPressIn(e);
       }}
       onLayout={a => {
         setSize({
@@ -62,10 +76,11 @@ export default function Button(props: BtnProps) {
         onLayout && onLayout(a);
       }}
       onPressOut={e => {
-        moveOut();
-        onPressOut && onPressOut(e);
+        !unable && moveOut();
+        !unable && onPressOut && onPressOut(e);
       }}>
       {children}
+
       <Animated.View
         style={[
           {
@@ -81,6 +96,10 @@ export default function Button(props: BtnProps) {
     </Pressable>
   );
 }
+
+Button.defaultProps = {
+  unable: false,
+};
 
 const ownstyles = StyleSheet.create({
   container: {

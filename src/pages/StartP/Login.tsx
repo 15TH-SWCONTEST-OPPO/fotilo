@@ -1,12 +1,13 @@
 import {View, Text, StyleSheet, Dimensions, TextInput} from 'react-native';
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import {useNavigate} from 'react-router-native';
 import {Button} from 'native-base';
 
 import debounce from '../../utils/debounce';
-import {QQ, Wechat, Weibo} from '../../static/myIcon';
-import {basicColor} from '../../static/color';
+import {Lock, QQ, Wechat, Weibo, User} from '../../static/myIcon';
+import {acceptColor, basicColor, errorColor} from '../../static/color';
 import MyBtn from '../../components/Button';
+import Input from '../../components/Input';
 /* 
   基础信息
 */
@@ -14,7 +15,7 @@ import MyBtn from '../../components/Button';
 const centerWidth = 320;
 
 // 账号密码
-let username: string = '';
+let phone: string = '';
 let password: string = '';
 
 /* 
@@ -40,26 +41,47 @@ const ThirdLogin = () => {
 };
 
 export default function Login() {
+
   const navigation = useNavigate();
+
+  const [empty,setEmpty]=useState<{phone:boolean,password:boolean}>({phone:true,password:true});
 
   return (
     <View style={styles.container}>
       <View style={styles.center}>
-        <TextInput
-          style={styles.input}
+        <Input
+          containerStyle={styles.input}
+          textStyle={{color: 'white'}}
           placeholderTextColor="#c0c0c0"
           onChangeText={debounce(function (e: string) {
-            username = e;
+            phone = e;
+            setEmpty({...empty,phone:e===''})
           }, 600)}
-          placeholder="用户名"
-        />
-        <TextInput
-          style={styles.input}
+          placeholder="手机号"
+          icon={[
+            <User size={5} />,
+            <User color={acceptColor} size={5} />,
+            <User color={errorColor} size={5} />,
+          ]}
+          rules={[!empty.phone,false]}
+          errText={["请输入手机号","手机号或密码错误"]}
+          />
+        <Input
+          containerStyle={styles.input}
+          textStyle={{color: 'white'}}
           placeholderTextColor="#c0c0c0"
           secureTextEntry
+          rules={[!empty.password,false]}
+          errText={["请输入密码","手机号或密码错误"]}
           onChangeText={debounce(function (e: string) {
+          setEmpty({...empty,password:e===''})
             password = e;
           }, 600)}
+          icon={[
+            <Lock size={5} />,
+            <Lock color={acceptColor} size={5} />,
+            <Lock color={errorColor} size={5} />,
+          ]}
           placeholder="密码"
         />
 
@@ -73,10 +95,10 @@ export default function Login() {
           </Button>
           <Button
             onPress={() => {
-              navigation('../forget');
+              navigation('../code');
             }}
             variant="ghost">
-            <Text style={styles.othersT}>忘记密码？</Text>
+            <Text style={styles.othersT}>验证码登录</Text>
           </Button>
         </View>
       </View>
@@ -88,8 +110,7 @@ export default function Login() {
       <View style={styles.btnContainer}>
         <MyBtn
           onPress={() => {
-            console.log(username);
-            console.log(password);
+            setEmpty({phone:phone==='',password:password===''})
           }}
           style={styles.loginBtn}>
           <Text style={styles.loginT}>登录</Text>

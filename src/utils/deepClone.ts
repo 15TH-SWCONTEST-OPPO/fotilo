@@ -5,6 +5,11 @@ const isArr = (origin: any): boolean => {
 
 
 export default function deepClone  <T>(origin: T, target?: Record<string, any> | T ): T  {
+
+    if (typeof origin !== 'object') {
+        return origin
+    }
+
     let tar = target || {}
 
     for (const key in origin) {

@@ -10,12 +10,14 @@ import React, {useEffect, useRef, useState} from 'react';
 import {Outlet, useLocation, useNavigate} from 'react-router-native';
 import StatusBarSpace from '../../components/StatusBarSpace';
 import {ArrowBackIcon} from 'native-base';
+import Button from '../../components/Button';
+
 
 // 头部标题
 const header: {[key: string]: string} = {
   login: '登录',
   register: '注册',
-  forget: '找回密码',
+  code: '验证码登录',
 };
 
 export default function Page1() {
@@ -57,7 +59,8 @@ export default function Page1() {
   }, [location]);
 
   return (
-    <View style={styles.container}>
+    <>
+      <View style={styles.container}>
         <StatusBarSpace />
         {title ? (
           <TouchableHighlight
@@ -70,19 +73,22 @@ export default function Page1() {
         ) : null}
         <Text style={styles.title}>{title}</Text>
 
-      <View style={styles.center}>
-        <Outlet />
+        <View style={styles.center}>
+          <Outlet />
+        </View>
+
+        <Animated.View style={[styles.backgroundBlur, {opacity: fadeAnim}]}>
+          <View style={styles.backgroundBlur} />
+        </Animated.View>
+
+        <ImageBackground
+          style={styles.background}
+          source={require('../../static/img/background.gif')}
+        />
       </View>
 
-      <Animated.View style={[styles.backgroundBlur, {opacity: fadeAnim}]}>
-        <View style={styles.backgroundBlur} />
-      </Animated.View>
-
-      <ImageBackground
-        style={styles.background}
-        source={require('../../static/img/background.gif')}
-      />
-    </View>
+      
+    </>
   );
 }
 
@@ -91,8 +97,8 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
   },
-  center:{
-    flexShrink:1 
+  center: {
+    flexShrink: 1,
   },
   background: {
     width: '100%',
