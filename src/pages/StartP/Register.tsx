@@ -1,11 +1,11 @@
-import {View, Text, StyleSheet, TextInputProps} from 'react-native';
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import {View, Text, StyleSheet} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
 import {styles} from './Login';
-import debounce from '../../utils/debounce';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
-import {passwordRule, phoneNumRule, emptyRule} from '../../static/regex';
+import {passwordRule, phoneNumRule, usernameRule} from '../../static/regex';
 import {userType} from '../../static/types';
+import {sendmessage, test} from '../../api';
 
 let info: userType = {username: '', password: '', code: '', phone: ''};
 
@@ -39,7 +39,13 @@ export default function Register() {
         : setEmptyErr([undefined, false, undefined, undefined]);
       return;
     }
-    !time.current && setNeedT(true);
+
+    if (!time.current) {
+      setNeedT(true);
+      sendmessage(info.phone).then(e => {
+        console.log(e);
+      });
+    }
   };
 
   //
@@ -75,10 +81,10 @@ export default function Register() {
               : setEmptyErr([e !== '', undefined, undefined, undefined]);
           }}
           getState={e => {
-            err.current[0] =  e.err;
+            err.current[0] = e.err;
           }}
-          rules={emptyErr ? emptyErr[0] : emptyErr}
-          errText="请输入用户名"
+          rules={[emptyErr ? emptyErr[0] : emptyErr, usernameRule]}
+          errText={['请输入用户名', "应由4~16位英文、数字、'_'构成"]}
           placeholder="用户名"
         />
 
@@ -87,7 +93,7 @@ export default function Register() {
           textStyle={rstyles.inputT}
           placeholderTextColor="#c0c0c0"
           getState={e => {
-            err.current[1] =  e.err;
+            err.current[1] = e.err;
           }}
           onChangeText={(e: string) => {
             info.phone = e;
@@ -102,7 +108,7 @@ export default function Register() {
 
         <Input
           getState={e => {
-            err.current[2] =  e.err;
+            err.current[2] = e.err;
           }}
           containerStyle={styles.input}
           textStyle={rstyles.inputT}
@@ -137,7 +143,7 @@ export default function Register() {
         <View style={{...rstyles.verContainer, width: styles.input.width}}>
           <Input
             getState={e => {
-              err.current[4] =  e.err;
+              err.current[4] = e.err;
             }}
             containerStyle={{
               borderColor: styles.input.borderColor,
@@ -174,16 +180,16 @@ export default function Register() {
         <Button
           onPress={() => {
             let empty: boolean[] = [];
-            let error=false;
+            let error = false;
             infoOrder.map(e => {
               empty.push(info[e] !== '');
-              error=error||info[e] === ''
+              error = error || info[e] === '';
             });
             setEmptyErr(empty);
 
-            err.current.map((e)=>{
-              error=error||e
-            })
+            err.current.map(e => {
+              error = error || e;
+            });
 
             if (error) {
               console.log('error');
@@ -218,5 +224,4 @@ const rstyles = StyleSheet.create({
     height: styles.input.height - 10,
     width: 110,
   },
-  verInput: {},
 });

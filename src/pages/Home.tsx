@@ -1,9 +1,7 @@
 import {View, Text} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
-import {Link} from 'react-router-native';
-import Input from '../components/Input';
+import VideoShow from './VideoShow';
 import {test} from '../api';
-import {passwordRule} from '../static/regex';
 
 export default function Home() {
   const [time, setTime] = useState(60);
@@ -14,12 +12,17 @@ export default function Home() {
     iter.current = setInterval(() => {
       num.current--;
       setTime(num.current)
-      console.log(time);
     }, 1000);
   }, []);
 
+  // test().then(e => {
+  //   console.log(e);
+  // });
+  fetch('https://192.168.180.94').then((v)=>{
+    console.log(v);
+  })
+
   useEffect(() => {
-    console.log(num.current);
     if (num.current <= 50) {
       clearInterval(iter.current!);
     }
@@ -27,17 +30,7 @@ export default function Home() {
 
   return (
     <View>
-      <Text>Home</Text>
-      <Link to="/login">
-        <Text>login</Text>
-      </Link>
-      <Text>{num.current}</Text>
-      <View style={{flexDirection: 'row'}}>
-        <Input
-          rules={[true, passwordRule]}
-          errText={['用户名或密码错误', '密码格式错误']}
-        />
-      </View>
+      <VideoShow />
     </View>
   );
 }

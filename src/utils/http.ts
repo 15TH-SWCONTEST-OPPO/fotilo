@@ -1,6 +1,7 @@
 import qs from 'qs';
 
-const baseUrl = 'https://www.koi2000.top/api/';
+import {ENV_URL,TEST_ENV} from '../api/backend'
+const baseUrl = TEST_ENV;
 
 export interface httpConfig extends RequestInit {
   cookie?: string;

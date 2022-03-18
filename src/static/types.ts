@@ -5,7 +5,13 @@ export type userType={
     code: string;
     [key:string]:any
 }
+
 export type codeLoginType={
     phone: string;
     code:string
+}
+
+export type loginType={
+    phone: string;
+    password: string;
 }
