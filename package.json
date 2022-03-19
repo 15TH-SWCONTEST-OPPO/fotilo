@@ -10,9 +10,12 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
+    "@react-native-cookies/cookies": "^6.1.0",
     "@react-navigation/native": "^6.0.8",
     "@reduxjs/toolkit": "^1.7.2",
+    "@types/axios": "^0.14.0",
     "@types/qs": "^6.9.7",
+    "@types/react-native-linear-gradient": "^2.4.0",
     "@types/react-native-video": "^5.0.12",
     "native-base": "^3.3.7",
     "qs": "^6.10.3",

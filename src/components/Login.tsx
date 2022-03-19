@@ -1,13 +1,14 @@
 import {View, Text, StyleSheet, Dimensions, TextInput} from 'react-native';
-import React, { useRef, useState } from 'react';
+import React, {useRef, useState} from 'react';
 import {useNavigate} from 'react-router-native';
 import {Button} from 'native-base';
 
-import debounce from '../../utils/debounce';
-import {Lock, QQ, Wechat, Weibo, User} from '../../static/myIcon';
-import {acceptColor, basicColor, errorColor} from '../../static/color';
-import MyBtn from '../../components/Button';
-import Input from '../../components/Input';
+import debounce from '../utils/debounce';
+import {Lock, QQ, Wechat, Weibo, User} from '../static/myIcon';
+import {acceptColor, basicColor, errorColor} from '../static/color';
+import MyBtn from './Button';
+import Input from './Input';
+import {login} from '../api';
 /* 
   基础信息
 */
@@ -41,10 +42,30 @@ const ThirdLogin = () => {
 };
 
 export default function Login() {
-
   const navigation = useNavigate();
 
-  const [empty,setEmpty]=useState<{phone:boolean,password:boolean}>({phone:true,password:true});
+  const [empty, setEmpty] = useState<{phone: boolean; password: boolean}>({
+    phone: true,
+    password: true,
+  });
+
+  const [otherErr,setOtherErr]=useState(true);
+  const [otherMessage,setOtherMessage]=useState('');
+
+
+  const onFinish = () => {
+    setEmpty({phone: phone === '', password: password === ''});
+    if (phone !== '' && password !== '') {
+      login({phone, password})
+        .then(e => {
+          console.log(e);
+        })
+        .catch(e => {
+          setOtherMessage(e.response.data.message);
+          setOtherErr(false);
+        });
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -55,7 +76,8 @@ export default function Login() {
           placeholderTextColor="#c0c0c0"
           onChangeText={debounce(function (e: string) {
             phone = e;
-            setEmpty({...empty,phone:e===''})
+            setEmpty({...empty, phone: e === ''});
+            setOtherErr(true)
           }, 600)}
           placeholder="手机号"
           icon={[
@@ -63,18 +85,19 @@ export default function Login() {
             <User color={acceptColor} size={5} />,
             <User color={errorColor} size={5} />,
           ]}
-          rules={[!empty.phone,false]}
-          errText={["请输入手机号","手机号或密码错误"]}
+          rules={[!empty.phone,otherErr]}
+          errText={['请输入手机号', otherMessage]}
           />
         <Input
           containerStyle={styles.input}
           textStyle={{color: 'white'}}
           placeholderTextColor="#c0c0c0"
           secureTextEntry
-          rules={[!empty.password,false]}
-          errText={["请输入密码","手机号或密码错误"]}
+          rules={[!empty.password,otherErr]}
+          errText={['请输入密码', otherMessage]}
           onChangeText={debounce(function (e: string) {
-          setEmpty({...empty,password:e===''})
+            setEmpty({...empty, password: e === ''});
+            setOtherErr(true)
             password = e;
           }, 600)}
           icon={[
@@ -108,11 +131,7 @@ export default function Login() {
       </View>
 
       <View style={styles.btnContainer}>
-        <MyBtn
-          onPress={() => {
-            setEmpty({phone:phone==='',password:password===''})
-          }}
-          style={styles.loginBtn}>
+        <MyBtn onPress={onFinish} style={styles.loginBtn}>
           <Text style={styles.loginT}>登录</Text>
         </MyBtn>
       </View>

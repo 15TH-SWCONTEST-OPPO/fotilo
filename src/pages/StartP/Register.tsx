@@ -1,22 +1,30 @@
 import {View, Text, StyleSheet} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
-import {styles} from './Login';
+import {styles} from '../../components/Login';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import {passwordRule, phoneNumRule, usernameRule} from '../../static/regex';
 import {userType} from '../../static/types';
-import {sendmessage, test} from '../../api';
+import {register, sendmessage} from '../../api';
 
 let info: userType = {username: '', password: '', code: '', phone: ''};
 
 const infoOrder = ['username', 'phone', 'password', 'code'];
 
 // 确认密码
-
 export default function Register() {
   const [password, setpassword] = useState('');
   const [nowNum, setNowNum] = useState(0);
   const [needT, setNeedT] = useState(false);
+
+  const [codeErr, setCodeErr] = useState<boolean>(true);
+  const [phoneErr, setPhoneErr] = useState<boolean>(true);
+  const [errMessage, setErrMessage] = useState<string>('')
+
+  const backerrs:{[key: string]: any}={
+    '验证码不匹配':setCodeErr,
+    '该手机号已注册':setPhoneErr
+  }
 
   // 必填信息为空
   const [emptyErr, setEmptyErr] = useState<
@@ -42,9 +50,40 @@ export default function Register() {
 
     if (!time.current) {
       setNeedT(true);
-      sendmessage(info.phone).then(e => {
-        console.log(e);
-      });
+      sendmessage(info.phone)
+        .then(e => {
+          console.log(e);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+  };
+
+  const onFinish = () => {
+    let empty: boolean[] = [];
+    let error = false;
+    infoOrder.map(e => {
+      empty.push(info[e] !== '');
+      error = error || info[e] === '';
+    });
+
+    setEmptyErr(empty);
+
+    err.current.map(e => {
+      error = error || e;
+    });
+
+
+    if (!error) {
+      register(info)
+        .then(e => {
+          console.log(e);
+        })
+        .catch(e => {
+          setErrMessage(e.response.data.message);
+          backerrs[e.response.data.message](true);
+        });
     }
   };
 
@@ -101,8 +140,8 @@ export default function Register() {
               ? setEmptyErr([emptyErr[0], e !== '', emptyErr[2], emptyErr[3]])
               : setEmptyErr([undefined, e !== '', undefined, undefined]);
           }}
-          rules={[emptyErr ? emptyErr[1] : true, phoneNumRule]}
-          errText={['请输入手机号', '请输入正常手机号码']}
+          rules={[emptyErr ? emptyErr[1] : true, phoneNumRule,phoneErr]}
+          errText={['请输入手机号', '请输入正常手机号码',errMessage]}
           placeholder="手机号码"
         />
 
@@ -157,8 +196,8 @@ export default function Register() {
                 ? setEmptyErr([emptyErr[0], emptyErr[1], emptyErr[2], e !== ''])
                 : setEmptyErr([undefined, undefined, undefined, e !== '']);
             }}
-            rules={emptyErr ? emptyErr[3] : emptyErr}
-            errText="请输入验证码"
+            rules={[emptyErr ? emptyErr[3] : emptyErr,codeErr]}
+            errText={['请输入验证码',errMessage]}
             placeholder="验证码"
           />
           <Button
@@ -179,21 +218,7 @@ export default function Register() {
       <View style={styles.btnContainer}>
         <Button
           onPress={() => {
-            let empty: boolean[] = [];
-            let error = false;
-            infoOrder.map(e => {
-              empty.push(info[e] !== '');
-              error = error || info[e] === '';
-            });
-            setEmptyErr(empty);
-
-            err.current.map(e => {
-              error = error || e;
-            });
-
-            if (error) {
-              console.log('error');
-            }
+            onFinish();
           }}
           style={styles.loginBtn}>
           <Text style={rstyles.reT}>注册</Text>

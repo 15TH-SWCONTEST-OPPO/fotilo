@@ -6,11 +6,14 @@ import VideoPlayer from '../components/VideoPlayer'
 
 const windowWidth=Dimensions.get('screen').width
 
+// 视频横纵比
+const scale=2.8/5
+
 export default function VideoShow() {
   return (
     <View style={styles.background}>
         <StatusBarSpace/>
-        <VideoPlayer />
+        <VideoPlayer style={{width:windowWidth, height:windowWidth*scale}}/>
       <Text>VideoShow</Text>
     </View>
   )
@@ -18,7 +21,6 @@ export default function VideoShow() {
 
 const styles = StyleSheet.create({
     background:{
-        backgroundColor:'black',
         height:'100%'
     }
 })

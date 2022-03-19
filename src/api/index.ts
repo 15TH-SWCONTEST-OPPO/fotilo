@@ -1,23 +1,25 @@
-import {fetchHttp} from '../utils/http';
 import {userType,codeLoginType,loginType} from '../static/types'
+import axios from 'axios';
+import {TEST_ENV,ENV_URL} from './backend'
 
+const env=TEST_ENV
 
 export const test=()=>{
-  return fetchHttp('user/test')
+  return axios.get(`${env}/user/test`)
 }
 
 export const sendmessage = (phone:string) => {
-  return fetchHttp('user/sendmessage?phone='+phone);
+  return axios.get(`${env}/user/sendMessage`,{params:{phone:phone}});
 };
 
 export const register=(data:userType)=>{
-  return fetchHttp('user/register',{data:data});
+  return axios.post(`${env}/user/register`,{...data});
 }
 
 export const login=(data:loginType)=>{
-  return fetchHttp('user/login',{data:data});
+  return axios.get(`${env}/user/phonelogin`,{params:{...data}});
 }
 
 export const codeLogin=(data:codeLoginType)=>{
-  return fetchHttp('user/phoneLogin',{data:data});
+  return axios(`${env}/user/phoneLogin`,{data:data});
 }

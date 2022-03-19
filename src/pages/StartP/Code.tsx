@@ -1,6 +1,6 @@
 import {View, Text, StyleSheet} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
-import {styles} from './Login';
+import {styles} from '../../components/Login';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import {Message, User} from '../../static/myIcon';

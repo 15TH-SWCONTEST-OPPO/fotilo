@@ -10,7 +10,6 @@ import React, {useEffect, useRef, useState} from 'react';
 import {Outlet, useLocation, useNavigate} from 'react-router-native';
 import StatusBarSpace from '../../components/StatusBarSpace';
 import {ArrowBackIcon} from 'native-base';
-import Button from '../../components/Button';
 
 
 // 头部标题
