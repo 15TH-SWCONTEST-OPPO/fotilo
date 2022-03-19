@@ -122,13 +122,13 @@ const styles = StyleSheet.create({
     marginBottom: 50,
   },
   loginBtn: {
-    width: 180,
+    width: '43%',
     height: 50,
     borderWidth: 2,
     backgroundColor: 'white',
   },
   regBtn: {
-    width: 180,
+    width: '43%',
     height: 50,
     borderWidth: 2,
     backgroundColor: 'black',

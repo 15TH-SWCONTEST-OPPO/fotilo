@@ -22,6 +22,7 @@
     "react": "17.0.2",
     "react-native": "0.67.2",
     "react-native-navigation-bar-color": "^2.0.1",
+    "react-native-orientation-locker": "^1.4.0",
     "react-native-safe-area-context": "^3.4.1",
     "react-native-svg": "^12.1.1",
     "react-native-video": "^5.2.0",

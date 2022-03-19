@@ -5,6 +5,7 @@ import {
   Animated,
   TouchableHighlight,
   Text,
+  StatusBar,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {Outlet, useLocation, useNavigate} from 'react-router-native';
@@ -55,6 +56,7 @@ export default function Page1() {
       fadeOut();
       faded = false;
     }
+    StatusBar.setBackgroundColor('transparent');
   }, [location]);
 
   return (

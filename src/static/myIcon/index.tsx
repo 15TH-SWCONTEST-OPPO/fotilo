@@ -159,6 +159,7 @@ export const User = (props: IconProps) => {
   });
   return <CustomIcon size={size} opacity={opacity} />;
 };
+
 export const Message = (props: IconProps) => {
   const {opacity, size, color} = props;
   const CustomIcon = createIcon({
@@ -171,7 +172,7 @@ export const Message = (props: IconProps) => {
           width="12.1"
           height="7.8"
           rx="1"
-          stroke={color||"white"}
+          stroke={color || 'white'}
           stroke-width="0.6"
         />
         <Line
@@ -179,7 +180,7 @@ export const Message = (props: IconProps) => {
           x2="7.53247"
           y2="-0.3"
           transform="matrix(0.822231 0.569155 -0.567823 0.823151 0.13916 0.818268)"
-          stroke={color||"white"}
+          stroke={color || 'white'}
           stroke-width="0.6"
         />
         <Line
@@ -187,8 +188,144 @@ export const Message = (props: IconProps) => {
           x2="7.53247"
           y2="-0.3"
           transform="matrix(-0.822231 0.569155 0.567823 0.823151 12.5259 0.818268)"
-          stroke={color||"white"}
+          stroke={color || 'white'}
           stroke-width="0.6"
+        />
+      </>,
+    ],
+  });
+  return <CustomIcon size={size} opacity={opacity} />;
+};
+
+export const Begin = (props: IconProps) => {
+  const {opacity, size, color} = props;
+  const CustomIcon = createIcon({
+    viewBox: '0 0 20 20',
+    path: [
+      <Path
+        d="M16.1 7.77154C17.7 8.6953 17.7 11.0047 16.1 11.9285L8.52495 16.3019C6.92495 17.2257 4.92495 16.0709 4.92495 14.2234L4.92495 5.47657C4.92495 3.62905 6.92495 2.47435 8.52495 3.39811L16.1 7.77154Z"
+        fill={color || '#ffffff'}
+      />,
+    ],
+  });
+  return <CustomIcon size={size} opacity={opacity} />;
+};
+
+export const Progress = (props: IconProps) => {
+  const {opacity, size, color} = props;
+  const CustomIcon = createIcon({
+    viewBox: '0 0 18 15',
+    path: [
+      <>
+        <Path
+          d="M11.9133 13.9657L10.0614 14.3776C9.65158 14.2775 9.31137 14.1639 8.97684 14.0521C8.82343 14.0008 8.67122 13.95 8.51402 13.901C8.00259 13.7417 7.47409 13.6159 6.77918 13.608C6.04909 13.5997 5.49236 13.7256 4.95325 13.8888C4.78757 13.939 4.62707 13.9914 4.4653 14.0442C4.11167 14.1596 3.75198 14.277 3.31879 14.3776L1.62012 13.9798C0.835084 13.796 0.28 13.0959 0.28 12.2896V5.488C0.28 4.52924 1.05723 3.752 2.016 3.752H11.536C12.4948 3.752 13.272 4.52923 13.272 5.488V12.2712C13.272 13.0848 12.7073 13.789 11.9133 13.9657Z"
+          fill={color || 'white'}
+          stroke="black"
+          stroke-width="0.56"
+        />
+        <Path
+          d="M14.6059 6.98879L16.6892 6.0904C16.874 6.01069 17.08 6.14622 17.08 6.34751V10.7128C17.08 10.9242 16.8547 11.0593 16.6682 10.9598L14.5849 9.84747C14.4937 9.79878 14.4367 9.70383 14.4367 9.60047V7.2459C14.4367 7.13412 14.5032 7.03305 14.6059 6.98879Z"
+          fill={color || 'white'}
+          stroke="black"
+          stroke-width="0.56"
+        />
+        <Circle
+          cx="9.23991"
+          cy="1.736"
+          r="1.456"
+          fill={color || 'white'}
+          stroke="black"
+          stroke-width="0.56"
+        />
+        <Circle
+          cx="3.86393"
+          cy="1.736"
+          r="1.456"
+          fill={color || 'white'}
+          stroke="black"
+          stroke-width="0.56"
+        />
+        <Circle cx="4.29101" cy="1.953" r="0.427" fill="black" />
+        <Circle cx="9.66699" cy="1.953" r="0.427" fill="black" />
+      </>,
+    ],
+  });
+  return <CustomIcon size={size} opacity={opacity} />;
+};
+
+export const Pause = (props: IconProps) => {
+  const {opacity, size, color} = props;
+  const CustomIcon = createIcon({
+    viewBox: '0 0 14 14',
+    path: [
+      <>
+        <Rect width="5.7" height="13.9" rx="2.4" fill={color || 'white'} />
+        <Rect
+          x="7.5"
+          width="5.7"
+          height="13.9"
+          rx="2.4"
+          fill={color || 'white'}
+        />
+      </>,
+    ],
+  });
+  return <CustomIcon size={size} opacity={opacity} />;
+};
+
+export const Full = (props: IconProps) => {
+  const {opacity, size, color} = props;
+  const CustomIcon = createIcon({
+    viewBox: '0 0 23 24',
+    path: [
+      <>
+        <Line
+          x1="10.1641"
+          y1="4.46308"
+          x2="3.14165"
+          y2="2.41761"
+          stroke={color||"white"}
+          stroke-width="0.4608"
+        />
+        <Line
+          y1="-0.2304"
+          x2="7.31426"
+          y2="-0.2304"
+          transform="matrix(-0.22532 -0.974285 -0.974285 0.22532 4.52759 9.63126)"
+          stroke={color||"white"}
+          stroke-width="0.4608"
+        />
+        <Line
+          x1="11.3831"
+          y1="11.1647"
+          x2="3.04709"
+          y2="2.34683"
+          stroke={color||"white"}
+          stroke-width="0.4608"
+        />
+        <Line
+          x1="13.4585"
+          y1="19.2906"
+          x2="20.4981"
+          y2="21.2763"
+          stroke={color||"white"}
+          stroke-width="0.4608"
+        />
+        <Line
+          y1="-0.2304"
+          x2="7.31426"
+          y2="-0.2304"
+          transform="matrix(0.233592 0.972335 0.972335 -0.233592 19.0508 14.0747)"
+          stroke={color||"white"}
+          stroke-width="0.4608"
+        />
+        <Line
+          x1="12.1827"
+          y1="12.5996"
+          x2="20.5933"
+          y2="21.3463"
+          stroke={color||"white"}
+          stroke-width="0.4608"
         />
       </>,
     ],

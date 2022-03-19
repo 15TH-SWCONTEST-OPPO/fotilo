@@ -198,6 +198,10 @@ dependencies {
     // 如果你需要支持GIF动图
     implementation 'com.facebook.fresco:animated-gif:2.5.0'
 
+    // 渐变
+    implementation project(':react-native-linear-gradient')
+
+
     implementation project(':react-native-video')
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
