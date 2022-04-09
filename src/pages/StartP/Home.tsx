@@ -136,6 +136,7 @@ const styles = StyleSheet.create({
   loginT: {
     fontSize: 20,
     fontFamily: 'Roboto',
+    color:'black'
   },
   regT: {
     color: 'white',

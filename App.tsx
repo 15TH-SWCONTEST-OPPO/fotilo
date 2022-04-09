@@ -6,6 +6,7 @@ import {hideNavigationBar} from 'react-native-navigation-bar-color';
 import {AppState, StatusBar} from 'react-native';
 import {Provider} from 'react-redux';
 import store from './src/store'
+import Orientation from 'react-native-orientation-locker';
 
 const App = () => {
 
@@ -15,6 +16,8 @@ const App = () => {
       hideNavigationBar();
     });
     StatusBar.setBackgroundColor('transparent');
+    Orientation.lockToPortrait();
+    
   }, []);
 
   return (

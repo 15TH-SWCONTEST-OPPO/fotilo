@@ -17,6 +17,7 @@
     "@types/qs": "^6.9.7",
     "@types/react-native-linear-gradient": "^2.4.0",
     "@types/react-native-video": "^5.0.12",
+    "@types/uuid": "^8.3.4",
     "native-base": "^3.3.7",
     "qs": "^6.10.3",
     "react": "17.0.2",
@@ -25,6 +26,7 @@
     "react-native-orientation-locker": "^1.4.0",
     "react-native-safe-area-context": "^3.4.1",
     "react-native-svg": "^12.1.1",
+    "react-native-system-setting": "^1.7.6",
     "react-native-video": "^5.2.0",
     "react-redux": "^7.2.6",
     "react-router-native": "6"
