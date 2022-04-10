@@ -204,6 +204,9 @@ dependencies {
 
     implementation project(':react-native-video')
 
+    implementation project(':react-native-system-setting')
+
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     androidTestCompile('androidx.test.espresso:espresso-core:3.1.0', {

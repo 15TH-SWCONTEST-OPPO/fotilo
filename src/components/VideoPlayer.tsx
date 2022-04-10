@@ -9,16 +9,16 @@ import {
   Dimensions,
   PanResponder,
 } from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import Video from 'react-native-video';
 import {useNavigate} from 'react-router-native';
 // 渐变
 import LinearGradient from 'react-native-linear-gradient';
-// 屏幕旋转
 import {Begin, Progress, Pause, Full} from '../static/myIcon';
 import {ArrowBackIcon, Slider} from 'native-base';
 import uuid from 'uuid';
 
+// 屏幕旋转
 import Orientation from 'react-native-orientation-locker';
 
 import getTime from '../utils/getTime';
@@ -27,7 +27,8 @@ import Drawer from './Drawer';
 
 import {basicColor} from '../static/color';
 
-// 音量
+// 系统设置
+import SystemSetting from 'react-native-system-setting';
 
 interface VideoPlayerProps {
   style?: ViewStyle;
@@ -64,7 +65,10 @@ export default function VideoPlayer(props: VideoPlayerProps) {
   const [pause, setPause] = useState(false);
 
   // 音量
-  const [audio, setAudio] = useState(1);
+  const [audio, setAudio] = useState(0.3);
+  SystemSetting.getVolume().then(volume => {
+    setAudio(volume);
+  });
 
   // 倍速
   const [rate, setRate] = useState(1);
@@ -154,24 +158,39 @@ export default function VideoPlayer(props: VideoPlayerProps) {
   });
 
   /* 
-    触摸
+    播放器手势响应
   */
 
+  //设置是否拖拽
   const [drag, setDrag] = useState(false);
+  const [dx, setDx] = useState(0);
+  const [dy, setDy] = useState(0);
+
+  useEffect(() => {
+    const daudio = dy>0?2/30:-2/30;
+    const volume = audio;
+    console.log(daudio);
+
+    SystemSetting.setVolume(audio-daudio);
+    setAudio(volume-daudio);
+  }, [dy]);
+
+  useEffect(() => {}, [dx]);
 
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: () => true,
       onPanResponderGrant: () => {
-        setDrag(true)
+        setDrag(true);
       },
       onPanResponderMove: (_, b) => {
-        const a = audio;
-        console.log(Math.min(1,a - b.dy / ((full ? windowWidth : size.height) as number)));
-        setAudio(Math.min(1,a - b.dy / ((full ? windowWidth : size.height) as number)));
+        setDx(b.dx);
+        setDy(b.dy);
       },
       onPanResponderRelease: () => {
-        
+        setDrag(false);
+        setDx(0);
+        setDy(0);
       },
     }),
   ).current;
@@ -195,11 +214,10 @@ export default function VideoPlayer(props: VideoPlayerProps) {
         {/* 
           滚动判断
         */}
-        <Text 
-        style={{
-          color: 'white'
-        }}
-        >
+        <Text
+          style={{
+            color: 'white',
+          }}>
           {audio}
         </Text>
         {/* 
@@ -244,7 +262,6 @@ export default function VideoPlayer(props: VideoPlayerProps) {
             style={{backgroundColor: 'black', width: '100%', height: '100%'}}
             resizeMode="contain"
             repeat
-            volume={audio}
             rate={rate}
             paused={pause}
             ref={e => {
