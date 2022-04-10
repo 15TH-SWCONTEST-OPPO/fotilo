@@ -8,6 +8,11 @@ import StartP_Home from './pages/StartP/Home';
 import Register from './pages/StartP/Register';
 import Code from './pages/StartP/Code';
 import Home from './pages/Home';
+import Home_Home from './pages/Home/Home';
+import Dynamic from './pages/Home/Dynamic';
+import Video from './pages/Home/Video';
+import Action from './pages/Home/Action';
+import Me from './pages/Home/Me';
 
 const routes: RouteObject[] = [
   {
@@ -35,6 +40,28 @@ const routes: RouteObject[] = [
   {
     path: '/home',
     element: <Home />,
+    children: [
+      {
+        path: 'dynamic',
+        element: <Dynamic />,
+      },
+      {
+        path: 'video',
+        element: <Video />,
+      },
+      {
+        path: 'action',
+        element: <Action />,
+      },
+      {
+        path: 'me',
+        element: <Me />,
+      },
+      {
+        path: '',
+        element: <Home_Home />,
+      },
+    ],
   },
   {
     path: '/',

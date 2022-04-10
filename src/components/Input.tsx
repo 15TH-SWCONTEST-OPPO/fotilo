@@ -9,7 +9,7 @@ import {
 import React, {useEffect, useRef, useState} from 'react';
 import {No, Yes} from '../static/myIcon';
 import {Text} from 'native-base';
-import {defaultColor as deColor,errorColor,acceptColor, defaultColor} from '../static/color'
+import {defaultColor as deColor,errorColor,acceptColor} from '../static/color'
 
 interface InputProps extends Omit<TextInputProps, 'style'> {
   iconSide: 'none' | 'left' | 'right';

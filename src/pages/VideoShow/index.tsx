@@ -1,10 +1,10 @@
 import {View, Text, StyleSheet, Dimensions, ScrollView} from 'react-native';
 import React from 'react';
-import StatusBarSpace from '../components/StatusBarSpace';
+import StatusBarSpace from '../../components/StatusBarSpace';
 import Video from 'react-native-video';
-import VideoPlayer from '../components/VideoPlayer';
+import VideoPlayer from '../../components/VideoPlayer';
 
-import Drawer from '../components/Drawer';
+import Drawer from '../../components/Drawer';
 
 const windowWidth = Dimensions.get('screen').width;
 
@@ -24,7 +24,6 @@ export default function VideoShow() {
     <View style={styles.background}>
       <StatusBarSpace />
       <VideoPlayer style={{width: windowWidth, height: windowWidth * scale}} />
-      <Drawer position="top" drawers={<Drawers/>}>VideoShow</Drawer>
       <ScrollView 
       alwaysBounceVertical={false}
       style={styles.scrollView}>
