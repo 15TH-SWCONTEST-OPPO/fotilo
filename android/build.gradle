@@ -10,6 +10,7 @@ buildscript {
     }
     repositories {
         google()
+        jcenter()
         mavenCentral()
     }
     dependencies {
@@ -43,5 +44,7 @@ allprojects {
                 includeModule("com.yqritc", "android-scalablevideoview")
             }
         }
+        maven { url "https://maven.aliyun.com/nexus/content/repositories/releases" }
+        jcenter()
     }
 }
