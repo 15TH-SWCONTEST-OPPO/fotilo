@@ -1,6 +1,6 @@
 import React from 'react';
 import {createIcon, Icon} from 'native-base';
-import Svg, {Circle, G, Line, Path, Rect} from 'react-native-svg';
+import Svg, {Circle, Ellipse, G, Line, Path, Rect} from 'react-native-svg';
 
 interface IconProps {
   size?: number | string;
@@ -284,7 +284,7 @@ export const Full = (props: IconProps) => {
           y1="4.46308"
           x2="3.14165"
           y2="2.41761"
-          stroke={color||"white"}
+          stroke={color || 'white'}
           stroke-width="0.4608"
         />
         <Line
@@ -292,7 +292,7 @@ export const Full = (props: IconProps) => {
           x2="7.31426"
           y2="-0.2304"
           transform="matrix(-0.22532 -0.974285 -0.974285 0.22532 4.52759 9.63126)"
-          stroke={color||"white"}
+          stroke={color || 'white'}
           stroke-width="0.4608"
         />
         <Line
@@ -300,7 +300,7 @@ export const Full = (props: IconProps) => {
           y1="11.1647"
           x2="3.04709"
           y2="2.34683"
-          stroke={color||"white"}
+          stroke={color || 'white'}
           stroke-width="0.4608"
         />
         <Line
@@ -308,7 +308,7 @@ export const Full = (props: IconProps) => {
           y1="19.2906"
           x2="20.4981"
           y2="21.2763"
-          stroke={color||"white"}
+          stroke={color || 'white'}
           stroke-width="0.4608"
         />
         <Line
@@ -316,7 +316,7 @@ export const Full = (props: IconProps) => {
           x2="7.31426"
           y2="-0.2304"
           transform="matrix(0.233592 0.972335 0.972335 -0.233592 19.0508 14.0747)"
-          stroke={color||"white"}
+          stroke={color || 'white'}
           stroke-width="0.4608"
         />
         <Line
@@ -324,8 +324,31 @@ export const Full = (props: IconProps) => {
           y1="12.5996"
           x2="20.5933"
           y2="21.3463"
-          stroke={color||"white"}
+          stroke={color || 'white'}
           stroke-width="0.4608"
+        />
+      </>,
+    ],
+  });
+  return <CustomIcon size={size} opacity={opacity} />;
+};
+
+export const Audio = (props: IconProps) => {
+  const {opacity, size, color} = props;
+  const CustomIcon = createIcon({
+    viewBox: '0 0 14 18',
+    path: [
+      <>
+        <Path
+          d="M0 6.70742C0 6.09881 0.325349 5.53663 0.853048 5.23342L7.41411 1.46347C8.54744 0.812261 9.96106 1.63037 9.96106 2.93747V14.9475C9.96106 16.1871 8.67726 17.0099 7.55104 16.4922L0.989973 13.4762C0.386632 13.1989 0 12.5956 0 11.9316V6.70742Z"
+          fill={color||"white"}
+        />
+        <Ellipse
+          cx="12.0957"
+          cy="8.74054"
+          rx="1.30443"
+          ry="3.74595"
+          fill={color||"white"}
         />
       </>,
     ],

@@ -14,7 +14,7 @@ import Video from 'react-native-video';
 import {useNavigate} from 'react-router-native';
 // 渐变
 import LinearGradient from 'react-native-linear-gradient';
-import {Begin, Progress, Pause, Full} from '../static/myIcon';
+import {Begin, Progress, Pause, Full, Audio} from '../static/myIcon';
 import {ArrowBackIcon, Slider} from 'native-base';
 import uuid from 'uuid';
 
@@ -167,12 +167,13 @@ export default function VideoPlayer(props: VideoPlayerProps) {
   const [dy, setDy] = useState(0);
 
   useEffect(() => {
-    const daudio = dy>0?2/30:-2/30;
+    const daudio = dy === 0 ? 0 : dy < 0 ? -0.1 : 0.1;
+
     const volume = audio;
     console.log(daudio);
 
-    SystemSetting.setVolume(audio-daudio);
-    setAudio(volume-daudio);
+    SystemSetting.setVolume(audio - daudio);
+    setAudio(volume - daudio);
   }, [dy]);
 
   useEffect(() => {}, [dx]);
@@ -185,7 +186,11 @@ export default function VideoPlayer(props: VideoPlayerProps) {
       },
       onPanResponderMove: (_, b) => {
         setDx(b.dx);
-        setDy(b.dy);
+        setDy(
+          Math.floor(
+            (b.dy / ((full ? windowWidth : size.height) as number)) * 10,
+          ),
+        );
       },
       onPanResponderRelease: () => {
         setDrag(false);
@@ -214,12 +219,21 @@ export default function VideoPlayer(props: VideoPlayerProps) {
         {/* 
           滚动判断
         */}
-        <Text
-          style={{
-            color: 'white',
-          }}>
-          {audio}
-        </Text>
+        {dy!==0 && (
+          <View
+            style={{
+              position: 'absolute',
+              zIndex: 9999,
+              left:
+                ((full ? windowHeight - statusH : size.width) as number) / 2,
+              top: ((full ? windowWidth : size.height) as number) / 2,
+              backgroundColor: 'black',
+              opacity: 0.5,
+              borderRadius: 10,
+            }}>
+            <Audio />
+          </View>
+        )}
         {/* 
         头部条
       */}
