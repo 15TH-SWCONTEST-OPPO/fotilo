@@ -4,7 +4,7 @@ import React from 'react'
 export default function Action() {
   return (
     <View>
-      <Text>Action</Text>
+      <Text style={{color:'white'}}>Action</Text>
     </View>
   )
 }

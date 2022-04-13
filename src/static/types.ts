@@ -5,6 +5,9 @@ export type userType={
     code?: string;
     userID:string;
     avatar?:string;
+    intr?: string;
+    videoNum?:number;
+    likeNum?:number;
     [key:string]:any
 }
 

@@ -4,7 +4,7 @@ import React from 'react'
 export default function Dynamic() {
   return (
     <View>
-      <Text>Dynamic</Text>
+      <Text style={{color:'white'}}>Dynamic</Text>
     </View>
   )
 }

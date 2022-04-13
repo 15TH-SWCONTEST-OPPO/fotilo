@@ -4,7 +4,7 @@ import React from 'react'
 export default function Video() {
   return (
     <View>
-      <Text>Video</Text>
+      <Text style={{color:'white'}}>Video</Text>
     </View>
   )
 }

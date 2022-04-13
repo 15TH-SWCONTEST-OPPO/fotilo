@@ -11,6 +11,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {Outlet, useLocation, useNavigate} from 'react-router-native';
 import StatusBarSpace from '../../components/StatusBarSpace';
 import {ArrowBackIcon} from 'native-base';
+import getLoc from '../../utils/getLoc';
 
 
 // 头部标题
@@ -46,7 +47,7 @@ export default function Page1() {
   // 头部文字判断&背景动画
   let faded = false;
   useEffect(() => {
-    const loc: string = location.pathname.split(/\//)[2];
+    const loc: string = getLoc(location,2);
     for (let name in header) if (name === loc) setTitle(header[name]);
     if (loc && !faded) {
       fadeIn();
@@ -66,6 +67,7 @@ export default function Page1() {
         {title ? (
           <TouchableHighlight
             underlayColor="transparent"
+            style={{width:30}}
             onPress={() => {
               navigation(-1);
             }}>

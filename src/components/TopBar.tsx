@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet, ImageBackground} from 'react-native';
+import {View, Text, StyleSheet, ImageBackground, ViewProps} from 'react-native';
 import React from 'react';
 import {basicColor} from '../static/color';
 import Button from './Button';
@@ -7,15 +7,19 @@ import {Camera, Message, SearchBtn} from '../static/myIcon';
 import {useAppSelector} from '../store/hooks';
 import {useNavigate} from 'react-router-native';
 
-export default function TopBar() {
+interface TopBarProps extends ViewProps{}
+
+export default function TopBar(props: TopBarProps) {
   const user = useAppSelector(store => store.user);
   const navigation = useNavigate();
 
   return (
-    <View style={{...styles.container}}>
+    <View {...props} style={{...styles.container,...(props.style as Object)}}>
       <>
         {user.userID ? (
-          <Button style={{...styles.avatar}}>
+          <Button style={{...styles.avatar}} onPress={()=>{
+            navigation("me")
+          }}>
             <ImageBackground style={{...styles.avatar}} source={user.avatar?{uri:user.avatar}:require('../static/img/defaultAvatar.png')} />
           </Button>
         ) : (

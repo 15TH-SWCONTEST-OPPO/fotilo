@@ -14,15 +14,16 @@ import {
   VideoLogo,
 } from '../static/myIcon';
 import {basicColor} from '../static/color';
+import getLoc from '../utils/getLoc';
 
 export default function BottomBar() {
   const navigation = useNavigate();
   const location = useLocation();
   const [loca, setLoca] = useState('');
   useEffect(() => {
-    const loc: string = location.pathname.split(/\//)[2];
+    const loc: string = getLoc(location,2);
     setLoca(loc ? loc : '');
-  });
+  },[location.pathname]);
   return (
     <View style={{...styles.container}}>
       <View style={{...styles.inner}}>
@@ -70,20 +71,20 @@ export default function BottomBar() {
             height: 68,
           }}
           onPress={() => {
-            navigation('Video');
+            navigation('video');
           }}>
           <View style={{...styles.shade}} />
           <View style={{flexDirection: 'row'}}>
             <View style={{width: 10, height: 2}} />
             <VideoLogo
               size={12}
-              color={loca === 'Video' ? basicColor : 'white'}
+              color={loca === 'video' ? basicColor : 'white'}
             />
           </View>
           <Text
             style={{
               ...styles.btnT,
-              color: loca === 'Video' ? basicColor : 'white',
+              color: loca === 'video' ? basicColor : 'white',
             }}>
             随便看看
           </Text>
@@ -92,13 +93,13 @@ export default function BottomBar() {
         <Button
           style={{...styles.btn}}
           onPress={() => {
-            navigation('Action');
+            navigation('action');
           }}>
-          {loca === 'Action' ? <ActionActive color={basicColor} /> : <Action />}
+          {loca === 'action' ? <ActionActive color={basicColor} /> : <Action />}
           <Text
             style={{
               ...styles.btnT,
-              color: loca === 'Action' ? basicColor : 'white',
+              color: loca === 'action' ? basicColor : 'white',
             }}>
             创作
           </Text>
@@ -107,13 +108,13 @@ export default function BottomBar() {
         <Button
           style={{...styles.btn}}
           onPress={() => {
-            navigation('Me');
+            navigation('me');
           }}>
-          {loca === 'Me' ? <MeActive color={basicColor} /> : <Me />}
+          {loca === 'me' ? <MeActive color={basicColor} /> : <Me />}
           <Text
             style={{
               ...styles.btnT,
-              color: loca === 'Me' ? basicColor : 'white',
+              color: loca === 'me' ? basicColor : 'white',
             }}>
             我的
           </Text>
