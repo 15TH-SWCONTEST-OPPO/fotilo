@@ -1,17 +1,34 @@
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, ImageBackground} from 'react-native';
 import React from 'react';
 import {basicColor} from '../static/color';
 import Button from './Button';
 import Input from './Input';
 import {Camera, Message, SearchBtn} from '../static/myIcon';
+import {useAppSelector} from '../store/hooks';
+import {useNavigate} from 'react-router-native';
 
 export default function TopBar() {
+  const user = useAppSelector(store => store.user);
+  const navigation = useNavigate();
+
   return (
     <View style={{...styles.container}}>
-      <Button style={{...styles.avatar}}>
-        <Text style={{...styles.avatarT}}>登</Text>
-        <Text style={{...styles.avatarT}}>录</Text>
-      </Button>
+      <>
+        {user.userID ? (
+          <Button style={{...styles.avatar}}>
+            <ImageBackground style={{...styles.avatar}} source={user.avatar?{uri:user.avatar}:require('../static/img/defaultAvatar.png')} />
+          </Button>
+        ) : (
+          <Button
+            style={{...styles.avatar}}
+            onPress={() => {
+              navigation('../StartP/login');
+            }}>
+            <Text style={{...styles.avatarT}}>登</Text>
+            <Text style={{...styles.avatarT}}>录</Text>
+          </Button>
+        )}
+      </>
       <Input
         placeholder="搜索一下"
         placeholderTextColor="#c0c0c0"
@@ -47,6 +64,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden',
   },
   avatarT: {
     color: basicColor,

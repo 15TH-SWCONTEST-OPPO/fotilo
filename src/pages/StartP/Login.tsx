@@ -1,14 +1,17 @@
 import {View, Text, StyleSheet, Dimensions, TextInput} from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, { useState} from 'react';
 import {useNavigate} from 'react-router-native';
 import {Button} from 'native-base';
 
-import debounce from '../utils/debounce';
-import {Lock, QQ, Wechat, Weibo, User} from '../static/myIcon';
-import {acceptColor, basicColor, errorColor} from '../static/color';
-import MyBtn from './Button';
-import Input from './Input';
-import {login} from '../api';
+import debounce from '../../utils/debounce';
+import {acceptColor, basicColor, errorColor} from '../../static/color';
+import {login} from '../../api';
+import {useAppDispatch} from '../../store/hooks';
+import {set} from '../../store/features/userSlice'
+
+import {Lock, QQ, Wechat, Weibo, User} from '../../static/myIcon';
+import MyBtn from '../../components/Button';
+import Input from '../../components/Input';
 /* 
   基础信息
 */
@@ -42,6 +45,9 @@ const ThirdLogin = () => {
 };
 
 export default function Login() {
+
+  const dispatch=useAppDispatch()
+
   const navigation = useNavigate();
 
   const [empty, setEmpty] = useState<{phone: boolean; password: boolean}>({
@@ -64,6 +70,8 @@ export default function Login() {
           setOtherMessage(e.response.data.message);
           setOtherErr(false);
         });
+        dispatch(set({username:"haha",userID:"123"}))
+        navigation("../../home")
     }
   };
 

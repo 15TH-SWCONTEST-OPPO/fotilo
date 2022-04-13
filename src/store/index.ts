@@ -1,8 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
-import isHomeReducer from './features/isHomeSlice';
+import userReducer from './features/userSlice';
 const store = configureStore({
     reducer: {
-        isHome:isHomeReducer
+        user:userReducer
     },
 }); 
 

@@ -1,6 +1,6 @@
 import {View, Text, StyleSheet} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
-import {styles} from '../../components/Login';
+import {styles} from './Login';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import {Message, User} from '../../static/myIcon';
@@ -34,6 +34,11 @@ export default function Code() {
       setNeedT(false);
     }
   }, [needT]);
+
+  const onFinish = () => {
+    setPhoneEmpty(codeLogin.phone === '');
+    setCodeEmpty(codeLogin.code === '');w
+  };
 
   useEffect(() => {
     if (num.current <= 0) {
@@ -107,10 +112,7 @@ export default function Code() {
         </View>
       </View>
       <View style={styles.btnContainer}>
-        <Button onPress={() => {
-          setPhoneEmpty(codeLogin.phone==='')
-          setCodeEmpty(codeLogin.code==='')
-        }} style={styles.loginBtn}>
+        <Button onPress={onFinish} style={styles.loginBtn}>
           <Text style={styles.loginT}>登录</Text>
         </Button>
       </View>

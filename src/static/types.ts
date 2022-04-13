@@ -1,8 +1,10 @@
 export type userType={
     username: string;
-    password: string;
-    phone: string;
-    code: string;
+    password?: string;
+    phone?: string;
+    code?: string;
+    userID:string;
+    avatar?:string;
     [key:string]:any
 }
 

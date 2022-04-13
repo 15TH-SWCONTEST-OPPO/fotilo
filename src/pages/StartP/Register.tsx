@@ -1,6 +1,6 @@
 import {View, Text, StyleSheet} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
-import {styles} from '../../components/Login';
+import {styles} from './Login';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import {passwordRule, phoneNumRule, usernameRule} from '../../static/regex';
