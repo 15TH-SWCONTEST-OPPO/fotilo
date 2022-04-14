@@ -5,16 +5,34 @@ import {
   StyleSheet,
   Image,
   ImageBackground,
+  Dimensions,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 
 import {useAppSelector} from '../../store/hooks';
 import Button from '../../components/Button';
+import {useNavigate} from 'react-router-native';
+import {useAppDispatch} from '../../store/hooks';
+import {set} from '../../store/features/imgCSlice';
 
 const AvatarSize = 160;
 
 export default function Me() {
-  const {username, avatar, intr,videoNum,likeNum} = useAppSelector(store => store.user);
+  const navigation = useNavigate();
+
+  const {username, avatar, intr, videoNum, likeNum} = useAppSelector(
+    store => store.user,
+  );
+  const [img, setImg] = useState<any>(
+    avatar ? {uri: avatar} : require('../../static/img/defaultAvatar.png'),
+  );
+
+  const dispatch = useAppDispatch();
+
+  // 头像选择
+  const chooseAvatar = () => {
+    dispatch(set({iniPic: img, show: true,scale:1}));
+  };
 
   return (
     <ScrollView>
@@ -23,37 +41,35 @@ export default function Me() {
         source={require('../../static/img/Ubackground.png')}
       />
       <View style={{...styles.backgroundSpace}} />
+
       <View style={{...styles.avatarC}}>
-
         <View style={{...styles.avatarAround}}>
-          <Text style={{...styles.aroundT}}>
-            视频数 
-          </Text>
-          <Text style={{...styles.aroundT}}>
-            {videoNum||0}
-          </Text>
+          <Text style={{...styles.aroundT}}>视频数</Text>
+          <Text style={{...styles.aroundT}}>{videoNum || 0}</Text>
         </View>
 
-        <Button style={{...styles.avatar}}>
-          <Image
+        {username ? (
+          <Button style={{...styles.avatar}} onPress={chooseAvatar}>
+            <Image style={{...styles.avatar}} source={img} />
+          </Button>
+        ) : (
+          <Button
             style={{...styles.avatar}}
-            source={
-              avatar
-                ? {uri: avatar}
-                : require('../../static/img/defaultAvatar.png')
-            }
-          />
-        </Button>
+            onPress={() => {
+              navigation('../../StartP/login');
+            }}>
+            <Text style={{...styles.avatarT}}>登</Text>
+            <Text style={{...styles.avatarT}}>录</Text>
+          </Button>
+        )}
 
         <View style={{...styles.avatarAround}}>
-          <Text style={{...styles.aroundT}}>
-            获赞数 
-          </Text>
-          <Text style={{...styles.aroundT}}>
-            {likeNum||0}
-          </Text>
+          <Text style={{...styles.aroundT}}>获赞数</Text>
+          <Text style={{...styles.aroundT}}>{likeNum || 0}</Text>
         </View>
-
+      </View>
+      <View style={{...styles.userN}}>
+        <Text style={{...styles.userNT}}>{username || '用户未登录'}</Text>
       </View>
     </ScrollView>
   );
@@ -68,7 +84,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
   },
   avatar: {
-    backgroundColor: 'white',
     width: AvatarSize,
     height: AvatarSize,
     borderRadius: AvatarSize / 2,
@@ -84,9 +99,23 @@ const styles = StyleSheet.create({
   avatarAround: {
     alignItems: 'center',
   },
-  aroundT:{
-    color:'white',
-    fontSize:20,
-    fontFamily: 'ABeeZee'
-  }
+  aroundT: {
+    color: 'white',
+    fontSize: 20,
+    fontFamily: 'ABeeZee',
+  },
+  userN: {
+    width: '100%',
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  userNT: {
+    color: 'white',
+    fontSize: 30,
+  },
+  avatarT: {
+    fontSize: 40,
+    color: 'white',
+  },
 });

@@ -11,7 +11,7 @@ const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    set: (state, action: PayloadAction<userType>) => {
+    set: (state, action: PayloadAction<Partial<userType>>) => {
       for(let key in action.payload){
         state[key]=action.payload[key];
       }

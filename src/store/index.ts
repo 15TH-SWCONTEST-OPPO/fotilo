@@ -1,8 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
 import userReducer from './features/userSlice';
+import imgCReducer from './features/imgCSlice';
 const store = configureStore({
     reducer: {
-        user:userReducer
+        user:userReducer,
+        imgC:imgCReducer
     },
 }); 
 

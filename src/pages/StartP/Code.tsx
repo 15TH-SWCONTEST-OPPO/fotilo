@@ -37,7 +37,7 @@ export default function Code() {
 
   const onFinish = () => {
     setPhoneEmpty(codeLogin.phone === '');
-    setCodeEmpty(codeLogin.code === '');w
+    setCodeEmpty(codeLogin.code === '');
   };
 
   useEffect(() => {

@@ -5,6 +5,8 @@ import TopBar from '../../components/TopBar';
 import BottomBar from '../../components/BottomBar';
 import {Outlet, useLocation} from 'react-router-native';
 import getLoc from '../../utils/getLoc';
+import ImageChoose from '../../components/ImageChoose';
+import {useAppSelector} from '../../store/hooks';
 
 export default function Home() {
   /* 
@@ -37,6 +39,7 @@ export default function Home() {
   return (
     <View style={styles.container}>
       <StatusBarSpace />
+      <ImageChoose/>
       <Animated.View style={[{overflow: 'hidden'}, {height: cutAnim}]}>
         <TopBar />
       </Animated.View>
@@ -56,7 +59,7 @@ const styles = StyleSheet.create({
   },
   center: {
     flexGrow: 1,
-    flexShrink:1,
+    flexShrink: 1,
     // backgroundColor: 'blue'
     overflow: 'hidden',
   },

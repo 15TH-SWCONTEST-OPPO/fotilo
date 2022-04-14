@@ -62,7 +62,7 @@ export default function Button(props: BtnProps) {
   return (
     <Pressable
       {...props}
-      style={{...ownstyles.container, ...uStyle}}
+      style={[{...ownstyles.container},uStyle]}
       
       onPressIn={e => {
         !unable && moveIn();
