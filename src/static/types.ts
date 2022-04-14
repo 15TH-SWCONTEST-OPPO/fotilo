@@ -5,7 +5,7 @@ export type userType={
     code?: string;
     userID:string;
     avatar?:string;
-    intr?: string;
+    description?: string;
     videoNum?:number;
     likeNum?:number;
     [key:string]:any
@@ -20,3 +20,18 @@ export type loginType={
     phone: string;
     password: string;
 }
+
+export type videoType={
+    userId:string;
+    videoId:string;
+    videoURL:string;
+    coverURL:string;
+    title:string;
+    duration:number;
+    description?: string;
+    like?:number;
+    share?:number;
+    comment?:number;
+}
+
+

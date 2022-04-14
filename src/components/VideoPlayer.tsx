@@ -33,6 +33,7 @@ import SystemSetting from 'react-native-system-setting';
 interface VideoPlayerProps {
   style?: ViewStyle;
   title?: string;
+  videoUrl:string
 }
 
 // 屏幕长宽
@@ -84,7 +85,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
   const [full, setFull] = useState(false);
 
   // 视频标题
-  const {title} = props;
+  const {title,videoUrl} = props;
 
   /* 
   倍速扩展框
@@ -170,8 +171,6 @@ export default function VideoPlayer(props: VideoPlayerProps) {
     const daudio = dy === 0 ? 0 : dy < 0 ? -0.1 : 0.1;
 
     const volume = audio;
-    console.log(daudio);
-
     SystemSetting.setVolume(audio - daudio);
     setAudio(volume - daudio);
   }, [dy]);
@@ -271,7 +270,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
           }}>
           <Video
             source={{
-              uri: 'https://vd3.bdstatic.com/mda-ka966fpjqpgy5a4e/v1-cae/sc/mda-ka966fpjqpgy5a4e.mp4?v_from_s=hkapp-haokan-nanjing&auth_key=1647591178-0-0-7cbba8d1ee38d14e310f7eb9d76d4a07&bcevod_channel=searchbox_feed&pd=1&cd=0&pt=3&logid=2578197149&vid=7374485987139761484&abtest=100815_1-17451_2&klogid=2578197149',
+              uri: videoUrl,
             }}
             style={{backgroundColor: 'black', width: '100%', height: '100%'}}
             resizeMode="contain"
@@ -333,7 +332,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
                 <Slider.Thumb />
               </Slider>
               <Text style={{color: 'white'}}>
-                {getTime(progress)}/{getTime(duration)}&nbsp;&nbsp;
+                {getTime(progress)}/{getTime(duration)}&nbsp;&nbsp;&nbsp;
               </Text>
               <View />
             </View>

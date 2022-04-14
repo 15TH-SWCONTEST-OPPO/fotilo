@@ -31,11 +31,11 @@ export default function Me() {
 
   // 头像选择
   const chooseAvatar = () => {
-    dispatch(set({iniPic: img, show: true,scale:1}));
+    dispatch(set({iniPic: img, show: true, scale: 1}));
   };
 
   return (
-    <ScrollView>
+    <>
       <ImageBackground
         style={{...styles.background}}
         source={require('../../static/img/Ubackground.png')}
@@ -71,7 +71,7 @@ export default function Me() {
       <View style={{...styles.userN}}>
         <Text style={{...styles.userNT}}>{username || '用户未登录'}</Text>
       </View>
-    </ScrollView>
+    </>
   );
 }
 

@@ -13,6 +13,7 @@ import Dynamic from './pages/Home/Dynamic';
 import Video from './pages/Home/Video';
 import Action from './pages/Home/Action';
 import Me from './pages/Home/Me';
+import VideoShow from './pages/VideoShow';
 
 const routes: RouteObject[] = [
   {
@@ -62,6 +63,11 @@ const routes: RouteObject[] = [
         element: <Home_Home />,
       },
     ],
+  },
+  {
+    path: '/video',
+    element: <VideoShow />,
+
   },
   {
     path: '/',

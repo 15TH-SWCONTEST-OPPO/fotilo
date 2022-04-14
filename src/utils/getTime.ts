@@ -1,6 +1,6 @@
 export default function getTime(value: number): string {
   let num = value;
-  let second = (Math.floor((num % 60) / 10) === 0 ? '0' : '') + (num % 60);
+  let second = (Math.floor((num % 60) / 10) === 0 ? '0' : '') + Math.floor(num % 60);
   num = Math.floor(num / 60);
   let min = (Math.floor((num % 60) / 10) === 0 ? '0' : '') + (num % 60);
   num = Math.floor(num / 60);

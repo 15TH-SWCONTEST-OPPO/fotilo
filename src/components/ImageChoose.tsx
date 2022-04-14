@@ -78,10 +78,10 @@ export default function ImageChoose(props: ImageChooseProps) {
             launchImageLibrary({mediaType: 'photo'}, e => {
               if (e.assets) {
                   dispatch(set({show: false}))
-                dispatch(setUser({avatar: e.assets[0].uri}));
-              }
-            });
-          }}>
+                  dispatch(setUser({avatar: e.assets[0].uri}));
+                }
+              });
+            }}>
           <Text style={[styles.btnT]}>从相册选择图片</Text>
         </Button>
         <Button
@@ -90,6 +90,7 @@ export default function ImageChoose(props: ImageChooseProps) {
             launchCamera({mediaType: 'photo', saveToPhotos: true}, e => {
               requestCameraPermission().then(() => {
                 if (e.assets) {
+                  dispatch(set({show: false}))
                   dispatch(setUser({avatar: e.assets[0].uri}));
                 }
               });

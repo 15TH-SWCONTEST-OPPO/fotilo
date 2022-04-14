@@ -26,7 +26,7 @@ export default function TopBar(props: TopBarProps) {
           <Button
             style={{...styles.avatar}}
             onPress={() => {
-              navigation('../StartP/login');
+              navigation('/StartP/login');
             }}>
             <Text style={{...styles.avatarT}}>登</Text>
             <Text style={{...styles.avatarT}}>录</Text>
@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingVertical:2
   },
   avatar: {
     backgroundColor: 'white',

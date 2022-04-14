@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet, Animated} from 'react-native';
+import {View, Text, StyleSheet, Animated, ScrollView} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import StatusBarSpace from '../../components/StatusBarSpace';
 import TopBar from '../../components/TopBar';
@@ -16,7 +16,7 @@ export default function Home() {
 
   const cutIn = () => {
     Animated.timing(cutAnim, {
-      toValue: 50,
+      toValue: 60,
       duration: 300,
       useNativeDriver: false,
     }).start();
@@ -43,9 +43,9 @@ export default function Home() {
       <Animated.View style={[{overflow: 'hidden'}, {height: cutAnim}]}>
         <TopBar />
       </Animated.View>
-      <View style={{...styles.center}}>
+      <ScrollView style={{...styles.center}}>
         <Outlet />
-      </View>
+      </ScrollView>
       <BottomBar />
     </View>
   );
