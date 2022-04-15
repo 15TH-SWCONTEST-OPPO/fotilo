@@ -6,11 +6,14 @@ import {
   ScrollView,
   Image,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import StatusBarSpace from '../../components/StatusBarSpace';
 import VideoPlayer from '../../components/VideoPlayer';
 
-import {useLocation} from 'react-router-native';
+import {Outlet, useLocation, useNavigate} from 'react-router-native';
+import Button from '../../components/Button';
+import getLoc from '../../utils/getLoc';
+import {basicColor} from '../../static/color';
 
 const windowWidth = Dimensions.get('screen').width;
 
@@ -18,32 +21,57 @@ const windowWidth = Dimensions.get('screen').width;
 const scale = 2.8 / 5;
 
 export default function VideoShow() {
-  const {state} = useLocation();
-  const {videoURL, title, avatar, username, likeNum, videoNum} = state as any;
-
+  const {state, pathname} = useLocation();
+  const {videoURL, title, avatar, username, likeNum, videoNum, location} =
+    state as any;
+  const [loc, setLoc] = useState(getLoc(pathname, 2));
+  const navigation = useNavigate();
+  useEffect(() => {
+    setLoc(getLoc(pathname, 2));
+  }, [pathname]);
   return (
     <View style={styles.background}>
       <StatusBarSpace />
       <VideoPlayer
+        lastUrl={location}
         videoUrl={videoURL}
         title={title}
         style={{width: windowWidth, height: windowWidth * scale}}
       />
       <ScrollView alwaysBounceVertical={false} style={styles.scrollView}>
-
-        <View style={[styles.userC]}>
-          <Image style={[styles.avatar]} source={{uri: avatar}} />
-          <View style={[styles.space]}/>
-          <View>
-            <Text style={[styles.username]}>{username}&nbsp;</Text>
-            <Text style={[styles.userdetail]}>
-              视频数：{videoNum || 0}&nbsp;|&nbsp;获赞数：{likeNum || 0}
+        <View style={[styles.changeBar]}>
+          <Button
+            style={{
+              ...styles.changeBtn,
+              borderColor: loc ? 'white' : basicColor,
+            }}
+            onPress={() => {
+              loc && navigation('/video', {state});
+            }}>
+            <Text style={[styles.changeT, {color: loc ? 'white' : basicColor}]}>
+              推荐
             </Text>
-          </View>
+          </Button>
+          <View style={[styles.space]} />
+          <Button
+            style={{
+              ...styles.changeBtn,
+              borderColor: loc === 'comment' ? basicColor : 'white',
+            }}
+            onPress={() => {
+              navigation('/video/comment', {state});
+            }}>
+            <Text
+              style={[
+                styles.changeT,
+                {color: loc === 'comment' ? basicColor : 'white'},
+              ]}>
+              评论
+            </Text>
+          </Button>
         </View>
 
-
-
+        <Outlet />
       </ScrollView>
     </View>
   );
@@ -60,29 +88,22 @@ const styles = StyleSheet.create({
   scrollView: {
     padding: 10,
   },
-  text: {
-    fontSize: 42,
-    height: 2000,
-  },
-  userC: {
-    width: 180,
+  changeBar: {
     flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 20,
   },
-  avatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: 'white',
-  },
-  username: {
+  changeT: {
     color: 'white',
     fontSize: 20,
   },
-  userdetail: {
-    color: 'white',
+  changeBtn: {
+    backgroundColor: 'transparent',
+    width: 80,
+    borderBottomWidth: 2,
   },
   space: {
-    width: 10,
-    height: 10,
+    width: 20,
+    height: 2,
   },
 });

@@ -5,7 +5,7 @@ import getTime from '../utils/getTime';
 import getUser from '../config/getUser';
 import Button from './Button';
 import {Comment, Like, Share} from '../static/myIcon';
-import {useNavigate} from 'react-router-native';
+import {useLocation, useNavigate} from 'react-router-native';
 
 interface VideoProps extends videoType {}
 
@@ -23,17 +23,24 @@ export default function VideoCardB(props: VideoProps) {
     comment,
   } = props;
 
-  console.log(getUser(userId));
-
   const {username, avatar, ...user} = useRef(getUser(userId)).current;
 
   const navigation = useNavigate();
+  const location = useLocation();
 
   return (
     <View style={{...styles.showP}}>
       <Button
         onPress={() => {
-          navigation('/video', {state: {...props, ...user, username, avatar}});
+          navigation('/video', {
+            state: {
+              ...props,
+              ...user,
+              username,
+              avatar,
+              location: location.pathname,
+            },
+          });
         }}>
         <Text style={[styles.vDuration]}>{getTime(duration)}&nbsp;</Text>
         <Image style={[styles.cover]} source={{uri: coverURL}} />

@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import Video from 'react-native-video';
-import {useNavigate} from 'react-router-native';
+import {useLocation, useNavigate} from 'react-router-native';
 // 渐变
 import LinearGradient from 'react-native-linear-gradient';
 import {Begin, Progress, Pause, Full, Audio} from '../static/myIcon';
@@ -33,7 +33,8 @@ import SystemSetting from 'react-native-system-setting';
 interface VideoPlayerProps {
   style?: ViewStyle;
   title?: string;
-  videoUrl:string
+  videoUrl: string;
+  lastUrl:string
 }
 
 // 屏幕长宽
@@ -85,7 +86,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
   const [full, setFull] = useState(false);
 
   // 视频标题
-  const {title,videoUrl} = props;
+  const {title, videoUrl,lastUrl} = props;
 
   /* 
   倍速扩展框
@@ -218,7 +219,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
         {/* 
           滚动判断
         */}
-        {dy!==0 && (
+        {dy !== 0 && (
           <View
             style={{
               position: 'absolute',
@@ -248,7 +249,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
                   StatusBar.setHidden(!full);
                   return;
                 }
-                navigate(-1);
+                navigate(lastUrl);
                 Orientation.lockToPortrait();
                 StatusBar.setHidden(false);
               }}>

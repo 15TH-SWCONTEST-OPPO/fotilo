@@ -14,6 +14,8 @@ import Video from './pages/Home/Video';
 import Action from './pages/Home/Action';
 import Me from './pages/Home/Me';
 import VideoShow from './pages/VideoShow';
+import VideoLike from './pages/VideoShow/VideoLike'
+import Comment from './pages/VideoShow/Comment'
 
 const routes: RouteObject[] = [
   {
@@ -67,7 +69,16 @@ const routes: RouteObject[] = [
   {
     path: '/video',
     element: <VideoShow />,
-
+    children: [
+      {
+        path: 'comment',
+        element:<Comment/>
+      },
+      {
+        path: '',
+        element:<VideoLike/>
+      },
+    ],
   },
   {
     path: '/',
