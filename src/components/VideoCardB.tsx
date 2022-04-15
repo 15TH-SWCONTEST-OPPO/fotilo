@@ -34,8 +34,8 @@ export default function VideoCardB(props: VideoProps) {
         onPress={() => {
           navigation('/video', {
             state: {
-              ...props,
               ...user,
+              ...props,
               username,
               avatar,
               location: location.pathname,
@@ -52,15 +52,15 @@ export default function VideoCardB(props: VideoProps) {
           <Text style={[styles.title]}>{title}</Text>
           <View style={[styles.threeBtn]}>
             <View style={[styles.btn]}>
-              <Like />
+              <Like size={6} />
               <Text style={[styles.threeT]}>{like || 0}</Text>
             </View>
             <View style={[styles.btn]}>
-              <Comment />
+              <Comment  size={6}/>
               <Text style={[styles.threeT]}>{comment || 0}</Text>
             </View>
             <View style={[styles.btn]}>
-              <Share size={9} />
+              <Share size={7} />
               <Text style={[styles.threeT]}>{share || 0}</Text>
             </View>
           </View>
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
   },
   threeT: {
     color: 'white',
-    fontSize: 20,
+    fontSize: 18,
   },
   btn: {
     flexDirection: 'row',

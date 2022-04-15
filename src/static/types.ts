@@ -29,8 +29,10 @@ export type videoType={
     title:string;
     duration:number;
     description?: string;
+    watch?:number;
     like?:number;
     share?:number;
+    star?: number;
     comment?:number;
 }
 

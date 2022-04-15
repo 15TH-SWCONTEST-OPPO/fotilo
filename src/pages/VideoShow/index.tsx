@@ -22,8 +22,8 @@ const scale = 2.8 / 5;
 
 export default function VideoShow() {
   const {state, pathname} = useLocation();
-  const {videoURL, title, avatar, username, likeNum, videoNum, location} =
-    state as any;
+  const {videoURL, title, location} = state as any;
+
   const [loc, setLoc] = useState(getLoc(pathname, 2));
   const navigation = useNavigate();
   useEffect(() => {
@@ -38,39 +38,38 @@ export default function VideoShow() {
         title={title}
         style={{width: windowWidth, height: windowWidth * scale}}
       />
+      <View style={[styles.changeBar]}>
+        <Button
+          style={{
+            ...styles.changeBtn,
+            borderColor: loc ? 'white' : basicColor,
+          }}
+          onPress={() => {
+            loc && navigation('/video', {state});
+          }}>
+          <Text style={[styles.changeT, {color: loc ? 'white' : basicColor}]}>
+            推荐
+          </Text>
+        </Button>
+        <View style={[styles.space]} />
+        <Button
+          style={{
+            ...styles.changeBtn,
+            borderColor: loc === 'comment' ? basicColor : 'white',
+          }}
+          onPress={() => {
+            navigation('/video/comment', {state});
+          }}>
+          <Text
+            style={[
+              styles.changeT,
+              {color: loc === 'comment' ? basicColor : 'white'},
+            ]}>
+            评论
+          </Text>
+        </Button>
+      </View>
       <ScrollView alwaysBounceVertical={false} style={styles.scrollView}>
-        <View style={[styles.changeBar]}>
-          <Button
-            style={{
-              ...styles.changeBtn,
-              borderColor: loc ? 'white' : basicColor,
-            }}
-            onPress={() => {
-              loc && navigation('/video', {state});
-            }}>
-            <Text style={[styles.changeT, {color: loc ? 'white' : basicColor}]}>
-              推荐
-            </Text>
-          </Button>
-          <View style={[styles.space]} />
-          <Button
-            style={{
-              ...styles.changeBtn,
-              borderColor: loc === 'comment' ? basicColor : 'white',
-            }}
-            onPress={() => {
-              navigation('/video/comment', {state});
-            }}>
-            <Text
-              style={[
-                styles.changeT,
-                {color: loc === 'comment' ? basicColor : 'white'},
-              ]}>
-              评论
-            </Text>
-          </Button>
-        </View>
-
         <Outlet />
       </ScrollView>
     </View>
@@ -91,7 +90,7 @@ const styles = StyleSheet.create({
   changeBar: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginBottom: 20,
+    marginBottom: 2,
   },
   changeT: {
     color: 'white',

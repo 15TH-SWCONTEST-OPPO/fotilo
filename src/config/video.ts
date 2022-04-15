@@ -11,6 +11,7 @@ export const videos: Array<videoType> = [
     description: '这里面水很深',
     userId: '1',
     duration: 135.6,
+    like:200,
   },
   {
     videoId: 'video124',
@@ -22,6 +23,7 @@ export const videos: Array<videoType> = [
     description: '劈我瓜是吧',
     userId: '2',
     duration: 135.6,
+    watch:200
   },
   {
     videoId: 'video125',
@@ -42,6 +44,16 @@ export const videos: Array<videoType> = [
       'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fwww.mooyuu.com%2Fuploadfile%2F2021%2F0209%2F20210209011006435.jpg&refer=http%3A%2F%2Fwww.mooyuu.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1652524192&t=1e9babccc08a5396dbe19f2f7e8f1b90',
     title: '这是一个视频',
     userId: '4',
+    duration: 100.6,
+  },
+  {
+    videoId: 'video129',
+    videoURL:
+      'https://vd3.bdstatic.com/mda-ka966fpjqpgy5a4e/v1-cae/sc/mda-ka966fpjqpgy5a4e.mp4?v_from_s=hkapp-haokan-nanjing&auth_key=1647591178-0-0-7cbba8d1ee38d14e310f7eb9d76d4a07&bcevod_channel=searchbox_feed&pd=1&cd=0&pt=3&logid=2578197149&vid=7374485987139761484&abtest=100815_1-17451_2&klogid=2578197149',
+    coverURL:
+      'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fwww.mooyuu.com%2Fuploadfile%2F2021%2F0209%2F20210209011006435.jpg&refer=http%3A%2F%2Fwww.mooyuu.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1652524192&t=1e9babccc08a5396dbe19f2f7e8f1b90',
+    title: '这是一个视频',
+    userId: '3',
     duration: 100.6,
   },
 ];
