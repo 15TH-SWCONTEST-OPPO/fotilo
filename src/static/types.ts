@@ -1,7 +1,7 @@
 export type userType={
     username: string;
     password?: string;
-    phone?: string;
+    phone: string;
     code?: string;
     userID:string;
     avatar?:string;

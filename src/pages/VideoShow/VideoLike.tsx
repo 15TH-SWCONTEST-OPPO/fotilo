@@ -1,5 +1,5 @@
 import {View, Text, Image, StyleSheet} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useLocation} from 'react-router-native';
 import Button from '../../components/Button';
 import {Like, Share, Star} from '../../static/myIcon';
@@ -21,13 +21,20 @@ export default function VideoLike() {
     like,
     share,
     location,
+    videoId
   } = state as any;
 
-  const [three, setThree] = useState<[number, boolean, number]>([
-    like,
-    false,
-    0,
+  const t = useRef([like || 0, star || 0, share || 0]);
+
+  const [three, setThree] = useState<[number, number, number]>([
+    t.current[0],
+    t.current[1],
+    t.current[2],
   ]);
+  useEffect(() => {
+      t.current = [like || 0, star || 0, share || 0];
+      setThree([like || 0, star || 0, share || 0]);
+  }, [videoId]);
   return (
     <View style={[styles.container]}>
       <View style={[styles.userC]}>
@@ -51,23 +58,30 @@ export default function VideoLike() {
         <Button
           style={styles.threeBtn}
           onPress={() => {
-            setThree([three[0] === like ? like + 1 : like, three[1], three[2]]);
+            setThree([three[0] === t.current[0] ? t.current[0] + 1 : t.current[0], three[1], three[2]]);
           }}>
-          <Like size={6} color={three[0] !== like ? basicColor : 'white'} />
+          <Like size={6} color={three[0] !== t.current[0] ? basicColor : 'white'} />
           <Text
-            style={[styles.threeT, , {color: three[0] !== like? basicColor : 'white'}]}>
-            {three[0] }&nbsp;
+            style={[
+              styles.threeT,
+              ,
+              {color: three[0] !== t.current[0] ? basicColor : 'white'},
+            ]}>
+            {three[0]}&nbsp;
           </Text>
         </Button>
         <Button
           style={styles.threeBtn}
           onPress={() => {
-            setThree([three[0], !three[1], three[2]]);
+            setThree([three[0], three[1] === t.current[1] ? t.current[1] + 1 : t.current[1], three[2]]);
           }}>
-          <Star color={three[1] ? basicColor : 'white'} />
+          <Star color={three[1] !== t.current[1] ? basicColor : 'white'} />
           <Text
-            style={[styles.threeT, {color: three[1] ? basicColor : 'white'}]}>
-            {star || 0 + (three[1] ? 1 : 0)}&nbsp;
+            style={[
+              styles.threeT,
+              {color: three[1] !== t.current[1] ? basicColor : 'white'},
+            ]}>
+            {three[1]}&nbsp;
           </Text>
         </Button>
         <Button
