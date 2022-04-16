@@ -15,7 +15,7 @@ export default function VideoCardB(props: VideoProps) {
     videoId,
     videoURL,
     coverURL,
-    userId,
+    userID: userId,
     description,
     duration,
     like,
@@ -46,8 +46,14 @@ export default function VideoCardB(props: VideoProps) {
         <Image style={[styles.cover]} source={{uri: coverURL}} />
       </Button>
       <View style={[styles.bottom]}>
-        <Image style={[styles.avatar]} source={{uri: avatar}} />
-        <Text style={[styles.username]}>&nbsp;{username}&nbsp;</Text>
+        <Button
+          style={{backgroundColor: 'transparent', flexDirection: 'row'}}
+          onPress={() => {
+            navigation('/home/user', {state: {...user, username, avatar}});
+          }}>
+          <Image style={[styles.avatar]} source={{uri: avatar}} />
+          <Text style={[styles.username]}>&nbsp;{username}&nbsp;</Text>
+        </Button>
         <View>
           <Text style={[styles.title]}>{title}</Text>
           <View style={[styles.threeBtn]}>
@@ -56,7 +62,7 @@ export default function VideoCardB(props: VideoProps) {
               <Text style={[styles.threeT]}>{like || 0}</Text>
             </View>
             <View style={[styles.btn]}>
-              <Comment  size={6}/>
+              <Comment size={6} />
               <Text style={[styles.threeT]}>{comment || 0}</Text>
             </View>
             <View style={[styles.btn]}>

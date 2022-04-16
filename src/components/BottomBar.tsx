@@ -15,11 +15,13 @@ import {
 } from '../static/myIcon';
 import {basicColor} from '../static/color';
 import getLoc from '../utils/getLoc';
+import { useAppSelector } from '../store/hooks';
 
 export default function BottomBar() {
   const navigation = useNavigate();
   const location = useLocation();
   const [loca, setLoca] = useState('');
+  const user=useAppSelector(s=>s.user)
   useEffect(() => {
     const loc: string = getLoc(location,2);
     setLoca(loc ? loc : '');
@@ -108,13 +110,13 @@ export default function BottomBar() {
         <Button
           style={{...styles.btn}}
           onPress={() => {
-            navigation('me');
+            navigation('user',{state:{...user}});
           }}>
-          {loca === 'me' ? <MeActive color={basicColor} /> : <Me />}
+          {loca === 'user' ? <MeActive color={basicColor} /> : <Me />}
           <Text
             style={{
               ...styles.btnT,
-              color: loca === 'me' ? basicColor : 'white',
+              color: loca === 'user' ? basicColor : 'white',
             }}>
             我的
           </Text>

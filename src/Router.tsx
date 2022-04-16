@@ -12,7 +12,7 @@ import Home_Home from './pages/Home/Home';
 import Dynamic from './pages/Home/Dynamic';
 import Video from './pages/Home/Video';
 import Action from './pages/Home/Action';
-import Me from './pages/Home/Me';
+import User from './pages/Home/User';
 import VideoShow from './pages/VideoShow';
 import VideoLike from './pages/VideoShow/VideoLike'
 import Comment from './pages/VideoShow/Comment'
@@ -57,8 +57,8 @@ const routes: RouteObject[] = [
         element: <Action />,
       },
       {
-        path: 'me',
-        element: <Me />,
+        path: 'user',
+        element: <User />,
       },
       {
         path: '',

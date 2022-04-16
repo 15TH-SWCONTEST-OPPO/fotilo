@@ -22,7 +22,7 @@ export type loginType={
 }
 
 export type videoType={
-    userId:string;
+    userID:string;
     videoId:string;
     videoURL:string;
     coverURL:string;
@@ -37,7 +37,7 @@ export type videoType={
 }
 
 export type commentType={
-    userId:string;
+    userID:string;
     commentId:string;
     detail:string;
     username:string;

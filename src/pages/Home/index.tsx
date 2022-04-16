@@ -33,7 +33,7 @@ export default function Home() {
   let location = useLocation();
   useEffect(() => {
     const loc = getLoc(location, 2);
-    loc !== 'me' && loc !== 'video' ? cutIn() : cutOut();
+    loc !== 'user' && loc !== 'video' ? cutIn() : cutOut();
   }, [location.pathname]);
 
   return (

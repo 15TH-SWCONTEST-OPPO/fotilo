@@ -18,7 +18,7 @@ export default function TopBar(props: TopBarProps) {
       <>
         {user.userID ? (
           <Button style={{...styles.avatar}} onPress={()=>{
-            navigation("me")
+            navigation("user",{state:{...user}})
           }}>
             <ImageBackground style={{...styles.avatar}} source={user.avatar?{uri:user.avatar}:require('../static/img/defaultAvatar.png')} />
           </Button>

@@ -114,7 +114,7 @@ export default function VideoShow() {
                 onPress={() => {
                   navigation('/video/comment',{state:{...(state as any),comment:{
                     username: user.username,
-                    userId: user.userID,
+                    userID: user.userID,
                     commentId: uuid.v4(),
                     detail: myComment.current,
                     avatar: user.avatar,

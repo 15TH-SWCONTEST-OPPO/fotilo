@@ -255,6 +255,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
       {/* 
         头部条
       */}
+      
       <Animated.View style={[styles.header, {top: inAnim}]}>
         <LinearGradient
           style={styles.linear}

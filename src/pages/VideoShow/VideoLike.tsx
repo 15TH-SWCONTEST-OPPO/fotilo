@@ -1,6 +1,6 @@
 import {View, Text, Image, StyleSheet, ScrollView} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
-import {useLocation} from 'react-router-native';
+import {useLocation, useNavigate} from 'react-router-native';
 import Button from '../../components/Button';
 import {Like, Share, Star} from '../../static/myIcon';
 import {videos} from '../../config/video';
@@ -9,6 +9,8 @@ import {basicColor} from '../../static/color';
 
 export default function VideoLike() {
   const {state} = useLocation();
+
+  const navigation = useNavigate();
 
   const {
     avatar,
@@ -21,8 +23,10 @@ export default function VideoLike() {
     like,
     share,
     location,
-    videoId
+    videoId,
+    userID,
   } = state as any;
+
 
   const t = useRef([like || 0, star || 0, share || 0]);
 
@@ -37,7 +41,9 @@ export default function VideoLike() {
   }, [videoId]);
   return (
     <View style={[styles.container]}>
-      <View style={[styles.userC]}>
+      <Button style={styles.userC} onPress={()=>{
+        navigation('/home/user',{state:{userID}})
+      }}>
         <Image style={[styles.avatar]} source={{uri: avatar}} />
         <View style={[styles.space]} />
 
@@ -47,7 +53,7 @@ export default function VideoLike() {
             视频数：{videoNum || 0}&nbsp;|&nbsp;获赞数：{likeNum || 0}
           </Text>
         </View>
-      </View>
+      </Button >
 
       <View style={[styles.detail]}>
         <Text style={[styles.title]}>{title}</Text>
@@ -110,6 +116,8 @@ const styles = StyleSheet.create({
   userC: {
     width: '100%',
     flexDirection: 'row',
+    justifyContent: 'flex-start',
+    backgroundColor:'transparent',
   },
   avatar: {
     width: 60,

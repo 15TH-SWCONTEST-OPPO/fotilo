@@ -13,7 +13,7 @@ interface VideoProps extends videoType {
 }
 
 export default function VideoCardL(props: VideoProps) {
-  const {title, coverURL, userId, description, duration, location, watch} =
+  const {title, coverURL, userID: userId, description, duration, location, watch} =
     props;
 
   const {username, avatar, ...user} = useRef(getUser(userId)).current;
