@@ -36,4 +36,10 @@ export type videoType={
     comment?:number;
 }
 
-
+export type commentType={
+    userId:string;
+    commentId:string;
+    detail:string;
+    username:string;
+    avatar?:string;
+}

@@ -14,6 +14,11 @@ import {Outlet, useLocation, useNavigate} from 'react-router-native';
 import Button from '../../components/Button';
 import getLoc from '../../utils/getLoc';
 import {basicColor} from '../../static/color';
+import {useAppSelector} from '../../store/hooks';
+
+import uuid from 'uuid';
+import Input from '../../components/Input';
+import {Send} from '../../static/myIcon';
 
 const windowWidth = Dimensions.get('screen').width;
 
@@ -29,6 +34,8 @@ export default function VideoShow() {
   useEffect(() => {
     setLoc(getLoc(pathname, 2));
   }, [pathname]);
+  const user = useAppSelector(s => s.user);
+  const myComment = useRef('');
   return (
     <View style={styles.background}>
       <StatusBarSpace />
@@ -38,40 +45,91 @@ export default function VideoShow() {
         title={title}
         style={{width: windowWidth, height: windowWidth * scale}}
       />
-      <View style={[styles.changeBar]}>
-        <Button
-          style={{
-            ...styles.changeBtn,
-            borderColor: loc ? 'white' : basicColor,
-          }}
-          onPress={() => {
-            loc && navigation('/video', {state});
-          }}>
-          <Text style={[styles.changeT, {color: loc ? 'white' : basicColor}]}>
-            推荐
-          </Text>
-        </Button>
-        <View style={[styles.space]} />
-        <Button
-          style={{
-            ...styles.changeBtn,
-            borderColor: loc === 'comment' ? basicColor : 'white',
-          }}
-          onPress={() => {
-            navigation('/video/comment', {state});
-          }}>
-          <Text
-            style={[
-              styles.changeT,
-              {color: loc === 'comment' ? basicColor : 'white'},
-            ]}>
-            评论
-          </Text>
-        </Button>
-      </View>
-      <ScrollView alwaysBounceVertical={false} style={styles.scrollView}>
-        <Outlet />
-      </ScrollView>
+      {
+        <>
+          <View style={[styles.changeBar]}>
+            <Button
+              style={{
+                ...styles.changeBtn,
+                borderColor: loc ? 'white' : basicColor,
+              }}
+              onPress={() => {
+                loc && navigation('/video', {state});
+              }}>
+              <Text
+                style={[styles.changeT, {color: loc ? 'white' : basicColor}]}>
+                推荐
+              </Text>
+            </Button>
+            <View style={[styles.space]} />
+            <Button
+              style={{
+                ...styles.changeBtn,
+                borderColor: loc === 'comment' ? basicColor : 'white',
+              }}
+              onPress={() => {
+                navigation('/video/comment', {state});
+              }}>
+              <Text
+                style={[
+                  styles.changeT,
+                  {color: loc === 'comment' ? basicColor : 'white'},
+                ]}>
+                评论
+              </Text>
+            </Button>
+          </View>
+          {loc === 'comment' && (
+            <View style={[styles.setC]}>
+              {user.username !== '' ? (
+                <Image
+                  source={
+                    user.avatar
+                      ? {uri: user.avatar}
+                      : require('../../static/img/defaultAvatar.png')
+                  }
+                  style={[styles.avatar]}
+                />
+              ) : (
+                <Button
+                  style={styles.avatar}
+                  onPress={() => {
+                    navigation('/startP/login');
+                  }}>
+                  <Text style={[styles.avatarT]}>登</Text>
+                  <Text style={[styles.avatarT]}>录</Text>
+                </Button>
+              )}
+              <Input
+                onChangeText={e => {
+                  myComment.current = e;
+                }}
+                unable={user.username === ''}
+                placeholder={user.username === '' ? '请登录后发表评论' : ''}
+                containerStyle={styles.input}
+                iconSide="none"
+              />
+              <Button
+                unable={user.username === ''}
+                onPress={() => {
+                  navigation('/video/comment',{state:{...(state as any),comment:{
+                    username: user.username,
+                    userId: user.userID,
+                    commentId: uuid.v4(),
+                    detail: myComment.current,
+                    avatar: user.avatar,
+                  } }})
+                }}
+                style={styles.subB}>
+                <Send color={basicColor} />
+              </Button>
+            </View>
+          )}
+          <ScrollView alwaysBounceVertical={false} style={styles.scrollView}>
+            <Outlet />
+          </ScrollView>
+        </>
+      }
     </View>
   );
 }
@@ -104,5 +162,28 @@ const styles = StyleSheet.create({
   space: {
     width: 20,
     height: 2,
+  },
+  setC: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 30,
+  },
+  input: {
+    backgroundColor: 'white',
+    borderRadius: 50,
+    flexWrap: 'wrap',
+    flexGrow: 1,
+    marginHorizontal: 8,
+  },
+  subB: {
+    backgroundColor: 'transparent',
+  },
+  avatarT: {
+    fontSize: 14,
+    color: 'white',
   },
 });

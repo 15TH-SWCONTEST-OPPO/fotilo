@@ -51,6 +51,7 @@ export default function Button(props: BtnProps) {
     children,
     onLayout,
     unable,
+    onPress,
   } = props;
 
   const uStyle: {[key: string]: any} = {...(userStyle?.valueOf() as Object)};
@@ -62,8 +63,7 @@ export default function Button(props: BtnProps) {
   return (
     <Pressable
       {...props}
-      style={[{...ownstyles.container},uStyle]}
-      
+      style={[{...ownstyles.container}, uStyle]}
       onPressIn={e => {
         !unable && moveIn();
         !unable && onPressIn && onPressIn(e);
@@ -74,6 +74,9 @@ export default function Button(props: BtnProps) {
           width: a.nativeEvent.layout.width,
         });
         onLayout && onLayout(a);
+      }}
+      onPress={e => {
+        !unable && onPress && onPress(e);
       }}
       onPressOut={e => {
         !unable && moveOut();

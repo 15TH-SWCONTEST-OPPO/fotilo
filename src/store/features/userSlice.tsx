@@ -5,6 +5,7 @@ import {userType} from '../../static/types';
 const initialState: userType = {
   username: "",
   userID:"",
+  phone:""
 };
 
 const userSlice = createSlice({

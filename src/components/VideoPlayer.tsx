@@ -14,7 +14,7 @@ import Video from 'react-native-video';
 import {useLocation, useNavigate} from 'react-router-native';
 // 渐变
 import LinearGradient from 'react-native-linear-gradient';
-import {Begin, Progress, Pause, Full, Audio} from '../static/myIcon';
+import {Begin, Progress, Pause, Full, Audio, Loading} from '../static/myIcon';
 import {ArrowBackIcon, Slider} from 'native-base';
 import uuid from 'uuid';
 
@@ -34,12 +34,12 @@ interface VideoPlayerProps {
   style?: ViewStyle;
   title?: string;
   videoUrl: string;
-  lastUrl:string
+  lastUrl: string;
 }
 
 // 屏幕长宽
-const windowWidth = Dimensions.get('screen').width;
-const windowHeight = Dimensions.get('screen').height;
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 // statusBar的高度
 const statusH = StatusBar.currentHeight || 0;
@@ -86,7 +86,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
   const [full, setFull] = useState(false);
 
   // 视频标题
-  const {title, videoUrl,lastUrl} = props;
+  const {title, videoUrl, lastUrl} = props;
 
   /* 
   倍速扩展框
@@ -202,173 +202,194 @@ export default function VideoPlayer(props: VideoPlayerProps) {
 
   const {style} = props;
 
+  /* 
+    loading 设置
+  */
+  const [isLoading, setIsLoading] = useState(false);
+
   return (
-    <>
-      <View
-        style={[
-          {
-            ...style,
-            overflow: 'hidden',
-            position: full ? 'absolute' : undefined,
-            zIndex: 999,
-            height: full ? windowWidth : size.height,
-            width: full ? windowHeight - statusH : size.width,
-          },
-        ]}
-        {...panResponder.panHandlers}>
-        {/* 
+    <View
+      style={[
+        {
+          ...style,
+          overflow: 'hidden',
+          position: full ? 'absolute' : undefined,
+          zIndex: 999,
+        },
+        {
+          height: full ? windowWidth : size.height,
+          width: full ? windowHeight - statusH : size.width,
+        },
+      ]}
+      {...panResponder.panHandlers}>
+      {isLoading && (
+        <View
+          style={[
+            styles.loading,
+            {
+              height: full ? windowWidth : size.height,
+              width: full ? windowHeight - statusH : size.width,
+            },
+          ]}>
+          <Loading size={10} />
+          <Text style={[styles.loadingT]}>Loading...&nbsp;</Text>
+        </View>
+      )}
+      {/* 
           滚动判断
         */}
-        {dy !== 0 && (
-          <View
-            style={{
-              position: 'absolute',
-              zIndex: 9999,
-              left:
-                ((full ? windowHeight - statusH : size.width) as number) / 2,
-              top: ((full ? windowWidth : size.height) as number) / 2,
-              backgroundColor: 'black',
-              opacity: 0.5,
-              borderRadius: 10,
-            }}>
-            <Audio />
-          </View>
-        )}
-        {/* 
+      {dy !== 0 && (
+        <View
+          style={{
+            position: 'absolute',
+            zIndex: 99,
+            left: ((full ? windowHeight - statusH : size.width) as number) / 2,
+            top: ((full ? windowWidth : size.height) as number) / 2,
+            backgroundColor: 'black',
+            opacity: 0.5,
+            borderRadius: 10,
+          }}>
+          <Audio />
+        </View>
+      )}
+      {/* 
         头部条
       */}
-        <Animated.View style={[styles.header, {top: inAnim}]}>
-          <LinearGradient
-            style={styles.linear}
-            colors={[barColor, 'transparent']}>
-            <Pressable
-              onPress={() => {
-                if (full) {
-                  Orientation.lockToPortrait();
-                  setFull(!full);
-                  StatusBar.setHidden(!full);
-                  return;
-                }
-                navigate(lastUrl);
+      <Animated.View style={[styles.header, {top: inAnim}]}>
+        <LinearGradient
+          style={styles.linear}
+          colors={[barColor, 'transparent']}>
+          <Pressable
+            onPress={() => {
+              if (full) {
                 Orientation.lockToPortrait();
-                StatusBar.setHidden(false);
+                setFull(!full);
+                StatusBar.setHidden(!full);
+                return;
+              }
+              navigate(lastUrl);
+              Orientation.lockToPortrait();
+              StatusBar.setHidden(false);
+            }}>
+            <ArrowBackIcon style={{color: 'white'}} />
+          </Pressable>
+          {full && <Text style={{color: 'white'}}>{title}</Text>}
+          <View />
+        </LinearGradient>
+      </Animated.View>
+
+      {/* 视频 */}
+      <Pressable
+        onPress={() => {
+          if (showControl) cutOut();
+          else {
+            cutIn();
+          }
+          setShowControl(!showControl);
+        }}>
+        <Video
+          source={{
+            uri: videoUrl,
+          }}
+          style={{backgroundColor: 'black', width: '100%', height: '100%'}}
+          resizeMode="contain"
+          repeat
+          rate={rate}
+          paused={pause}
+          ref={e => {
+            myVideo.current = e;
+          }}
+          onProgress={e => {
+            setProgress(Math.floor(e.currentTime));
+          }}
+          onLoadStart={() => {
+            setIsLoading(true);
+          }}
+          onLoad={e => {
+            setDuration(Math.floor(e.duration));
+            setIsLoading(false);
+          }}
+        />
+      </Pressable>
+
+      {/* 底部条 */}
+      <Animated.View style={[styles.footer, {bottom: inAnim}]}>
+        <LinearGradient
+          style={{...styles.linear}}
+          colors={['transparent', barColor]}>
+          {/* 暂停键 */}
+          <Pressable
+            onPress={() => {
+              setPause(!pause);
+            }}
+            style={{alignItems: 'center', justifyContent: 'center'}}>
+            <Progress size={8} />
+            <View
+              style={{
+                ...styles.startBtn,
+                top: pause ? 10 : 12,
+                left: pause ? 4 : 6,
               }}>
-              <ArrowBackIcon style={{color: 'white'}} />
-            </Pressable>
-            {full && <Text style={{color: 'white'}}>{title}</Text>}
-            <View />
-          </LinearGradient>
-        </Animated.View>
-
-        {/* 视频 */}
-        <Pressable
-          onPress={() => {
-            if (showControl) cutOut();
-            else {
-              cutIn();
-            }
-            setShowControl(!showControl);
-          }}>
-          <Video
-            source={{
-              uri: videoUrl,
-            }}
-            style={{backgroundColor: 'black', width: '100%', height: '100%'}}
-            resizeMode="contain"
-            repeat
-            rate={rate}
-            paused={pause}
-            ref={e => {
-              myVideo.current = e;
-            }}
-            onProgress={e => {
-              setProgress(Math.floor(e.currentTime));
-            }}
-            onLoad={e => {
-              setDuration(Math.floor(e.duration));
-            }}
-          />
-        </Pressable>
-
-        {/* 底部条 */}
-        <Animated.View style={[styles.footer, {bottom: inAnim}]}>
-          <LinearGradient
-            style={{...styles.linear}}
-            colors={['transparent', barColor]}>
-            {/* 暂停键 */}
-            <Pressable
-              onPress={() => {
-                setPause(!pause);
-              }}
-              style={{alignItems: 'center', justifyContent: 'center'}}>
-              <Progress size={8} />
-              <View
-                style={{
-                  ...styles.startBtn,
-                  top: pause ? 10 : 12,
-                  left: pause ? 4 : 6,
-                }}>
-                {pause ? (
-                  <Begin size={4} color="black" />
-                ) : (
-                  <Pause size={3} color="black" />
-                )}
-              </View>
-            </Pressable>
-
-            {/*进度条  */}
-            <View style={styles.progressBar}>
-              <Slider
-                w="3/5"
-                maxW="300"
-                defaultValue={0}
-                minValue={0}
-                maxValue={duration || 1}
-                value={progress}
-                accessibilityLabel="hello world"
-                step={1}>
-                <Slider.Track>
-                  <Slider.FilledTrack />
-                </Slider.Track>
-                <Slider.Thumb />
-              </Slider>
-              <Text style={{color: 'white'}}>
-                {getTime(progress)}/{getTime(duration)}&nbsp;&nbsp;&nbsp;
-              </Text>
-              <View />
+              {pause ? (
+                <Begin size={4} color="black" />
+              ) : (
+                <Pause size={3} color="black" />
+              )}
             </View>
+          </Pressable>
 
-            {full ? (
-              <>
-                {/* 
+          {/*进度条  */}
+          <View style={styles.progressBar}>
+            <Slider
+              w="3/5"
+              maxW="300"
+              defaultValue={0}
+              minValue={0}
+              maxValue={duration || 1}
+              value={progress}
+              accessibilityLabel="hello world"
+              step={1}>
+              <Slider.Track>
+                <Slider.FilledTrack />
+              </Slider.Track>
+              <Slider.Thumb />
+            </Slider>
+            <Text style={{color: 'white'}}>
+              {getTime(progress)}/{getTime(duration)}&nbsp;&nbsp;&nbsp;
+            </Text>
+            <View />
+          </View>
+
+          {full ? (
+            <>
+              {/* 
               倍速
             */}
-                <Drawer
-                  showDrawer={showControl}
-                  position="top"
-                  drawers={<RateDrawers />}>
-                  <Text style={{color: 'white'}}>{setPoint(rate)}&nbsp;</Text>
-                </Drawer>
-              </>
-            ) : (
-              <>
-                {/* 全屏 */}
-                <Pressable
-                  onPress={() => {
-                    StatusBar.setHidden(!full);
-                    if (full) Orientation.lockToPortrait();
-                    else Orientation.lockToLandscape();
-                    setFull(!full);
-                  }}>
-                  <Full size={5} />
-                </Pressable>
-              </>
-            )}
-            <View />
-          </LinearGradient>
-        </Animated.View>
-      </View>
-    </>
+              <Drawer
+                showDrawer={showControl}
+                position="top"
+                drawers={<RateDrawers />}>
+                <Text style={{color: 'white'}}>{setPoint(rate)}&nbsp;</Text>
+              </Drawer>
+            </>
+          ) : (
+            <>
+              {/* 全屏 */}
+              <Pressable
+                onPress={() => {
+                  StatusBar.setHidden(!full);
+                  if (full) Orientation.lockToPortrait();
+                  else Orientation.lockToLandscape();
+                  setFull(!full);
+                }}>
+                <Full size={5} />
+              </Pressable>
+            </>
+          )}
+          <View />
+        </LinearGradient>
+      </Animated.View>
+    </View>
   );
 }
 
@@ -408,5 +429,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  loading: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'black',
+    opacity: 0.8,
+    zIndex: 999,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingT: {
+    color: 'white',
   },
 });

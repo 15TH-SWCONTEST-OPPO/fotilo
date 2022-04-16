@@ -1,4 +1,4 @@
-import {View, Text, Image, StyleSheet} from 'react-native';
+import {View, Text, Image, StyleSheet, ScrollView} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {useLocation} from 'react-router-native';
 import Button from '../../components/Button';
@@ -94,11 +94,11 @@ export default function VideoLike() {
         </Button>
       </View>
 
-      <View style={{width: '100%'}}>
+      <ScrollView style={{width: '100%'}}>
         {videos.map(v => {
-          return <VideoCardL location={location} {...v} />;
+          return <VideoCardL key={v.videoId} location={location} {...v} />;
         })}
-      </View>
+      </ScrollView>
     </View>
   );
 }

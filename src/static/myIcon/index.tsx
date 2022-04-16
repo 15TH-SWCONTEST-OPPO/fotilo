@@ -1138,11 +1138,11 @@ export const Loading = (props: IconProps) => {
         useNativeDriver: false,
       }),
     ).start();
-  },[]);
-  const spin=rotate.interpolate({
-    inputRange:[0,1],
-    outputRange:['0deg','360deg']
-  })
+  }, []);
+  const spin = rotate.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
   return (
     <View
       style={{
@@ -1162,4 +1162,28 @@ export const Loading = (props: IconProps) => {
       </View>
     </View>
   );
+};
+
+export const Send = (props: IconProps) => {
+  const {opacity, size, color} = props;
+  const CustomIcon = createIcon({
+    viewBox: '0 0 14 14',
+    path: [
+      <>
+        <Path
+          d="M0.700204 14L13.2002 7.28571H2.82825L1.76422 8.37185L0.700195 9.45798L0.700204 14Z"
+          fill={color || 'white'}
+        />
+        <Path
+          d="M0.700204 0L13.2002 6.71429H2.82825L1.76422 5.62815L0.700195 4.54202L0.700204 0Z"
+          fill={color || 'white'}
+        />
+        <Path
+          d="M2.2002 6.99999L0.550195 8.36088L0.550195 5.63909L2.2002 6.99999Z"
+          fill={color || 'white'}
+        />
+      </>,
+    ],
+  });
+  return <CustomIcon size={size} opacity={opacity} />;
 };

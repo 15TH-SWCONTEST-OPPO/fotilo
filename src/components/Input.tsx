@@ -9,7 +9,11 @@ import {
 import React, {useEffect, useRef, useState} from 'react';
 import {No, Yes} from '../static/myIcon';
 import {Text} from 'native-base';
-import {defaultColor as deColor,errorColor,acceptColor} from '../static/color'
+import {
+  defaultColor as deColor,
+  errorColor,
+  acceptColor,
+} from '../static/color';
 
 interface InputProps extends Omit<TextInputProps, 'style'> {
   iconSide: 'none' | 'left' | 'right';
@@ -25,6 +29,9 @@ interface InputProps extends Omit<TextInputProps, 'style'> {
   confirm?: boolean;
   confirmText?: string;
   confirmErrorText?: string;
+
+  // 是否可用
+  unable?: boolean;
 
   getState?: (e: {[key: string]: any}) => void;
 }
@@ -64,18 +71,17 @@ const getRules = (
 };
 
 export default function Input(props: InputProps) {
-
   const defaultColor = {
     default: deColor,
     accept: acceptColor,
     error: errorColor,
   };
 
-  const number={
-    default:0,
+  const number = {
+    default: 0,
     accept: 1,
-    error:2    
-  }
+    error: 2,
+  };
 
   // input的不同模式
   const [situ, setSitu] = useState<keyof typeof defaultColor>('default');
@@ -95,10 +101,13 @@ export default function Input(props: InputProps) {
 
     // 类型为数组，传入默认、正确、错误的icon图标
     icon,
+
     confirm,
     confirmText,
     confirmErrorText,
     getState,
+
+    unable,
   } = props;
 
   const cStyle = {...(containerStyle as Object)};
@@ -131,7 +140,7 @@ export default function Input(props: InputProps) {
       : defaultColor[situ];
 
   return (
-    <View>
+    <>
       {/* input容器 */}
       <View
         style={{
@@ -140,8 +149,12 @@ export default function Input(props: InputProps) {
           flexDirection: iconSide === 'right' ? 'row-reverse' : 'row',
           borderColor: borderColor,
         }}>
+        {unable && <View style={[styles.unable,{width:containerStyle?.width||'120%'}]}/>}
         {/* icon */}
-        {(icon && ((icon.constructor === Array &&(icon as Array<object>)[number[situ]])||icon)) ||
+        {(icon &&
+          ((icon.constructor === Array &&
+            (icon as Array<object>)[number[situ]]) ||
+            icon)) ||
           (iconSide !== 'none' && (
             <View style={styles.icon}>
               {situ === 'error' ? (
@@ -186,7 +199,7 @@ export default function Input(props: InputProps) {
             'error'}
         </Text>
       )}
-    </View>
+    </>
   );
 }
 
@@ -196,6 +209,7 @@ Input.defaultProps = {
   confirm: false,
   confirmText: '',
   confirmErrorText: '',
+  unable: false,
 };
 
 const styles = StyleSheet.create({
@@ -206,10 +220,18 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden'
   },
   icon: {},
   input: {
     height: defaultSize.height,
     flex: 1,
+  },
+  unable: {
+    position: 'absolute',
+    zIndex:9,
+    backgroundColor:'black',
+    height:'100%',
+    opacity: 0.5
   },
 });
