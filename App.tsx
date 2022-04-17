@@ -9,6 +9,8 @@ import store from './src/store';
 import Orientation from 'react-native-orientation-locker';
 
 const App = () => {
+
+
   useEffect(() => {
     hideNavigationBar();
     AppState.addEventListener('focus', () => {

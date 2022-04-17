@@ -140,7 +140,7 @@ export default function Input(props: InputProps) {
       : defaultColor[situ];
 
   return (
-    <>
+    <View>
       {/* input容器 */}
       <View
         style={{
@@ -199,7 +199,7 @@ export default function Input(props: InputProps) {
             'error'}
         </Text>
       )}
-    </>
+    </View>
   );
 }
 

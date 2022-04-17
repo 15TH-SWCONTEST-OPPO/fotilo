@@ -1,20 +1,15 @@
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  Animated,
-} from 'react-native';
+import {View, Text, Image, StyleSheet, Animated} from 'react-native';
 import React, {useEffect, useRef} from 'react';
 import {Link, useNavigate} from 'react-router-native';
 import Button from '../../components/Button';
+import {useAppSelector} from '../../store/hooks';
+import {getUser} from '../../api';
 
 // 文字logo大小&缩放比
 const logoTSize = {width: 208, height: 56};
 const logoTScale = 1.3;
 
 export default function StartP() {
-  
   /* 
   首页文字淡化
   */
@@ -38,6 +33,7 @@ export default function StartP() {
 
   useEffect(() => {
     fadeIn();
+
     return () => {
       fadeOut();
     };
@@ -45,9 +41,11 @@ export default function StartP() {
 
   const navigate = useNavigate();
 
+  // 用户
+  const user = useAppSelector(s => s.user);
+
   return (
     <View style={styles.container}>
-
       <View />
 
       <View
@@ -68,22 +66,29 @@ export default function StartP() {
         </Link>
       </View>
 
-      <View style={styles.bottomBar}>
-        <Button
-          onPress={() => {
-            navigate('login');
-          }}
-          style={styles.loginBtn}>
-          <Text style={styles.loginT}>登录 </Text>
-        </Button>
-        <Button
-          onPress={() => {
-            navigate('register');
-          }}
-          style={styles.regBtn}>
-          <Text style={styles.regT}>注册 </Text>
-        </Button>
-      </View>
+      {
+        <View style={styles.bottomBar}>
+          {console.log(user.userId)}
+          {user.userId === '' && (
+            <>
+              <Button
+                onPress={() => {
+                  navigate('login');
+                }}
+                style={styles.loginBtn}>
+                <Text style={styles.loginT}>登录 </Text>
+              </Button>
+              <Button
+                onPress={() => {
+                  navigate('register');
+                }}
+                style={styles.regBtn}>
+                <Text style={styles.regT}>注册 </Text>
+              </Button>
+            </>
+          )}
+        </View>
+      }
     </View>
   );
 }
@@ -136,7 +141,7 @@ const styles = StyleSheet.create({
   loginT: {
     fontSize: 20,
     fontFamily: 'Roboto',
-    color:'black'
+    color: 'black',
   },
   regT: {
     color: 'white',

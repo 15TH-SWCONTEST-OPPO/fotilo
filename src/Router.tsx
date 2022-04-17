@@ -60,6 +60,7 @@ const routes: RouteObject[] = [
         path: 'user',
         element: <User />,
       },
+      
       {
         path: '',
         element: <Home_Home />,
@@ -80,6 +81,7 @@ const routes: RouteObject[] = [
       },
     ],
   },
+  
   {
     path: '/',
     element: <Navigate to="startP" />,

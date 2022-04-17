@@ -5,7 +5,7 @@ import {
   StyleSheet,
   Image,
   ImageBackground,
-  Dimensions,
+  Animated,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 
@@ -13,10 +13,13 @@ import {useAppSelector} from '../../store/hooks';
 import Button from '../../components/Button';
 import {useLocation, useNavigate} from 'react-router-native';
 import {useAppDispatch} from '../../store/hooks';
+import {set as setMe} from '../../store/features/userSlice'
 import {set} from '../../store/features/imgCSlice';
 import Input from '../../components/Input';
 import {defaultColor} from '../../static/color';
-import getUser from '../../config/getUser';
+import {changeInfo, getUser, logout} from '../../api';
+import {emptyUser} from '../../config/user';
+import {HamburgerIcon} from 'native-base';
 
 const AvatarSize = 160;
 
@@ -24,29 +27,42 @@ export default function User() {
   const navigation = useNavigate();
 
   const {state} = useLocation();
-  const {userID: uID} = state as any;
+  const {userId: uID} = state as any;
 
-  const {
-    username: uName,
-    likeNum: uLikeNum,
-    videoNum: uVideoNum,
-    avatar: uAvatar,
-    description,
-  } = getUser(uID);
-
-  const {userID} = useAppSelector(store => store.user);
+  const {userId} = useAppSelector(store => store.user);
+  const [user, setUser] = useState(emptyUser);
 
   const [img, setImg] = useState<any>(
-    uAvatar ? {uri: uAvatar} : require('../../static/img/defaultAvatar.png'),
+    user.avatar
+      ? {uri: user.avatar}
+      : require('../../static/img/defaultAvatar.png'),
   );
   // username 修改
-  const [name, setName] = useState<string>(uName);
+  const [name, setName] = useState<string>(user.username);
   const [cName, setCName] = useState<boolean>(false);
-  const nowName = useRef(uName);
+  const nowName = useRef(user.username);
   // description 修改
-  const [des, setDes] = useState<string>(description || '');
+  const [des, setDes] = useState<string>(user.description || '');
   const [cDes, setCDes] = useState<boolean>(false);
-  const nowDes = useRef(description);
+  const nowDes = useRef(user.description);
+  useEffect(() => {
+    getUser(uID, 'GETNUM')
+      .then(e => {
+        setUser({...e.data.data});
+        setName(e.data.data.username);
+        nowName.current = e.data.data.username;
+        setDes(e.data.data.description || '');
+        nowName.current = e.data.data.description || '';
+        setImg(
+          e.data.data.avatar
+            ? {uri: e.data.data.avatar}
+            : require('../../static/img/defaultAvatar.png'),
+        );
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  }, []);
 
   const dispatch = useAppDispatch();
 
@@ -55,26 +71,84 @@ export default function User() {
     dispatch(set({iniPic: img, show: true, scale: 1}));
   };
 
+  /* 
+    Drawer动画
+  */
+  const fade = useRef(new Animated.Value(0)).current;
+  const [isFade, setIsFade] = useState(false);
+  const fadeIn = () => {
+    Animated.timing(fade, {
+      duration: 300,
+      useNativeDriver: false,
+      toValue: 0.8,
+    }).start();
+  };
+  const fadeOut = () => {
+    Animated.timing(fade, {
+      duration: 300,
+      useNativeDriver: false,
+      toValue: 0,
+    }).start();
+  };
+
   return (
     <>
       <ImageBackground
         style={{...styles.background}}
         source={require('../../static/img/Ubackground.png')}
       />
+      <View style={[styles.settingC]}>
+        <Button
+          style={styles.setting}
+          onPress={() => {
+            !isFade ? fadeIn() : fadeOut();
+            setIsFade(!isFade);
+          }}>
+          <HamburgerIcon color={'white'} />
+        </Button>
+        <Animated.View style={[styles.drawer, {opacity: fade}]}>
+          <Button
+            onPress={() => {
+              logout()
+                .then(e => {
+                  dispatch(setMe(emptyUser))
+                  fadeOut();
+                  setIsFade(!isFade);
+                  navigation('/startP')
+                })
+                .catch(e => {
+                  console.log(e);
+                });
+            }}
+            style={styles.drawerBtn}>
+            <Text style={[styles.settingT]}>登出</Text>
+          </Button>
+          <Button
+            onPress={() => {
+              navigation('/startP/login');
+              fadeOut();
+              setIsFade(!isFade);
+            }}
+            style={styles.drawerBtn}>
+            <Text style={[styles.settingT]}>切换账号</Text>
+          </Button>
+        </Animated.View>
+      </View>
+
       <View style={{...styles.backgroundSpace}} />
 
       <View style={{...styles.avatarC}}>
         <View style={{...styles.avatarAround}}>
           <Text style={{...styles.aroundT}}>视频数&nbsp;&nbsp;</Text>
-          <Text style={{...styles.aroundT}}>{uVideoNum || 0}&nbsp;&nbsp;</Text>
+          <Text style={{...styles.aroundT}}>
+            {user.videoNum || 0}&nbsp;&nbsp;
+          </Text>
         </View>
-
-        {userID !== uID ? (
+        {userId ? (
           <Button
             style={{...styles.avatar}}
             onPress={() => {
-              console.log(state, uID, userID);
-              userID === uID && chooseAvatar();
+              userId === uID && chooseAvatar();
             }}>
             <Image style={{...styles.avatar}} source={img} />
           </Button>
@@ -91,17 +165,13 @@ export default function User() {
 
         <View style={{...styles.avatarAround}}>
           <Text style={{...styles.aroundT}}>获赞数&nbsp;&nbsp;</Text>
-          <Text style={{...styles.aroundT}}>{uLikeNum || 0}&nbsp;&nbsp;</Text>
+          <Text style={{...styles.aroundT}}>
+            {user.supportedNum || 0}&nbsp;&nbsp;
+          </Text>
         </View>
       </View>
       <View style={{...styles.userN}}>
-        <Button
-          style={styles.userNTB}
-          onPress={() => {
-            if (uID === userID) {
-              setCName(true);
-            }
-          }}>
+        <Button style={styles.userNTB} onPress={() => {}}>
           {cName ? (
             <Input
               textStyle={styles.cnameT}
@@ -124,7 +194,7 @@ export default function User() {
         <Button
           style={styles.userNTB}
           onPress={() => {
-            if (uID === userID) {
+            if (uID === userId) {
               setCDes(true);
             }
           }}>
@@ -137,6 +207,13 @@ export default function User() {
               }}
               onBlur={() => {
                 setDes(nowDes.current || '');
+                changeInfo(nowDes.current || '')
+                  .then(e => {
+                    console.log(e);
+                  })
+                  .catch(e => {
+                    console.log(e);
+                  });
                 setCDes(false);
               }}
               defaultValue={des}
@@ -203,5 +280,29 @@ const styles = StyleSheet.create({
   },
   cnameT: {
     color: 'white',
+  },
+  setting: {
+    backgroundColor: 'transparent',
+  },
+  settingC: {
+    zIndex: 999,
+    position: 'absolute',
+    alignItems: 'flex-start',
+    padding: 5,
+  },
+  drawer: {
+    backgroundColor: 'black',
+    borderRadius: 5,
+    alignItems: 'center',
+    opacity: 0.8,
+    padding: 5,
+  },
+  settingT: {
+    color: 'white',
+    fontSize: 20,
+  },
+  drawerBtn: {
+    backgroundColor: 'transparent',
+    height: 50,
   },
 });

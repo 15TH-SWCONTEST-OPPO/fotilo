@@ -1,5 +1,5 @@
-import {View, Text, StyleSheet, Dimensions, TextInput} from 'react-native';
-import React, { useState} from 'react';
+import {View, Text, StyleSheet} from 'react-native';
+import React, {useState} from 'react';
 import {useNavigate} from 'react-router-native';
 import {Button} from 'native-base';
 
@@ -7,7 +7,7 @@ import debounce from '../../utils/debounce';
 import {acceptColor, basicColor, errorColor} from '../../static/color';
 import {login} from '../../api';
 import {useAppDispatch} from '../../store/hooks';
-import {set} from '../../store/features/userSlice'
+import {set} from '../../store/features/userSlice';
 
 import {Lock, QQ, Wechat, Weibo, User} from '../../static/myIcon';
 import MyBtn from '../../components/Button';
@@ -45,8 +45,7 @@ const ThirdLogin = () => {
 };
 
 export default function Login() {
-
-  const dispatch=useAppDispatch()
+  const dispatch = useAppDispatch();
 
   const navigation = useNavigate();
 
@@ -55,23 +54,27 @@ export default function Login() {
     password: true,
   });
 
-  const [otherErr,setOtherErr]=useState(true);
-  const [otherMessage,setOtherMessage]=useState('');
-
+  const [otherErr, setOtherErr] = useState(true);
+  const [otherMessage, setOtherMessage] = useState('');
 
   const onFinish = () => {
     setEmpty({phone: phone === '', password: password === ''});
     if (phone !== '' && password !== '') {
       login({phone, password})
         .then(e => {
-          console.log(e);
+          dispatch(
+            set({
+              username: e.data.data.username,
+              userId: e.data.data.userId,
+              avatar:e.data.data.avatar
+            }),
+            );
+            navigation('../../home');
         })
         .catch(e => {
           setOtherMessage(e.response.data.message);
           setOtherErr(false);
         });
-        dispatch(set({username:"haha",userID:"123"}))
-        navigation("../../home")
     }
   };
 
@@ -85,7 +88,7 @@ export default function Login() {
           onChangeText={debounce(function (e: string) {
             phone = e;
             setEmpty({...empty, phone: e === ''});
-            setOtherErr(true)
+            setOtherErr(true);
           }, 600)}
           placeholder="手机号"
           icon={[
@@ -93,19 +96,19 @@ export default function Login() {
             <User color={acceptColor} size={5} />,
             <User color={errorColor} size={5} />,
           ]}
-          rules={[!empty.phone,otherErr]}
+          rules={[!empty.phone, otherErr]}
           errText={['请输入手机号', otherMessage]}
-          />
+        />
         <Input
           containerStyle={styles.input}
           textStyle={{color: 'white'}}
           placeholderTextColor="#c0c0c0"
           secureTextEntry
-          rules={[!empty.password,otherErr]}
+          rules={[!empty.password, otherErr]}
           errText={['请输入密码', otherMessage]}
           onChangeText={debounce(function (e: string) {
             setEmpty({...empty, password: e === ''});
-            setOtherErr(true)
+            setOtherErr(true);
             password = e;
           }, 600)}
           icon={[

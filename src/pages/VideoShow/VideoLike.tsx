@@ -3,9 +3,10 @@ import React, {useEffect, useRef, useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-native';
 import Button from '../../components/Button';
 import {Like, Share, Star} from '../../static/myIcon';
-import {videos} from '../../config/video';
+import {videos,emptyVideo} from '../../config/video';
 import VideoCardL from '../../components/VideoCardL';
 import {basicColor} from '../../static/color';
+import { getVideoList } from '../../api';
 
 export default function VideoLike() {
   const {state} = useLocation();
@@ -24,7 +25,7 @@ export default function VideoLike() {
     share,
     location,
     videoId,
-    userID,
+    userId,
   } = state as any;
 
 
@@ -39,10 +40,19 @@ export default function VideoLike() {
       t.current = [like || 0, star || 0, share || 0];
       setThree([like || 0, star || 0, share || 0]);
   }, [videoId]);
+
+  const [videoList,setVideoList]=useState(emptyVideo)
+
+  useEffect(() => {
+    getVideoList(6).then((e)=>{
+      setVideoList(e.data.data)
+    })
+  },[videoId])
+
   return (
     <View style={[styles.container]}>
       <Button style={styles.userC} onPress={()=>{
-        navigation('/home/user',{state:{userID}})
+        navigation('/home/user',{state:{userId}})
       }}>
         <Image style={[styles.avatar]} source={{uri: avatar}} />
         <View style={[styles.space]} />
@@ -101,7 +111,7 @@ export default function VideoLike() {
       </View>
 
       <ScrollView style={{width: '100%'}}>
-        {videos.map(v => {
+        {videoList.map(v => {
           return <VideoCardL key={v.videoId} location={location} {...v} />;
         })}
       </ScrollView>

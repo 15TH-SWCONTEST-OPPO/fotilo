@@ -13,7 +13,7 @@ export default function Comment() {
   const [cs, setCs] = useState(comments);
   const navigation=useNavigate();
   const user = useAppSelector(s => s.user);
-  const{userID}=state as any
+  const{userId}=state as any
   useEffect(() => {
     const {comment} = state as any;
     comment && setCs([comment, ...cs]);
@@ -25,7 +25,7 @@ export default function Comment() {
           return (
             <View style={[styles.comment]} key={c.commentId}>
               <Button onPress={()=>{
-                navigation('/home/user',{state:{userID:c.userID}})
+                navigation('/home/user',{state:{userId:c.userId}})
               }} style={styles.cAvatarC}>
                 <Image
                   style={[styles.cAvatar]}
@@ -41,7 +41,7 @@ export default function Comment() {
               </Button>
               <Text style={[styles.detail]}>{c.detail}&nbsp;&nbsp;</Text>
 
-              {c.userID === user.userID && (
+              {c.userId === user.userId && (
                 <Button
                   onPress={() => {
                     setCs(cs.filter(e => e.commentId !== c.commentId));

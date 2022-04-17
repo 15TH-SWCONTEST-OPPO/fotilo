@@ -3,9 +3,9 @@ import {RootState} from '..';
 import {userType} from '../../static/types';
 
 const initialState: userType = {
-  username: "",
-  userID:"",
-  phone:""
+  username: '',
+  userId: '',
+  phone: '',
 };
 
 const userSlice = createSlice({
@@ -13,8 +13,8 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     set: (state, action: PayloadAction<Partial<userType>>) => {
-      for(let key in action.payload){
-        state[key]=action.payload[key];
+      for (let key in action.payload) {
+        state[key] = action.payload[key];
       }
     },
   },

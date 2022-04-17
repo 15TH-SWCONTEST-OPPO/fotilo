@@ -9,7 +9,7 @@ export const test=()=>{
 }
 
 export const sendmessage = (phone:string) => {
-  return axios.get(`${env}/user/sendMessage`,{params:{phone:phone}});
+  return axios.get(`${env}/user/sendMessage`,{params:{phone}});
 };
 
 export const register=(data:userType)=>{
@@ -17,9 +17,30 @@ export const register=(data:userType)=>{
 }
 
 export const login=(data:loginType)=>{
-  return axios.get(`${env}/user/phonelogin`,{params:{...data}});
+  return axios.post(`${env}/user/phonelogin`,{...data});
 }
 
 export const codeLogin=(data:codeLoginType)=>{
-  return axios(`${env}/user/phoneLogin`,{data:data});
+  return axios.post(`${env}/user/phoneLogin`,{...data});
 }
+
+export const getUser=(userId?:string,type?:'GETVIDEO'|'GETNUM')=>{
+  return axios.get(`${env}/user/getUserInfo`,{params:{userId,type}});
+}
+
+export const changeInfo=(description:string)=>{
+  return axios.post(`${env}/user/edit`,{description});
+}
+
+export const logout=()=>{
+  return axios.get(`${env}/user/logout`);
+}
+
+export const getVideoList=(recommendNum:number)=>{
+  return axios.get(`${env}/video/recommendList`,{params:{recommendNum}});
+}
+
+export const getVideo=(videoId:string)=>{
+  return axios.get(`${env}/video/getVideoInfo`,{params:{videoId}});
+}
+

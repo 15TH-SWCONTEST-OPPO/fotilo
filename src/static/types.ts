@@ -3,11 +3,11 @@ export type userType={
     password?: string;
     phone: string;
     code?: string;
-    userID:string;
+    userId?:string;
     avatar?:string;
     description?: string;
     videoNum?:number;
-    likeNum?:number;
+    supportedNum?:number;
     [key:string]:any
 }
 
@@ -22,7 +22,7 @@ export type loginType={
 }
 
 export type videoType={
-    userID:string;
+    userId:string;
     videoId:string;
     videoURL:string;
     coverURL:string;
@@ -37,7 +37,7 @@ export type videoType={
 }
 
 export type commentType={
-    userID:string;
+    userId:string;
     commentId:string;
     detail:string;
     username:string;

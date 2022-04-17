@@ -12,6 +12,9 @@ import {Outlet, useLocation, useNavigate} from 'react-router-native';
 import StatusBarSpace from '../../components/StatusBarSpace';
 import {ArrowBackIcon} from 'native-base';
 import getLoc from '../../utils/getLoc';
+import { getUser } from '../../api';
+import { useAppDispatch } from '../../store/hooks';
+import {set} from '../../store/features/userSlice'
 
 
 // 头部标题
@@ -27,6 +30,17 @@ export default function Page1() {
   const navigation = useNavigate();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   let location = useLocation();
+
+  const dispatch=useAppDispatch()
+
+  useEffect(() => {
+    getUser()
+      .then(e => {
+        dispatch(set({...e.data.data}))
+      })
+      .catch(e => {
+      });
+    })
 
   const fadeIn = () => {
     Animated.timing(fadeAnim, {

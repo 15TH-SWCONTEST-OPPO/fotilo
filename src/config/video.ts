@@ -9,7 +9,7 @@ export const videos: Array<videoType> = [
       'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fwww.mooyuu.com%2Fuploadfile%2F2021%2F0209%2F20210209011006435.jpg&refer=http%3A%2F%2Fwww.mooyuu.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1652524192&t=1e9babccc08a5396dbe19f2f7e8f1b90',
     title: '潘嘎之交',
     description: '这里面水很深',
-    userID: '1',
+    userId: '1',
     duration: 135.6,
     like:200,
   },
@@ -21,7 +21,7 @@ export const videos: Array<videoType> = [
       'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fwww.mooyuu.com%2Fuploadfile%2F2021%2F0209%2F20210209011006435.jpg&refer=http%3A%2F%2Fwww.mooyuu.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1652524192&t=1e9babccc08a5396dbe19f2f7e8f1b90',
     title: '华强白嫖',
     description: '劈我瓜是吧',
-    userID: '2',
+    userId: '2',
     duration: 135.6,
     watch:200
   },
@@ -33,7 +33,7 @@ export const videos: Array<videoType> = [
       'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fwww.mooyuu.com%2Fuploadfile%2F2021%2F0209%2F20210209011006435.jpg&refer=http%3A%2F%2Fwww.mooyuu.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1652524192&t=1e9babccc08a5396dbe19f2f7e8f1b90',
     title: '杰哥不要',
     description: '让我康康！',
-    userID: '3',
+    userId: '3',
     duration: 125.6,
   },
   {
@@ -43,7 +43,7 @@ export const videos: Array<videoType> = [
     coverURL:
       'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fwww.mooyuu.com%2Fuploadfile%2F2021%2F0209%2F20210209011006435.jpg&refer=http%3A%2F%2Fwww.mooyuu.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1652524192&t=1e9babccc08a5396dbe19f2f7e8f1b90',
     title: '这是一个视频',
-    userID: '4',
+    userId: '4',
     duration: 100.6,
   },
   {
@@ -53,7 +53,16 @@ export const videos: Array<videoType> = [
     coverURL:
       'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fwww.mooyuu.com%2Fuploadfile%2F2021%2F0209%2F20210209011006435.jpg&refer=http%3A%2F%2Fwww.mooyuu.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1652524192&t=1e9babccc08a5396dbe19f2f7e8f1b90',
     title: '这是一个视频',
-    userID: '3',
+    userId: '3',
     duration: 100.6,
   },
 ];
+
+export const emptyVideo: Array<videoType> =[{
+  videoId: '',
+  videoURL:'',
+  coverURL:'',
+  title: '',
+  userId: '',
+  duration: 0,
+},]

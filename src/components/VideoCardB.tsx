@@ -1,11 +1,12 @@
 import {View, Text, StyleSheet, Image} from 'react-native';
-import React, {useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {videoType} from '../static/types';
 import getTime from '../utils/getTime';
-import getUser from '../config/getUser';
+import {getUser} from '../api';
 import Button from './Button';
 import {Comment, Like, Share} from '../static/myIcon';
 import {useLocation, useNavigate} from 'react-router-native';
+import {emptyUser} from '../config/user';
 
 interface VideoProps extends videoType {}
 
@@ -15,7 +16,7 @@ export default function VideoCardB(props: VideoProps) {
     videoId,
     videoURL,
     coverURL,
-    userID: userId,
+    userId: userId,
     description,
     duration,
     like,
@@ -23,7 +24,16 @@ export default function VideoCardB(props: VideoProps) {
     comment,
   } = props;
 
-  const {username, avatar, ...user} = useRef(getUser(userId)).current;
+  const [user, setUser] = useState(emptyUser);
+  useEffect(() => {
+    getUser(userId, 'GETNUM')
+      .then(e => {
+        setUser({...(e.data.data as any)});
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  });
 
   const navigation = useNavigate();
   const location = useLocation();
@@ -36,8 +46,8 @@ export default function VideoCardB(props: VideoProps) {
             state: {
               ...user,
               ...props,
-              username,
-              avatar,
+              username: user.username,
+              avatar: user.avatar,
               location: location.pathname,
             },
           });
@@ -49,10 +59,12 @@ export default function VideoCardB(props: VideoProps) {
         <Button
           style={{backgroundColor: 'transparent', flexDirection: 'row'}}
           onPress={() => {
-            navigation('/home/user', {state: {...user, username, avatar}});
+            navigation('/home/user', {
+              state: {...user, username: user.username, avatar: user.avatar},
+            });
           }}>
-          <Image style={[styles.avatar]} source={{uri: avatar}} />
-          <Text style={[styles.username]}>&nbsp;{username}&nbsp;</Text>
+          <Image style={[styles.avatar]} source={{uri: user.avatar}} />
+          <Text style={[styles.username]}>&nbsp;{user.username}&nbsp;</Text>
         </Button>
         <View>
           <Text style={[styles.title]}>{title}</Text>
@@ -103,7 +115,9 @@ const styles = StyleSheet.create({
   },
   title: {
     color: 'white',
-    fontSize: 35,
+    fontSize: 25,
+    width: 220,
+    height: 38,
     overflow: 'hidden',
   },
   bottom: {

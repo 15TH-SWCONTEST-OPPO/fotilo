@@ -16,7 +16,7 @@ export default function TopBar(props: TopBarProps) {
   return (
     <View {...props} style={{...styles.container,...(props.style as Object)}}>
       <>
-        {user.userID ? (
+        {user.userId ? (
           <Button style={{...styles.avatar}} onPress={()=>{
             navigation("user",{state:{...user}})
           }}>

@@ -6,6 +6,9 @@ import Input from '../../components/Input';
 import {passwordRule, phoneNumRule, usernameRule} from '../../static/regex';
 import {userType} from '../../static/types';
 import {register, sendmessage} from '../../api';
+import {useNavigate} from 'react-router-native';
+import {useAppDispatch} from '../../store/hooks';
+import {set} from '../../store/features/userSlice';
 
 let info: userType = {username: '', password: '', code: '', phone: ''};
 
@@ -19,12 +22,16 @@ export default function Register() {
 
   const [codeErr, setCodeErr] = useState<boolean>(true);
   const [phoneErr, setPhoneErr] = useState<boolean>(true);
-  const [errMessage, setErrMessage] = useState<string>('')
+  const [errMessage, setErrMessage] = useState<string>('');
 
-  const backerrs:{[key: string]: any}={
-    '验证码不匹配':setCodeErr,
-    '该手机号已注册':setPhoneErr
-  }
+  const backerrs: {[key: string]: any} = {
+    验证码不匹配: setCodeErr,
+    该手机号已注册: setPhoneErr,
+  };
+
+  const navigation = useNavigate();
+
+  const dispatch = useAppDispatch();
 
   // 必填信息为空
   const [emptyErr, setEmptyErr] = useState<
@@ -74,11 +81,18 @@ export default function Register() {
       error = error || e;
     });
 
-
     if (!error) {
       register(info)
         .then(e => {
           console.log(e);
+          dispatch(
+            set({
+              username: info.username,
+              phone: info.phone,
+              userId: e.data.data.userId,
+            }),
+          );
+          navigation('/home');
         })
         .catch(e => {
           setErrMessage(e.response.data.message);
@@ -140,8 +154,8 @@ export default function Register() {
               ? setEmptyErr([emptyErr[0], e !== '', emptyErr[2], emptyErr[3]])
               : setEmptyErr([undefined, e !== '', undefined, undefined]);
           }}
-          rules={[emptyErr ? emptyErr[1] : true, phoneNumRule,phoneErr]}
-          errText={['请输入手机号', '请输入正常手机号码',errMessage]}
+          rules={[emptyErr ? emptyErr[1] : true, phoneNumRule, phoneErr]}
+          errText={['请输入手机号', '请输入正常手机号码', errMessage]}
           placeholder="手机号码"
         />
 
@@ -196,8 +210,8 @@ export default function Register() {
                 ? setEmptyErr([emptyErr[0], emptyErr[1], emptyErr[2], e !== ''])
                 : setEmptyErr([undefined, undefined, undefined, e !== '']);
             }}
-            rules={[emptyErr ? emptyErr[3] : emptyErr,codeErr]}
-            errText={['请输入验证码',errMessage]}
+            rules={[emptyErr ? emptyErr[3] : emptyErr, codeErr]}
+            errText={['请输入验证码', errMessage]}
             placeholder="验证码"
           />
           <Button

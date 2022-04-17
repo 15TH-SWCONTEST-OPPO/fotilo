@@ -88,6 +88,8 @@ export default function VideoPlayer(props: VideoPlayerProps) {
   // 视频标题
   const {title, videoUrl, lastUrl} = props;
 
+  
+
   /* 
   倍速扩展框
    */
@@ -170,7 +172,6 @@ export default function VideoPlayer(props: VideoPlayerProps) {
 
   useEffect(() => {
     const daudio = dy === 0 ? 0 : dy < 0 ? -0.1 : 0.1;
-
     const volume = audio;
     SystemSetting.setVolume(audio - daudio);
     setAudio(volume - daudio);
@@ -222,19 +223,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
         },
       ]}
       {...panResponder.panHandlers}>
-      {isLoading && (
-        <View
-          style={[
-            styles.loading,
-            {
-              height: full ? windowWidth : size.height,
-              width: full ? windowHeight - statusH : size.width,
-            },
-          ]}>
-          <Loading size={10} />
-          <Text style={[styles.loadingT]}>Loading...&nbsp;</Text>
-        </View>
-      )}
+      
       {/* 
           滚动判断
         */}
@@ -288,6 +277,19 @@ export default function VideoPlayer(props: VideoPlayerProps) {
           }
           setShowControl(!showControl);
         }}>
+          {isLoading && (
+        <View
+          style={[
+            styles.loading,
+            {
+              height: full ? windowWidth : size.height,
+              width: full ? windowHeight - statusH : size.width,
+            },
+          ]}>
+          <Loading size={10} />
+          <Text style={[styles.loadingT]}>Loading...&nbsp;</Text>
+        </View>
+      )}
         <Video
           source={{
             uri: videoUrl,
@@ -437,7 +439,7 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: 'black',
     opacity: 0.8,
-    zIndex: 999,
+    zIndex: 99,
     justifyContent: 'center',
     alignItems: 'center',
   },
