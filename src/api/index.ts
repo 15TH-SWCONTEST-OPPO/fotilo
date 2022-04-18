@@ -49,3 +49,11 @@ export const getVideoList = (recommendNum: number) => {
 export const getVideo = (videoId: string) => {
   return axios.get(`${env}/video/getVideoInfo`, {params: {videoId}});
 };
+
+export const comment = (videoId: string) => {
+  return axios.get(`${env}/video/getVideoInfo`, {params: {videoId}});
+};
+
+export const getDynamicList = (recommendNum: number) =>{
+  return axios.get(`${env}/dynamic/recommendList`,{params:{recommendNum}})
+}

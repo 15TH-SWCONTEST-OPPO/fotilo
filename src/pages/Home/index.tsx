@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   center: {
     flexGrow: 1,
     flexShrink: 1,
-    // backgroundColor: 'blue'
+    // backgroundColor: 'blue',
     overflow: 'hidden',
   },
 });

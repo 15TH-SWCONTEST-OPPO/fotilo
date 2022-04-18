@@ -26,7 +26,7 @@ export default function VideoCardL(props: VideoProps) {
 
   const [user, setUser] = useState(emptyUser);
   useEffect(() => {
-    getUser(userId).then((e:any) =>{
+    getUser(false,userId).then((e:any) =>{
       setUser(e.data.data)
     })
   },[])
