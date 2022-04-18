@@ -34,7 +34,7 @@ export default function Page1() {
   const dispatch=useAppDispatch()
 
   useEffect(() => {
-    getUser()
+    getUser(true)
       .then(e => {
         dispatch(set({...e.data.data}))
       })

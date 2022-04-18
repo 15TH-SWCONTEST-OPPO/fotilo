@@ -40,4 +40,6 @@ export const emptyUser: userType = {
   avatar: '',
   description: '',
   phone: '',
+  videoNum:0,
+  supportedNum:0
 };

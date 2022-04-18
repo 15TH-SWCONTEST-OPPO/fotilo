@@ -7,6 +7,7 @@ import Button from './Button';
 import {Comment, Like, Share} from '../static/myIcon';
 import {useLocation, useNavigate} from 'react-router-native';
 import {emptyUser} from '../config/user';
+import { useAppSelector } from '../store/hooks';
 
 interface VideoProps extends videoType {}
 
@@ -24,9 +25,11 @@ export default function VideoCardB(props: VideoProps) {
     comment,
   } = props;
 
+  const {userId:meid}=useAppSelector(s=>s.user)
+
   const [user, setUser] = useState(emptyUser);
   useEffect(() => {
-    getUser(userId, 'GETNUM')
+    getUser(meid===userId,userId, 'GETNUM')
       .then(e => {
         setUser({...(e.data.data as any)});
       })
