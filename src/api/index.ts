@@ -54,6 +54,14 @@ export const comment = (videoId: string) => {
   return axios.get(`${env}/video/getVideoInfo`, {params: {videoId}});
 };
 
-export const getDynamicList = (recommendNum: number) =>{
-  return axios.get(`${env}/dynamic/recommendList`,{params:{recommendNum}})
-}
+export const getDynamicList = (recommendNum: number) => {
+  return axios.get(`${env}/dynamic/recommendList`, {params: {recommendNum}});
+};
+
+export const setDynamic = (props: {
+  videoId: string;
+  content: string;
+  images: Array<number>;
+}) => {
+  return axios.post(`${env}/dynamic/create`, {props});
+};

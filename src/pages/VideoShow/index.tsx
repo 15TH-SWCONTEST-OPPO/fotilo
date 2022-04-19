@@ -19,7 +19,7 @@ import {useAppSelector} from '../../store/hooks';
 import uuid from 'uuid';
 import Input from '../../components/Input';
 import {Send} from '../../static/myIcon';
-import { getVideo } from '../../api';
+import {getVideo} from '../../api';
 
 const windowWidth = Dimensions.get('screen').width;
 
@@ -28,7 +28,7 @@ const scale = 2.8 / 5;
 
 export default function VideoShow() {
   const {state, pathname} = useLocation();
-  const {videoURL, title, location,videoId} = state as any;
+  const {videoURL, title, location, videoId} = state as any;
 
   const [loc, setLoc] = useState(getLoc(pathname, 2));
   const navigation = useNavigate();
@@ -37,13 +37,15 @@ export default function VideoShow() {
   }, [pathname]);
   const user = useAppSelector(s => s.user);
   const myComment = useRef('');
-useEffect(() => {
-  getVideo(videoId).then((e)=>{
-    console.log(e);
-  }).catch((e)=>{
-    console.log(e);
-  })
-},[videoId])
+  useEffect(() => {
+    getVideo(videoId)
+      .then(e => {
+        console.log(e);
+      })
+      .catch(e => {
+        console.log('videoshow error', e);
+      });
+  }, [videoId]);
 
   return (
     <View style={styles.background}>
@@ -121,13 +123,18 @@ useEffect(() => {
               <Button
                 unable={user.username === ''}
                 onPress={() => {
-                  navigation('/video/comment',{state:{...(state as any),comment:{
-                    username: user.username,
-                    userId: user.userId,
-                    commentId: uuid.v4(),
-                    detail: myComment.current,
-                    avatar: user.avatar,
-                  } }})
+                  navigation('/video/comment', {
+                    state: {
+                      ...(state as any),
+                      comment: {
+                        username: user.username,
+                        userId: user.userId,
+                        commentId: uuid.v4(),
+                        detail: myComment.current,
+                        avatar: user.avatar,
+                      },
+                    },
+                  });
                 }}
                 style={styles.subB}>
                 <Send color={basicColor} />

@@ -58,10 +58,9 @@ export default function User() {
             ? {uri: e.data.data.avatar}
             : require('../../static/img/defaultAvatar.png'),
         );
-        console.log(e);
       })
       .catch(e => {
-        console.log(e);
+        console.log('user Error',e);
       });
   }, [uID]);
 
@@ -119,7 +118,7 @@ export default function User() {
                     navigation('/startP');
                   })
                   .catch(e => {
-                    console.log(e);
+                    console.log('User logout Error',e);
                   });
               }}
               style={styles.drawerBtn}>
@@ -215,7 +214,7 @@ export default function User() {
                     console.log(e);
                   })
                   .catch(e => {
-                    console.log(e);
+                    console.log('user change error',e);
                   });
                 setCDes(false);
               }}

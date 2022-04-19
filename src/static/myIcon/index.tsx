@@ -1249,15 +1249,51 @@ export const Add = (props: IconProps) => {
     viewBox: '0 0 15 15',
     path: [
       <>
-        <Rect x="5.3999" width="4.4" height="14.8" rx="2.2" fill={color||"white"} />
+        <Rect
+          x="5.3999"
+          width="4.4"
+          height="14.8"
+          rx="2.2"
+          fill={color || 'white'}
+        />
         <Path
           d="M2.2 5.20001C0.984974 5.20001 -1.49276e-07 6.18498 -9.6165e-08 7.40001V7.40001C-4.30545e-08 8.61503 0.984973 9.60001 2.2 9.60001L3.55 9.60001L3.55 5.20001L2.2 5.20001Z"
-          fill={color||"white"}
+          fill={color || 'white'}
         />
         <Path
           d="M12.5 9.60001C13.715 9.60001 14.7 8.61504 14.7 7.40001V7.40001C14.7 6.18499 13.715 5.20001 12.5 5.20001L11.15 5.20001L11.15 9.60001L12.5 9.60001Z"
-          fill={color||"white"}
+          fill={color || 'white'}
         />
+      </>,
+    ],
+  });
+  return <CustomIcon size={size} opacity={opacity} />;
+};
+
+export const Pic = (props: IconProps) => {
+  const {opacity, size, color} = props;
+  const CustomIcon = createIcon({
+    viewBox: '0 0 18 17',
+    path: [
+      <>
+        <Rect width="17.2" height="14.1" rx="0.6" />
+        <Rect
+          width="17.2"
+          height="14.1"
+          rx="0.6"
+          stroke={color||"white"}
+          stroke-width="2"
+          mask="url(#path-1-inside-1_764_4592)"
+        />
+        <Path
+          d="M4.84265 13.575L8.35005 7.5L11.8575 13.575H4.84265Z"
+          stroke={color||"white"}
+        />
+        <Path
+          d="M12.3936 13.6L11.2225 11.5L12.1 9.92654L14.1486 13.6H12.3936Z"
+          stroke={color||"white"}
+        />
+        <Circle cx="3.7001" cy="3.20001" r="1.6" fill={color||"white"} />
       </>,
     ],
   });

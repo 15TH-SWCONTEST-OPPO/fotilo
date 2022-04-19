@@ -12,7 +12,7 @@ export default function Home() {
     getVideoList(6).then((e)=>{
       setVideos(e.data.data)
     }).catch((e)=>{
-      console.log(e);
+      console.log('home Error',e);
     })
   },[])
 

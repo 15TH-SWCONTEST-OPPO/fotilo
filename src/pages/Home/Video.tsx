@@ -19,7 +19,7 @@ export default function Video() {
                 setVIds([e.data.data[0].videoId, ...vIds]);
               })
               .catch(e => {
-                console.log(e);
+                console.log('video videolist error',e);
               });
           } else {
             getVideo(vIds[videoNum - 1])
@@ -28,7 +28,7 @@ export default function Video() {
                 setVideoNum(videoNum - 1);
               })
               .catch(e => {
-                console.log(e);
+                console.log('video getvideo error',e);
               });
           }
         } else {
@@ -38,7 +38,7 @@ export default function Video() {
               setVideoNum(videoNum + 1);
             })
             .catch(e => {
-              console.log(e);
+              console.log('video getlist error',e);
             });
         }
       },
@@ -51,10 +51,9 @@ export default function Video() {
       .then(e => {
         setVIds([...vIds, e.data.data[0].videoId]);
         setVideoNum(videoNum + 1);
-        console.log(e);
       })
       .catch(e => {
-        console.log(e);
+        console.log('video get 2nd list error',e);
       });
   }, []);
 

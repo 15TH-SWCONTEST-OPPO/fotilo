@@ -19,10 +19,7 @@ const imgCSlice = createSlice({
   initialState,
   reducers: {
     set: (state, action: PayloadAction<Partial<imgCType>>) => {
-      console.log(action.payload.iniPic);
-      
       state.iniPic = action.payload.iniPic;
-      
       state.show = action.payload.show||false;
       state.scale = action.payload.scale||0;
     },

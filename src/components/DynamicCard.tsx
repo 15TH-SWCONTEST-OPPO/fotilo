@@ -27,7 +27,7 @@ export default function DynamicCard(props: basicDynamic) {
         setAuth(user.data.data);
       })
       .catch(e => {
-        console.log(e);
+        console.log('dynamicCreate Error',e);
       });
   }, []);
 

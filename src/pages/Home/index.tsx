@@ -7,6 +7,7 @@ import {Outlet, useLocation} from 'react-router-native';
 import getLoc from '../../utils/getLoc';
 import ImageChoose from '../../components/ImageChoose';
 import {useAppSelector} from '../../store/hooks';
+import Upload from '../../components/Upload';
 
 export default function Home() {
   /* 
@@ -47,6 +48,7 @@ export default function Home() {
         <Outlet />
       </ScrollView>
       <BottomBar />
+      <Upload />
     </View>
   );
 }

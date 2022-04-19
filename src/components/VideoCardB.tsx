@@ -34,7 +34,7 @@ export default function VideoCardB(props: VideoProps) {
         setUser({...(e.data.data as any)});
       })
       .catch(e => {
-        console.log(e);
+        console.log("videoCardB Error",e);
       });
   });
 

@@ -21,7 +21,7 @@ export default function VideoMid(props: {video: videoType; userId: string}) {
         setUser(user.data.data);
       })
       .catch(error => {
-        console.log(error);
+        console.log('videoMid Error',error);
       });
     
   }, []);

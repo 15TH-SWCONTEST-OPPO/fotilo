@@ -68,7 +68,6 @@ export default function StartP() {
 
       {
         <View style={styles.bottomBar}>
-          {console.log(user.userId)}
           {user.userId === '' && (
             <>
               <Button
