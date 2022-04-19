@@ -1,7 +1,7 @@
 import {
   View,
   Animated,
-  Pressable,
+  Pressable as Button,
   StyleSheet,
   ViewStyle,
   Text,
@@ -105,7 +105,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
         }}>
         {rates.map(e => {
           return (
-            <Pressable
+            <Button
               key={uuid.v4()}
               style={{height: 25}}
               onPress={() => {
@@ -115,7 +115,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
                 style={{color: setPoint(rate) === e ? basicColor : 'white'}}>
                 {e}&nbsp;
               </Text>
-            </Pressable>
+            </Button>
           );
         })}
       </View>
@@ -249,7 +249,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
         <LinearGradient
           style={styles.linear}
           colors={[barColor, 'transparent']}>
-          <Pressable
+          <Button
             onPress={() => {
               if (full) {
                 Orientation.lockToPortrait();
@@ -262,14 +262,14 @@ export default function VideoPlayer(props: VideoPlayerProps) {
               StatusBar.setHidden(false);
             }}>
             <ArrowBackIcon style={{color: 'white'}} />
-          </Pressable>
+          </Button>
           {full && <Text style={{color: 'white'}}>{title}</Text>}
           <View />
         </LinearGradient>
       </Animated.View>
 
       {/* 视频 */}
-      <Pressable
+      <Button
         onPress={() => {
           if (showControl) cutOut();
           else {
@@ -313,7 +313,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
             setIsLoading(false);
           }}
         />
-      </Pressable>
+      </Button>
 
       {/* 底部条 */}
       <Animated.View style={[styles.footer, {bottom: inAnim}]}>
@@ -321,7 +321,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
           style={{...styles.linear}}
           colors={['transparent', barColor]}>
           {/* 暂停键 */}
-          <Pressable
+          <Button
             onPress={() => {
               setPause(!pause);
             }}
@@ -339,7 +339,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
                 <Pause size={3} color="black" />
               )}
             </View>
-          </Pressable>
+          </Button>
 
           {/*进度条  */}
           <View style={styles.progressBar}>
@@ -378,7 +378,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
           ) : (
             <>
               {/* 全屏 */}
-              <Pressable
+              <Button
                 onPress={() => {
                   StatusBar.setHidden(!full);
                   if (full) Orientation.lockToPortrait();
@@ -386,7 +386,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
                   setFull(!full);
                 }}>
                 <Full size={5} />
-              </Pressable>
+              </Button>
             </>
           )}
           <View />

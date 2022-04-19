@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     borderWidth: 2,
     borderColor: '#3a3838',
-    padding: 5,
+    padding: 8,
   },
   authAvatar: {
     width: 60,
