@@ -36,7 +36,7 @@ export default function DynamicCrate() {
                   const nowPics=pics.filter(a=>{return a.uri!==p.uri})
                   setPics([...nowPics])
                 }}>
-                  <Trash color={defaultColor} size={5}/>
+                  <Trash size={5}/>
                 </Button>
                 <Image style={styles.myPics} source={{uri: p.uri}} />
               </View>
@@ -89,7 +89,9 @@ const styles = StyleSheet.create({
   },
   picBtn: {
     position: 'absolute',
-    backgroundColor: 'transparent',
+    backgroundColor: '#4d4d4dd6',
+    width:30,
+    height:30,
     zIndex:99,
     top:2,
     right:0

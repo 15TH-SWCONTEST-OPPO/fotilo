@@ -11,7 +11,7 @@ import {Add, Loading} from '../../static/myIcon';
 import Button from '../../components/Button';
 import DynamicCard, {basicDynamic} from '../../components/DynamicCard';
 import {getDynamicList} from '../../api';
-import DynamicCrate from './DynamicCrate';
+import DynamicCrate from './DynamicCreate';
 import {ArrowBackIcon} from 'native-base';
 
 export default function Dynamic() {
