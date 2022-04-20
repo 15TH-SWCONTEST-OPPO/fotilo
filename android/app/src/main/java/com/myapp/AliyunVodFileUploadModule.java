@@ -112,7 +112,7 @@ public class AliyunVodFileUploadModule extends ReactContextBaseJavaModule {
         };
 
         // 清除所有文件
-        this.clearFiles();
+        //this.clearFiles();
 
         //上传初始化
         uploader.init(vodCallback);

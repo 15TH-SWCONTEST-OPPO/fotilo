@@ -14,6 +14,7 @@ import {getDynamicList} from '../../api';
 import DynamicCrate from './DynamicCreate';
 import {ArrowBackIcon} from 'native-base';
 import {useAppSelector} from '../../store/hooks';
+import uuid from 'uuid'
 
 export default function Dynamic() {
   const [dynamic, setDynamic] = useState<Array<basicDynamic>>([]);
@@ -98,10 +99,10 @@ export default function Dynamic() {
       <ScrollView style={styles.scrollView}>
         {dynamic.map(d => {
           return (
-            <>
-              <DynamicCard key={d.userId} {...d} />
+            <View key={uuid.v4()}>
+              <DynamicCard {...d} />
               <View style={styles.space} />
-            </>
+            </View>
           );
         })}
         <View style={styles.space} />

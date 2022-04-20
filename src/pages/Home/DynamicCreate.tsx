@@ -3,11 +3,14 @@ import React, {useEffect, useState} from 'react';
 import {TextArea} from 'native-base';
 import Button from '../../components/Button';
 import {Pic, Trash} from '../../static/myIcon';
-import {set,setType} from '../../store/features/imgDrawerSlice';
+import {set, setType} from '../../store/features/imgDrawerSlice';
 import {useAppDispatch, useAppSelector} from '../../store/hooks';
 import uuid from 'uuid';
 import {uploadImg} from '../../api';
-import {AliyunVodFileUpload} from '../../utils/aliyun-vod-payload';
+import {
+  AliyunVodFileUpload,
+  AliyunVodFileUploadEmitter,
+} from '../../utils/aliyun-vod-payload';
 
 export default function DynamicCrate(props: {userId: string}) {
   const dispatch = useAppDispatch();
@@ -17,13 +20,25 @@ export default function DynamicCrate(props: {userId: string}) {
   const {pics: nowpics} = useAppSelector(s => s.imgDrawer);
 
   useEffect(() => {
-    dispatch(setType('photo'))
-  },[])
+    dispatch(setType('photo'));
+  }, []);
 
   useEffect(() => {
     setPics([...pics, ...nowpics]);
   }, [nowpics]);
-  
+
+  useEffect(() => {
+    AliyunVodFileUploadEmitter.addListener(
+      'OnUploadProgress',
+      (result: any) => {
+        console.log('[progress]', Math.floor(result.progress * 100) + '%');
+      },
+    );
+    AliyunVodFileUploadEmitter.addListener('onUploadSucceed', (result: any) => {
+      console.log('[succeed]', result);
+    });
+  }, []);
+
   return (
     <View style={styles.container}>
       <TextArea
@@ -37,13 +52,30 @@ export default function DynamicCrate(props: {userId: string}) {
           style={styles.submitBtn}
           onPress={() => {
             pics.map(p => {
+              const title = userId + 'dynamic' + uuid.v4();
               const imageExt: 'png' | 'jpg' | 'jpeg' | 'gif' =
                 p.type.split(/\//)[1];
-              const title = userId + 'dynamic' + uuid.v4();
               uploadImg({title, imageType: 'DEFAULT', imageExt})
                 .then(e => {
-                  console.log(e);
-                  
+                  AliyunVodFileUpload.init(
+                    {
+                      videoId: e.data.data.imageId,
+                      uploadAuth: e.data.data.uploadAuth,
+                      uploadAddress: e.data.data.uploadAddress,
+                    },
+                    res => {
+                      console.log(res);
+                    },
+                  );
+                  AliyunVodFileUpload.addFile({
+                    path: p.uri.split(/^file:\/\//)[1],
+                    type: p.type,
+                    title,
+                    desc: '',
+                    tags: '',
+                    cateId: 1,
+                  });
+                  AliyunVodFileUpload.start();
                 })
                 .catch(e => {
                   console.log(e);
@@ -57,7 +89,7 @@ export default function DynamicCrate(props: {userId: string}) {
         <View style={styles.pics}>
           {pics.map(p => {
             return (
-              <View key={p.uri} style={styles.picC}>
+              <View key={uuid.v4()} style={styles.picC}>
                 <Button
                   style={styles.picBtn}
                   onPress={() => {
