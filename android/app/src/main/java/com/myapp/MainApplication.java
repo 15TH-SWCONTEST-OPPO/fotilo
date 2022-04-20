@@ -34,6 +34,8 @@ public class MainApplication extends Application implements ReactApplication {
       // packages.add(new MyReactNativePackage());
       packages.add(new ReactVideoPackage());
       packages.add(new LinearGradientPackage());
+      packages.add(new MyReactPackage());
+      packages.add(new AliyunVodFileUploadPackage());
       // packages.add(new OrientationPackage());
       return packages;
     }

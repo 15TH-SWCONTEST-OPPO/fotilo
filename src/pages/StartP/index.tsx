@@ -5,7 +5,7 @@ import {
   Animated,
   TouchableHighlight,
   Text,
-  StatusBar,
+  StatusBar
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {Outlet, useLocation, useNavigate} from 'react-router-native';
@@ -15,7 +15,7 @@ import getLoc from '../../utils/getLoc';
 import { getUser } from '../../api';
 import { useAppDispatch } from '../../store/hooks';
 import {set} from '../../store/features/userSlice'
-
+import { AliyunVodFileUpload, AliyunVodFileUploadEmitter } from '../../utils/aliyun-vod-payload'
 
 // 头部标题
 const header: {[key: string]: string} = {
