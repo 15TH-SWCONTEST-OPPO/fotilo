@@ -51,6 +51,7 @@ export default function Comment() {
                   <Text style={[styles.bottomT]}>删除&nbsp;&nbsp;</Text>
                 </Button>
               )}
+              <Text />
               <View style={[styles.bottom]} />
             </View>
           );

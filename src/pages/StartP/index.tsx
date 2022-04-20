@@ -15,7 +15,6 @@ import getLoc from '../../utils/getLoc';
 import { getUser } from '../../api';
 import { useAppDispatch } from '../../store/hooks';
 import {set} from '../../store/features/userSlice'
-import { AliyunVodFileUpload, AliyunVodFileUploadEmitter } from '../../utils/aliyun-vod-payload'
 
 // 头部标题
 const header: {[key: string]: string} = {
@@ -40,7 +39,7 @@ export default function Page1() {
       })
       .catch(e => {
       });
-    })
+    },[])
 
   const fadeIn = () => {
     Animated.timing(fadeAnim, {

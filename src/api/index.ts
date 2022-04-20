@@ -65,3 +65,22 @@ export const setDynamic = (props: {
 }) => {
   return axios.post(`${env}/dynamic/create`, {props});
 };
+
+
+export const uploadImg= (props:{
+  title:string,
+  imageType:'DEFAULT'|'COVER',
+  imageExt:'png'|'jpg'|'jpeg'|'gif',
+  tags?:Array<string>,
+  description?:string,
+})=>{
+  const{tags}=props
+  let strTags:string=(tags&&tags[0])||''
+  tags&&tags.map(tag => {
+    strTags=strTags+','+tag;
+  })
+  console.log(props);
+  
+  return axios.post(`${env}/image/upload/auth`,{...props,tags:strTags,action:'CreateUploadImage'})
+   
+} 

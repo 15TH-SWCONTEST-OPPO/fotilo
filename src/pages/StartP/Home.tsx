@@ -3,7 +3,6 @@ import React, {useEffect, useRef} from 'react';
 import {Link, useNavigate} from 'react-router-native';
 import Button from '../../components/Button';
 import {useAppSelector} from '../../store/hooks';
-import {getUser} from '../../api';
 
 // 文字logo大小&缩放比
 const logoTSize = {width: 208, height: 56};

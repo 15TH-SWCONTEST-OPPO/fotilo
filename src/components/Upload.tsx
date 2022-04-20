@@ -64,7 +64,7 @@ export default function Upload() {
       <Button
         style={styles.btn}
         onPress={() => {
-          launchImageLibrary({mediaType: 'photo', selectionLimit: 9}).then(
+          launchImageLibrary({mediaType: img.type, selectionLimit: 9}).then(
             e => {
               if (e.assets) {
                 dispatch(set(false));
@@ -79,7 +79,7 @@ export default function Upload() {
       <Button
         style={styles.btn}
         onPress={() => {
-          launchCamera({mediaType: 'photo'}, e => {
+          launchCamera({mediaType: img.type}, e => {
             requestCameraPermission().then(() => {
               if (e.assets) {
                 dispatch(set(false));

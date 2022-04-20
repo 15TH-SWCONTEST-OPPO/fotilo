@@ -1,24 +1,29 @@
 import {View, Text, StyleSheet, Image, ScrollView} from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {Actionsheet, TextArea} from 'native-base';
+import {TextArea} from 'native-base';
 import Button from '../../components/Button';
-import {Camera, Pic, Trash} from '../../static/myIcon';
-import {set} from '../../store/features/imgDrawerSlice';
+import {Pic, Trash} from '../../static/myIcon';
+import {set,setType} from '../../store/features/imgDrawerSlice';
 import {useAppDispatch, useAppSelector} from '../../store/hooks';
-import {defaultColor} from '../../static/color';
+import uuid from 'uuid';
+import {uploadImg} from '../../api';
+import {AliyunVodFileUpload} from '../../utils/aliyun-vod-payload';
 
-export default function DynamicCrate() {
+export default function DynamicCrate(props: {userId: string}) {
   const dispatch = useAppDispatch();
   const [pics, setPics] = useState<any[]>([]);
-
-  const [upLPic, setUpLPic] = useState(false);
+  const {userId} = props;
 
   const {pics: nowpics} = useAppSelector(s => s.imgDrawer);
 
   useEffect(() => {
+    dispatch(setType('photo'))
+  },[])
+
+  useEffect(() => {
     setPics([...pics, ...nowpics]);
   }, [nowpics]);
-
+  
   return (
     <View style={styles.container}>
       <TextArea
@@ -27,16 +32,41 @@ export default function DynamicCrate() {
         maxH={200}
         color="white"
       />
+      <View style={{width: '100%', alignItems: 'flex-end'}}>
+        <Button
+          style={styles.submitBtn}
+          onPress={() => {
+            pics.map(p => {
+              const imageExt: 'png' | 'jpg' | 'jpeg' | 'gif' =
+                p.type.split(/\//)[1];
+              const title = userId + 'dynamic' + uuid.v4();
+              uploadImg({title, imageType: 'DEFAULT', imageExt})
+                .then(e => {
+                  console.log(e);
+                  
+                })
+                .catch(e => {
+                  console.log(e);
+                });
+            });
+          }}>
+          <Text style={styles.submitT}>发布</Text>
+        </Button>
+      </View>
       <ScrollView style={{marginTop: 5}}>
         <View style={styles.pics}>
           {pics.map(p => {
             return (
               <View key={p.uri} style={styles.picC}>
-                <Button style={styles.picBtn} onPress={() =>{
-                  const nowPics=pics.filter(a=>{return a.uri!==p.uri})
-                  setPics([...nowPics])
-                }}>
-                  <Trash size={5}/>
+                <Button
+                  style={styles.picBtn}
+                  onPress={() => {
+                    const nowPics = pics.filter(a => {
+                      return a.uri !== p.uri;
+                    });
+                    setPics([...nowPics]);
+                  }}>
+                  <Trash size={5} />
                 </Button>
                 <Image style={styles.myPics} source={{uri: p.uri}} />
               </View>
@@ -52,7 +82,7 @@ export default function DynamicCrate() {
             <Text style={styles.picT}>上传图片&nbsp;</Text>
           </Button>
         </View>
-        <View style={{width: 20, height: 320}} />
+        <View style={{width: 20, height: 400}} />
       </ScrollView>
     </View>
   );
@@ -90,14 +120,23 @@ const styles = StyleSheet.create({
   picBtn: {
     position: 'absolute',
     backgroundColor: '#4d4d4dd6',
-    width:30,
-    height:30,
-    zIndex:99,
-    top:2,
-    right:0
+    width: 30,
+    height: 30,
+    zIndex: 99,
+    top: 2,
+    right: 0,
   },
   picC: {
     marginRight: 20,
     marginBottom: 20,
+  },
+  submitBtn: {
+    width: 80,
+    height: 40,
+    marginTop: 5,
+  },
+  submitT: {
+    color: 'white',
+    fontSize: 20,
   },
 });

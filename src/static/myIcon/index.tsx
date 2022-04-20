@@ -1281,19 +1281,92 @@ export const Pic = (props: IconProps) => {
           width="17.2"
           height="14.1"
           rx="0.6"
-          stroke={color||"white"}
+          stroke={color || 'white'}
           stroke-width="2"
           mask="url(#path-1-inside-1_764_4592)"
         />
         <Path
           d="M4.84265 13.575L8.35005 7.5L11.8575 13.575H4.84265Z"
-          stroke={color||"white"}
+          stroke={color || 'white'}
         />
         <Path
           d="M12.3936 13.6L11.2225 11.5L12.1 9.92654L14.1486 13.6H12.3936Z"
-          stroke={color||"white"}
+          stroke={color || 'white'}
         />
-        <Circle cx="3.7001" cy="3.20001" r="1.6" fill={color||"white"} />
+        <Circle cx="3.7001" cy="3.20001" r="1.6" fill={color || 'white'} />
+      </>,
+    ],
+  });
+  return <CustomIcon size={size} opacity={opacity} />;
+};
+
+export const FreePause = (props: IconProps) => {
+  const {opacity, size, color} = props;
+  const CustomIcon = createIcon({
+    viewBox: '0 0 19 16',
+    path: [
+      <>
+        <Path
+          d="M10.3501 7.98578C11.1501 8.44766 11.1501 9.60236 10.3501 10.0642L6.56265 12.251C5.76265 12.7128 4.76265 12.1355 4.76265 11.2117L4.76265 6.83829C4.76265 5.91453 5.76265 5.33718 6.56265 5.79906L10.3501 7.98578Z"
+          fill={color || 'white'}
+        />
+        <Path
+          d="M12.7642 14.9632L10.7801 15.4046C10.341 15.2973 9.97647 15.1756 9.61805 15.0558C9.45368 15.0009 9.29059 14.9464 9.12217 14.8939C8.5742 14.7232 8.00795 14.5885 7.26341 14.58C6.48117 14.5711 5.88468 14.706 5.30706 14.8809C5.12953 14.9346 4.95757 14.9908 4.78425 15.0473C4.40536 15.171 4.01998 15.2968 3.55584 15.4046L1.73584 14.9784C0.894732 14.7814 0.3 14.0313 0.3 13.1674V5.88C0.3 4.85275 1.13275 4.02 2.16 4.02H12.36C13.3872 4.02 14.22 4.85275 14.22 5.88V13.1477C14.22 14.0194 13.615 14.774 12.7642 14.9632Z"
+          stroke={color || 'white'}
+          stroke-width="0.6"
+        />
+        <Path
+          d="M15.6489 7.488L17.881 6.52544C18.0791 6.44004 18.2998 6.58525 18.2998 6.80092V11.478C18.2998 11.7045 18.0584 11.8493 17.8585 11.7426L15.6264 10.5509C15.5287 10.4987 15.4677 10.397 15.4677 10.2862V7.76348C15.4677 7.64371 15.539 7.53542 15.6489 7.488Z"
+          fill={color || 'white'}
+          stroke={color || 'white'}
+          stroke-width="0.6"
+        />
+        <Circle
+          cx="9.90004"
+          cy="1.86"
+          r="1.56"
+          stroke={color || 'white'}
+          stroke-width="0.6"
+        />
+        <Circle
+          cx="4.14003"
+          cy="1.86"
+          r="1.56"
+          stroke={color || 'white'}
+          stroke-width="0.6"
+        />
+        <Circle cx="4.59764" cy="2.09251" r="0.4575" fill={color || 'white'} />
+        <Circle cx="10.3574" cy="2.09251" r="0.4575" fill={color || 'white'} />
+      </>,
+    ],
+  });
+  return <CustomIcon size={size} opacity={opacity} />;
+};
+
+export const Upload = (props: IconProps) => {
+  const {opacity, size, color} = props;
+  const CustomIcon = createIcon({
+    viewBox: '0 0 19 20',
+    path: [
+      <>
+        <Rect
+          x="12.3"
+          y="14.1"
+          width="5.2"
+          height="9"
+          rx="0.6"
+          transform="rotate(180 12.3 14.1)"
+          fill={color||"white"}
+        />
+        <Path
+          d="M9.95401 0.189215C9.83894 0.0824907 9.66106 0.0824904 9.54599 0.189214L3.59891 5.70504C3.39894 5.89052 3.53018 6.225 3.80292 6.225L15.6971 6.225C15.9698 6.225 16.1011 5.89052 15.9011 5.70504L9.95401 0.189215Z"
+          fill={color||"white"}
+        />
+        <Path
+          d="M4.35 8.20001H1.9C1.40294 8.20001 1 8.60296 1 9.10001V18.7C1 19.1971 1.40294 19.6 1.9 19.6H17.6C18.0971 19.6 18.5 19.1971 18.5 18.7V9.10001C18.5 8.60296 18.0971 8.20001 17.6 8.20001H15.15"
+          stroke={color||"white"}
+          stroke-width="0.7"
+        />
       </>,
     ],
   });

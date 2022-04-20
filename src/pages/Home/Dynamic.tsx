@@ -13,10 +13,12 @@ import DynamicCard, {basicDynamic} from '../../components/DynamicCard';
 import {getDynamicList} from '../../api';
 import DynamicCrate from './DynamicCreate';
 import {ArrowBackIcon} from 'native-base';
+import {useAppSelector} from '../../store/hooks';
 
 export default function Dynamic() {
   const [dynamic, setDynamic] = useState<Array<basicDynamic>>([]);
   const [isEdit, setIsEdit] = useState(false);
+  const user = useAppSelector(s => s.user);
 
   /* 
     动画
@@ -64,7 +66,7 @@ export default function Dynamic() {
         setDynamic(e.data.data);
       })
       .catch(e => {
-        console.log('dynamic Error',e);
+        console.log('dynamic Error', e);
       });
   }, []);
 
@@ -86,11 +88,11 @@ export default function Dynamic() {
             underlayColor="transparent"
             style={{width: 30}}
             onPress={() => {
-              setIsEdit(false)
+              setIsEdit(false);
             }}>
-            <ArrowBackIcon style={{color:'white'}}/>
+            <ArrowBackIcon style={{color: 'white'}} />
           </TouchableHighlight>
-          <DynamicCrate />
+          <DynamicCrate userId={user.userId||''}/>
         </View>
       </Animated.View>
       <ScrollView style={styles.scrollView}>
@@ -105,15 +107,17 @@ export default function Dynamic() {
         <View style={styles.space} />
       </ScrollView>
 
-      <Animated.View style={{opacity: fade}}>
-        <Button
-          style={styles.addBtn}
-          onPress={() => {
-            setIsEdit(true);
-          }}>
-          <Add size={12} />
-        </Button>
-      </Animated.View>
+      {user.userId!=='' && (
+        <Animated.View style={{opacity: fade}}>
+          <Button
+            style={styles.addBtn}
+            onPress={() => {
+              setIsEdit(true);
+            }}>
+            <Add size={12} />
+          </Button>
+        </Animated.View>
+      )}
     </View>
   );
 }

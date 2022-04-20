@@ -36,7 +36,7 @@ export default function VideoCardB(props: VideoProps) {
       .catch(e => {
         console.log("videoCardB Error",e);
       });
-  });
+  },[]);
 
   const navigation = useNavigate();
   const location = useLocation();
