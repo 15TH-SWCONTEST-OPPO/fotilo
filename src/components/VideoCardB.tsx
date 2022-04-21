@@ -7,7 +7,7 @@ import Button from './Button';
 import {Comment, Like, Share} from '../static/myIcon';
 import {useLocation, useNavigate} from 'react-router-native';
 import {emptyUser} from '../config/user';
-import { useAppSelector } from '../store/hooks';
+import {useAppSelector} from '../store/hooks';
 
 interface VideoProps extends videoType {}
 
@@ -25,18 +25,19 @@ export default function VideoCardB(props: VideoProps) {
     comment,
   } = props;
 
-  const {userId:meid}=useAppSelector(s=>s.user)
+  const {userId: meid} = useAppSelector(s => s.user);
 
   const [user, setUser] = useState(emptyUser);
   useEffect(() => {
-    getUser(meid===userId,userId, 'GETNUM')
-      .then(e => {
-        setUser({...(e.data.data as any)});
-      })
-      .catch(e => {
-        console.log("videoCardB Error",e);
-      });
-  },[]);
+    userId &&
+      getUser(meid === userId, userId, 'GETNUM')
+        .then(e => {
+          setUser({...(e.data.data as any)});
+        })
+        .catch(e => {
+          console.log('videoCardB Error', e);
+        });
+  }, []);
 
   const navigation = useNavigate();
   const location = useLocation();
@@ -66,7 +67,7 @@ export default function VideoCardB(props: VideoProps) {
               state: {...user, username: user.username, avatar: user.avatar},
             });
           }}>
-          <Image style={[styles.avatar]} source={{uri: user.avatar}} />
+          <Image style={[styles.avatar]} source={user.avatar?{uri: user.avatar}:require('../static/img/videoCover2.jpg')} />
           <Text style={[styles.username]}>&nbsp;{user.username}&nbsp;</Text>
         </Button>
         <View>

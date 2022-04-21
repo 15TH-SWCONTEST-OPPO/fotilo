@@ -71,6 +71,7 @@ public class AliyunVodFileUploadModule extends ReactContextBaseJavaModule {
                 //OSSLog.logInfo("[VodUpload] onProgress" + info.getFilePath() + " " + uploadedSize + " " + totalSize);
 
                 WritableMap params = Arguments.createMap();
+                params.putString("videoId", videoId);
                 params.putDouble("uploadedSize", uploadedSize);
                 params.putDouble("totalSize", totalSize);
                 params.putDouble("progress", (float) uploadedSize / totalSize);

@@ -50,10 +50,6 @@ export const getVideo = (videoId: string) => {
   return axios.get(`${env}/video/getVideoInfo`, {params: {videoId}});
 };
 
-export const comment = (videoId: string) => {
-  return axios.get(`${env}/video/getVideoInfo`, {params: {videoId}});
-};
-
 export const getDynamicList = (recommendNum: number) => {
   return axios.get(`${env}/dynamic/recommendList`, {params: {recommendNum}});
 };
@@ -84,3 +80,7 @@ export const uploadImg= (props:{
   return axios.post(`${env}/image/upload/auth`,{...props,tags:strTags,action:'CreateUploadImage'})
    
 } 
+
+export const uploadAvatar=(props:{userId:string,imageId:string})=>{
+  return axios.post(`${env}/user/avatar/upload`,{...props})
+}

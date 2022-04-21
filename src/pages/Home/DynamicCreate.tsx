@@ -1,5 +1,5 @@
 import {View, Text, StyleSheet, Image, ScrollView} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {TextArea} from 'native-base';
 import Button from '../../components/Button';
 import {Pic, Trash} from '../../static/myIcon';
@@ -19,6 +19,18 @@ export default function DynamicCrate(props: {userId: string}) {
 
   const {pics: nowpics} = useAppSelector(s => s.imgDrawer);
 
+  const nowNum = useRef(0);
+  const data = useRef<
+    {
+      videoId: string;
+      uploadAuth: string;
+      uploadAddress: string;
+      path: string;
+      type: string;
+      title: string;
+    }[]
+  >([]);
+
   useEffect(() => {
     dispatch(setType('photo'));
   }, []);
@@ -31,7 +43,32 @@ export default function DynamicCrate(props: {userId: string}) {
     AliyunVodFileUploadEmitter.addListener(
       'OnUploadProgress',
       (result: any) => {
-        console.log('[progress]', Math.floor(result.progress * 100) + '%');
+        console.log(Math.floor(result.progress*100)+'%');
+        
+        if (result.progress === 1) {
+          nowNum.current += 1;
+          if (nowNum.current < data.current.length) {
+            AliyunVodFileUpload.init(
+              {
+                videoId: data.current[nowNum.current].videoId,
+                uploadAuth: data.current[nowNum.current].uploadAuth,
+                uploadAddress: data.current[nowNum.current].uploadAddress,
+              },
+              res => {
+                console.log(res);
+              },
+            );
+            AliyunVodFileUpload.addFile({
+              path: data.current[nowNum.current].path,
+              type: data.current[nowNum.current].type,
+              title: data.current[nowNum.current].title,
+              desc: '',
+              tags: '',
+              cateId: 1,
+            });
+            AliyunVodFileUpload.start();
+          }
+        }
       },
     );
     AliyunVodFileUploadEmitter.addListener('onUploadSucceed', (result: any) => {
@@ -51,31 +88,41 @@ export default function DynamicCrate(props: {userId: string}) {
         <Button
           style={styles.submitBtn}
           onPress={() => {
-            pics.map(p => {
+            pics.map((p, index) => {
               const title = userId + 'dynamic' + uuid.v4();
               const imageExt: 'png' | 'jpg' | 'jpeg' | 'gif' =
                 p.type.split(/\//)[1];
               uploadImg({title, imageType: 'DEFAULT', imageExt})
                 .then(e => {
-                  AliyunVodFileUpload.init(
-                    {
-                      videoId: e.data.data.imageId,
-                      uploadAuth: e.data.data.uploadAuth,
-                      uploadAddress: e.data.data.uploadAddress,
-                    },
-                    res => {
-                      console.log(res);
-                    },
-                  );
-                  AliyunVodFileUpload.addFile({
+                  data.current.push({
+                    videoId: e.data.data.imageId,
+                    uploadAuth: e.data.data.uploadAuth,
+                    uploadAddress: e.data.data.uploadAddress,
                     path: p.uri.split(/^file:\/\//)[1],
                     type: p.type,
                     title,
-                    desc: '',
-                    tags: '',
-                    cateId: 1,
                   });
-                  AliyunVodFileUpload.start();
+                  if (index === pics.length - 1) {
+                    AliyunVodFileUpload.init(
+                      {
+                        videoId: data.current[0].videoId,
+                        uploadAuth: data.current[0].uploadAuth,
+                        uploadAddress: data.current[0].uploadAddress,
+                      },
+                      res => {
+                        console.log(res);
+                      },
+                    );
+                    AliyunVodFileUpload.addFile({
+                      path: data.current[0].path,
+                      type: data.current[0].type,
+                      title: data.current[0].title,
+                      desc: '',
+                      tags: '',
+                      cateId: 1,
+                    });
+                    AliyunVodFileUpload.start();
+                  }
                 })
                 .catch(e => {
                   console.log(e);

@@ -79,8 +79,8 @@ export default function Upload() {
       <Button
         style={styles.btn}
         onPress={() => {
-          launchCamera({mediaType: img.type}, e => {
-            requestCameraPermission().then(() => {
+          requestCameraPermission().then(() => {
+            launchCamera({mediaType: img.type}, e => {
               if (e.assets) {
                 dispatch(set(false));
                 dispatch(setImg(e.assets));

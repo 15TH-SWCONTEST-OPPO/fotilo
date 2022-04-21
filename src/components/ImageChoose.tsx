@@ -8,15 +8,20 @@ import {
   PermissionsAndroid,
   TouchableHighlight,
 } from 'react-native';
-import React, {useEffect} from 'react';
+import React, {useEffect, useRef} from 'react';
 
 import {useAppSelector, useAppDispatch} from '../store/hooks';
-import {set, setResFile} from '../store/features/imgCSlice';
+import {set} from '../store/features/imgCSlice';
 import {set as setUser} from '../store/features/userSlice';
 import Button from './Button';
 import StatusSpace from './StatusBarSpace';
 import {ArrowBackIcon} from 'native-base';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import {uploadAvatar, uploadImg} from '../api';
+import {
+  AliyunVodFileUpload,
+  AliyunVodFileUploadEmitter,
+} from '../utils/aliyun-vod-payload';
 
 interface ImageChooseProps extends ViewProps {}
 
@@ -50,9 +55,34 @@ const requestCameraPermission = async () => {
 export default function ImageChoose(props: ImageChooseProps) {
   const {style} = props;
 
+  const imageId = useRef('');
   const {show, iniPic, scale} = useAppSelector(store => store.imgC);
+  const user = useAppSelector(s => s.user);
+  const {userId} = user;
 
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    AliyunVodFileUploadEmitter.addListener(
+      'OnUploadProgress',
+      (result: any) => {
+        console.log(result.progress);
+
+        if (result.progress === 1) {
+          setTimeout(() => {
+            uploadAvatar({userId: userId || '', imageId: imageId.current})
+              .then(e => {
+                console.log(e);
+                dispatch(setUser({...user, avatar: e.data.data.avatar}));
+              })
+              .catch(e => {
+                console.log(e);
+              });
+          }, 3000);
+        }
+      },
+    );
+  }, []);
 
   return (
     <View style={[styles.container, style, {display: show ? 'flex' : 'none'}]}>
@@ -77,21 +107,79 @@ export default function ImageChoose(props: ImageChooseProps) {
           onPress={() => {
             launchImageLibrary({mediaType: 'photo'}, e => {
               if (e.assets) {
-                  dispatch(set({show: false}))
-                  dispatch(setUser({avatar: e.assets[0].uri}));
-                }
-              });
-            }}>
+                dispatch(set({show: false}));
+                dispatch(setUser({avatar: e.assets[0].uri}));
+                const title = userId + '-avatar';
+                const imageExt: 'png' | 'jpg' | 'jpeg' | 'gif' =
+                  e.assets[0].type!.split(/\//)[1] as any;
+                uploadImg({
+                  title,
+                  imageType: 'DEFAULT',
+                  imageExt,
+                }).then(res => {
+                  imageId.current = res.data.data.imageId;
+                  AliyunVodFileUpload.init(
+                    {
+                      videoId: res.data.data.imageId,
+                      uploadAuth: res.data.data.uploadAuth,
+                      uploadAddress: res.data.data.uploadAddress,
+                    },
+                    res => {
+                      console.log(res);
+                    },
+                  );
+                  AliyunVodFileUpload.addFile({
+                    path: e.assets![0].uri!.split(/^file:\/\//)[1],
+                    type: e.assets![0].type || '',
+                    title,
+                    desc: '',
+                    tags: '',
+                    cateId: 1,
+                  });
+                  AliyunVodFileUpload.start();
+                });
+              }
+            });
+          }}>
           <Text style={[styles.btnT]}>从相册选择图片</Text>
         </Button>
         <Button
           style={{...styles.btn}}
           onPress={() => {
-            launchCamera({mediaType: 'photo', saveToPhotos: true}, e => {
-              requestCameraPermission().then(() => {
+            requestCameraPermission().then(() => {
+              launchCamera({mediaType: 'photo', saveToPhotos: true}, e => {
                 if (e.assets) {
-                  dispatch(set({show: false}))
+                  dispatch(set({show: false}));
                   dispatch(setUser({avatar: e.assets[0].uri}));
+                  const title = userId + '-avatar';
+                  const imageExt: 'png' | 'jpg' | 'jpeg' | 'gif' =
+                    e.assets[0].type!.split(/\//)[1] as any;
+                  uploadImg({
+                    title,
+                    imageType: 'DEFAULT',
+                    imageExt,
+                  }).then(res => {
+                    imageId.current = res.data.data.imageId;
+                    AliyunVodFileUpload.init(
+                      {
+                        videoId: res.data.data.imageId,
+                        uploadAuth: res.data.data.uploadAuth,
+                        uploadAddress: res.data.data.uploadAddress,
+                      },
+                      res => {
+                        console.log(res);
+                      },
+                    );
+                    AliyunVodFileUpload.addFile({
+                      path: e.assets![0].uri!.split(/^file:\/\//)[1],
+                      type: e.assets![0].type || '',
+                      title,
+                      desc: '',
+                      tags: '',
+                      cateId: 1,
+                    });
+                    AliyunVodFileUpload.start();
+                  });
                 }
               });
             });
