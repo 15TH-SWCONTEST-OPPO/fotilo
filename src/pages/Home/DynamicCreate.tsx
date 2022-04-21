@@ -144,6 +144,7 @@ export default function DynamicCrate(props: {userId: string}) {
                       return a.uri !== p.uri;
                     });
                     setPics([...nowPics]);
+                    
                   }}>
                   <Trash size={5} />
                 </Button>

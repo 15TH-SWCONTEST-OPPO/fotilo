@@ -8,8 +8,12 @@ import getLoc from '../../utils/getLoc';
 import ImageChoose from '../../components/ImageChoose';
 import {useAppSelector} from '../../store/hooks';
 import Upload from '../../components/Upload';
+import ShowImg from '../../components/ShowImg';
 
 export default function Home() {
+
+  const {show}=useAppSelector(s=>s.imgChoose)
+
   /* 
     上边栏切入
   */
@@ -41,6 +45,7 @@ export default function Home() {
     <View style={styles.container}>
       <StatusBarSpace />
       <ImageChoose/>
+      {show&&<ShowImg />}
       <Animated.View style={[{overflow: 'hidden'}, {height: cutAnim}]}>
         <TopBar />
       </Animated.View>

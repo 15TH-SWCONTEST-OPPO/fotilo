@@ -181,7 +181,16 @@ export default function VideoPlayer(props: VideoPlayerProps) {
 
   const panResponder = useRef(
     PanResponder.create({
-      onMoveShouldSetPanResponder: () => true,
+      onStartShouldSetPanResponder: (event, b) => {
+        return true;
+      },
+      onMoveShouldSetPanResponder: (a,b) => {
+        if((Math.abs(b.dx) > 5) || (Math.abs(b.dy) > 5)){
+          return true
+        }else{
+          return false
+        }
+      },
       onPanResponderGrant: () => {
         setDrag(true);
       },
@@ -222,7 +231,8 @@ export default function VideoPlayer(props: VideoPlayerProps) {
           width: full ? windowHeight - statusH : size.width,
         },
       ]}
-      {...panResponder.panHandlers}>
+      {...panResponder.panHandlers}
+      >
       
       {/* 
           滚动判断

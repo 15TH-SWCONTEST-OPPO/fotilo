@@ -67,7 +67,7 @@ export default function VideoCardB(props: VideoProps) {
               state: {...user, username: user.username, avatar: user.avatar},
             });
           }}>
-          <Image style={[styles.avatar]} source={user.avatar?{uri: user.avatar}:require('../static/img/videoCover2.jpg')} />
+          <Image style={[styles.avatar]} source={user.avatar?{uri: user.avatar}:require('../static/img/defaultAvatar.png')} />
           <Text style={[styles.username]}>&nbsp;{user.username}&nbsp;</Text>
         </Button>
         <View>

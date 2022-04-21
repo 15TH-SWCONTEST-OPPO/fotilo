@@ -45,7 +45,13 @@ export default function Video() {
 
         return true;
       },
-      onMoveShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: (a,b) => {
+        if (Math.abs(b.dx) > 5 || Math.abs(b.dy) > 5) {
+          return true;
+        } else {
+          return false;
+        }
+      },
       onPanResponderGrant: a => {},
       onPanResponderMove: (a, b) => {
         if (b.numberActiveTouches === 1) {
@@ -180,17 +186,12 @@ export default function Video() {
           </Button>
         </View>
       )}
-      {
-        !hidden.current&&
+      {!hidden.current && (
         <View style={styles.detail}>
-          <Text style={styles.detailT}>
-            {video.title}
-          </Text>
-          <Text style={styles.detailT}>
-          {video.description }
-          </Text>
+          <Text style={styles.detailT}>{video.title}</Text>
+          <Text style={styles.detailT}>{video.description}</Text>
         </View>
-      }
+      )}
       {pause && (
         <View
           style={{
@@ -297,7 +298,7 @@ const styles = StyleSheet.create({
     zIndex: 99,
     alignItems: 'center',
     justifyContent: 'space-between',
-    height:300,
+    height: 300,
   },
   avatar: {
     width: 50,
@@ -310,16 +311,17 @@ const styles = StyleSheet.create({
   rightT: {
     color: 'white',
   },
-  detail:{
-    width:200,
-    height:200,
+  detail: {
+    width: 200,
+    height: 200,
     backgroundColor: '#00000050',
     position: 'absolute',
-    bottom:0,
-    left:0,
+    bottom: 0,
+    left: 0,
     zIndex: 99,
-    borderTopRightRadius:5
-  },detailT:{
-    color:'white'
-  }
+    borderTopRightRadius: 5,
+  },
+  detailT: {
+    color: 'white',
+  },
 });

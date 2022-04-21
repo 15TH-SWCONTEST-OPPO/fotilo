@@ -62,7 +62,7 @@ export default function Dynamic() {
   });
 
   useEffect(() => {
-    getDynamicList(5)
+    getDynamicList(3)
       .then(e => {
         setDynamic(e.data.data);
       })

@@ -17,7 +17,7 @@ import Button from './Button';
 import StatusSpace from './StatusBarSpace';
 import {ArrowBackIcon} from 'native-base';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import {uploadAvatar, uploadImg} from '../api';
+import {finishUpload, uploadAvatar, uploadImg} from '../api';
 import {
   AliyunVodFileUpload,
   AliyunVodFileUploadEmitter,
@@ -66,10 +66,8 @@ export default function ImageChoose(props: ImageChooseProps) {
     AliyunVodFileUploadEmitter.addListener(
       'OnUploadProgress',
       (result: any) => {
-        console.log(result.progress);
-
         if (result.progress === 1) {
-          setTimeout(() => {
+          finishUpload(imageId.current).then(()=>{
             uploadAvatar({userId: userId || '', imageId: imageId.current})
               .then(e => {
                 console.log(e);
@@ -78,7 +76,7 @@ export default function ImageChoose(props: ImageChooseProps) {
               .catch(e => {
                 console.log(e);
               });
-          }, 3000);
+          })
         }
       },
     );

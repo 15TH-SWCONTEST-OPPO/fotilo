@@ -80,6 +80,12 @@ export const uploadImg= (props:{
   return axios.post(`${env}/image/upload/auth`,{...props,tags:strTags,action:'CreateUploadImage'})
    
 } 
+export const finishUpload= (
+  imageId:string,
+)=>{
+  return axios.post(`${env}/image/upload/complete`,{imageId})
+   
+} 
 
 export const uploadAvatar=(props:{userId:string,imageId:string})=>{
   return axios.post(`${env}/user/avatar/upload`,{...props})

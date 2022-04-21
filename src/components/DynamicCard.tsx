@@ -7,6 +7,9 @@ import {useNavigate} from 'react-router-native';
 import {Comment, Like, Share, Star} from '../static/myIcon';
 import VideoMid from './VideoMid';
 import {videoType} from '../static/types';
+import uuid from 'uuid';
+import {useAppDispatch} from '../store/hooks'
+import {setShow,setImgs,setIndex} from '../store/features/imgChooseSlice';
 
 export type basicDynamic = {
   userId: string;
@@ -18,8 +21,11 @@ export type basicDynamic = {
 };
 export default function DynamicCard(props: basicDynamic) {
   const {userId, content, likes, comments, videoInfo, images} = props;
-  
+
   const [auth, setAuth] = useState(emptyUser);
+  const [width, setWidth] = useState(0);
+
+  const dispatch = useAppDispatch();
   const navigation = useNavigate();
   useEffect(() => {
     getUser(false, userId)
@@ -27,7 +33,7 @@ export default function DynamicCard(props: basicDynamic) {
         setAuth(user.data.data);
       })
       .catch(e => {
-        console.log('dynamicCreate Error',e);
+        console.log('dynamicCreate Error', e);
       });
   }, []);
 
@@ -51,10 +57,71 @@ export default function DynamicCard(props: basicDynamic) {
         </Text>
       </Button>
       <View style={{width: 10, height: 2}} />
-      <Text style={styles.detail}>{content || '真好啊'}</Text>
+      <Text style={styles.detail}>{content}</Text>
 
-      <View style={{width: '100%',marginBottom:20}}>
-        {videoInfo && <VideoMid video={videoInfo} userId={userId} />}
+      <View
+        onLayout={e => {
+          images.length > 0 &&
+            setWidth(
+              e.nativeEvent.layout.width *
+                (Math.ceil((images.length >= 9 ? 9 : images.length) / 3) / 3),
+            );
+        }}
+        style={[
+          {
+            width: '100%',
+            marginBottom: 20,
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+          },
+          width != 0 && {height: width},
+        ]}>
+        {images.length > 0
+          ? images.map((i, index) => {
+              if (index > 8) return;
+              return (
+                <Button
+                  key={uuid.v4()}
+                  style={{
+                    height:
+                      (4 -
+                        Math.ceil(
+                          (images.length >= 9 ? 9 : images.length) / 3,
+                        )) *
+                        33 +
+                      '%',
+                    width: '33%',
+                    backgroundColor: 'transparent',
+                  }}
+                  onPress={() => {
+                    dispatch(setIndex(index))
+                    dispatch(setImgs(images));
+                    dispatch(setShow(true));
+                  }}>
+                  {index === 8 && (
+                    <View
+                      style={{
+                        position: 'absolute',
+                        backgroundColor: '#000000c0',
+                        width: '100%',
+                        height: '100%',
+                        zIndex: 99,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}>
+                      <Text style={{color: 'white', fontSize: 40}}>
+                        +{images.length - 9}
+                      </Text>
+                    </View>
+                  )}
+                  <Image
+                    style={[{height: '100%', width: '100%'}]}
+                    source={{uri: i}}
+                  />
+                </Button>
+              );
+            })
+          : videoInfo && <VideoMid video={videoInfo} userId={userId} />}
       </View>
 
       <View style={styles.three}>
@@ -106,5 +173,8 @@ const styles = StyleSheet.create({
   },
   threeT: {
     color: 'white',
+  },
+  images: {
+    width: '33%',
   },
 });
