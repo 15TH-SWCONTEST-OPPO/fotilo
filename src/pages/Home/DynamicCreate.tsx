@@ -2,22 +2,29 @@ import {View, Text, StyleSheet, Image, ScrollView} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {TextArea} from 'native-base';
 import Button from '../../components/Button';
-import {Pic, Trash} from '../../static/myIcon';
+import {Loading, Pic, Trash} from '../../static/myIcon';
 import {set, setType} from '../../store/features/imgDrawerSlice';
 import {useAppDispatch, useAppSelector} from '../../store/hooks';
 import uuid from 'uuid';
-import {uploadImg} from '../../api';
+import {finishUpload, setDynamic, uploadImg} from '../../api';
 import {
   AliyunVodFileUpload,
   AliyunVodFileUploadEmitter,
 } from '../../utils/aliyun-vod-payload';
 
-export default function DynamicCrate(props: {userId: string}) {
+export default function DynamicCrate(props: {
+  userId: string;
+  setIsEdit: (props: boolean) => void;
+  isEdit: boolean;
+}) {
   const dispatch = useAppDispatch();
   const [pics, setPics] = useState<any[]>([]);
-  const {userId} = props;
+  const [shouldEmpty, setShouldEmpty] = useState(false);
+  const {userId, setIsEdit, isEdit} = props;
 
   const {pics: nowpics} = useAppSelector(s => s.imgDrawer);
+
+  const [updating, setUpdating] = useState(false);
 
   const nowNum = useRef(0);
   const data = useRef<
@@ -32,6 +39,14 @@ export default function DynamicCrate(props: {userId: string}) {
   >([]);
 
   useEffect(() => {
+    setShouldEmpty(false);
+    setUpdating(false);
+    setPics([]);
+    nowNum.current = 0;
+    data.current = [];
+  }, [isEdit]);
+
+  useEffect(() => {
     dispatch(setType('photo'));
   }, []);
 
@@ -39,13 +54,20 @@ export default function DynamicCrate(props: {userId: string}) {
     setPics([...pics, ...nowpics]);
   }, [nowpics]);
 
+  const content = useRef('');
+
   useEffect(() => {
     AliyunVodFileUploadEmitter.addListener(
       'OnUploadProgress',
       (result: any) => {
-        console.log(Math.floor(result.progress*100)+'%');
-        
+        console.log(Math.floor(result.progress * 100) + '%');
+
         if (result.progress === 1) {
+          finishUpload(data.current[nowNum.current].videoId)
+            .then(e => {})
+            .catch(e => {
+              console.log('dynamicCreate compete', e);
+            });
           nowNum.current += 1;
           if (nowNum.current < data.current.length) {
             AliyunVodFileUpload.init(
@@ -67,6 +89,25 @@ export default function DynamicCrate(props: {userId: string}) {
               cateId: 1,
             });
             AliyunVodFileUpload.start();
+          } else {
+            setDynamic({
+              content: content.current,
+              images: data.current.map(d => {
+                return d.videoId;
+              }),
+            })
+              .then(e => {
+                console.log('setDynamic', e);
+                setUpdating(false);
+                setPics([]);
+                nowNum.current = 0;
+                data.current = [];
+                setShouldEmpty(true);
+                setIsEdit(false);
+              })
+              .catch(e => {
+                console.log('setDynamic', e);
+              });
           }
         }
       },
@@ -83,11 +124,34 @@ export default function DynamicCrate(props: {userId: string}) {
         fontSize={20}
         maxH={200}
         color="white"
+        value={shouldEmpty ? '' : undefined}
+        onChangeText={e => {
+          content.current = e;
+        }}
       />
+
+      {updating && (
+        <View
+          style={{
+            position: 'absolute',
+            top: '30%',
+            left: '40%',
+            zIndex: 99,
+            backgroundColor: '#000000a0',
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderRadius: 5,
+            padding: 6,
+          }}>
+          <Loading size={20} />
+          <Text style={{color: 'white'}}>上传中...</Text>
+        </View>
+      )}
       <View style={{width: '100%', alignItems: 'flex-end'}}>
         <Button
           style={styles.submitBtn}
           onPress={() => {
+            setUpdating(true);
             pics.map((p, index) => {
               const title = userId + 'dynamic' + uuid.v4();
               const imageExt: 'png' | 'jpg' | 'jpeg' | 'gif' =
@@ -144,7 +208,6 @@ export default function DynamicCrate(props: {userId: string}) {
                       return a.uri !== p.uri;
                     });
                     setPics([...nowPics]);
-                    
                   }}>
                   <Trash size={5} />
                 </Button>

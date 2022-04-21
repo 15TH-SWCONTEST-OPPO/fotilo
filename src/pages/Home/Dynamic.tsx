@@ -62,7 +62,7 @@ export default function Dynamic() {
   });
 
   useEffect(() => {
-    getDynamicList(3)
+    getDynamicList(3,user.userId)
       .then(e => {
         setDynamic(e.data.data);
       })
@@ -93,7 +93,7 @@ export default function Dynamic() {
             }}>
             <ArrowBackIcon style={{color: 'white'}} />
           </TouchableHighlight>
-          <DynamicCrate userId={user.userId||''}/>
+          <DynamicCrate isEdit={isEdit} setIsEdit={setIsEdit} userId={user.userId||''}/>
         </View>
       </Animated.View>
       <ScrollView style={styles.scrollView}>
