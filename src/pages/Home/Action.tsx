@@ -1,7 +1,7 @@
 import {View, Text, StyleSheet, PermissionsAndroid} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import Button from '../../components/Button';
-import {Pic, Upload} from '../../static/myIcon';
+import {Loading, Pic, Upload} from '../../static/myIcon';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {useAppSelector} from '../../store/hooks';
 import {
@@ -13,6 +13,7 @@ import uuid from 'uuid';
 import Input from '../../components/Input';
 import {TextArea} from 'native-base';
 import {errorColor} from '../../static/color';
+import { useNavigate } from 'react-router-native';
 
 export default function Action() {
   const [loading, setLoading] = useState(false);
@@ -36,6 +37,8 @@ export default function Action() {
   const description = useRef('');
   const coverFinish = useRef(false);
   const [error, setError] = useState(false);
+
+  const navigation = useNavigate();
 
   useEffect(() => {
     const s = AliyunVodFileUploadEmitter.addListener(
@@ -80,6 +83,8 @@ export default function Action() {
         } else if (result.progress === 1) {
           finishUploadV(video.current.videoId).then(e => {
             console.log('video finish', e);
+            setLoading(false);
+            navigation('/home')
           });
         }
       },
@@ -158,6 +163,26 @@ export default function Action() {
 
   return (
     <View style={{padding: 12, height: '80%', justifyContent: 'space-evenly'}}>
+      {loading && (
+        <View
+          style={{
+            position: 'absolute',
+            top: '60%',
+            left: '36%',
+            backgroundColor: '#000000',
+            zIndex: 999,
+            borderWidth: 1,
+            borderColor: 'white',
+            borderRadius: 5,
+            width: 120,
+            height: 120,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <Loading size={20} />
+          <Text style={{color: 'white', fontSize: 20}}>上传中...</Text>
+        </View>
+      )}
       <TextArea
         color="white"
         style={{flexGrow: 1}}

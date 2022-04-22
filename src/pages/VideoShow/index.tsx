@@ -20,6 +20,7 @@ import uuid from 'uuid';
 import Input from '../../components/Input';
 import {Send} from '../../static/myIcon';
 import {getVideo} from '../../api';
+import Share from '../../components/Share';
 
 const windowWidth = Dimensions.get('screen').width;
 
@@ -47,9 +48,13 @@ export default function VideoShow() {
       });
   }, [videoId]);
 
+  const {show: sshow} = useAppSelector(s => s.share);
+
   return (
     <View style={styles.background}>
       <StatusBarSpace />
+      {sshow && <Share />}
+
       <VideoPlayer
         lastUrl={location}
         videoUrl={videoURL}

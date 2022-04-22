@@ -3,12 +3,15 @@ import React, {useEffect, useRef, useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-native';
 import Button from '../../components/Button';
 import {Like, Share, Star} from '../../static/myIcon';
-import {videos,emptyVideo} from '../../config/video';
+import {videos, emptyVideo} from '../../config/video';
 import VideoCardL from '../../components/VideoCardL';
 import {basicColor} from '../../static/color';
-import { getVideoList } from '../../api';
+import {getVideoList} from '../../api';
+import {useAppDispatch} from '../../store/hooks';
+import {set, setVideoId} from '../../store/features/shareSlice';
 
 export default function VideoLike() {
+  const dispatch = useAppDispatch();
   const {state} = useLocation();
 
   const navigation = useNavigate();
@@ -28,7 +31,6 @@ export default function VideoLike() {
     userId,
   } = state as any;
 
-
   const t = useRef([like || 0, star || 0, share || 0]);
 
   const [three, setThree] = useState<[number, number, number]>([
@@ -37,23 +39,25 @@ export default function VideoLike() {
     t.current[2],
   ]);
   useEffect(() => {
-      t.current = [like || 0, star || 0, share || 0];
-      setThree([like || 0, star || 0, share || 0]);
+    t.current = [like || 0, star || 0, share || 0];
+    setThree([like || 0, star || 0, share || 0]);
   }, [videoId]);
 
-  const [videoList,setVideoList]=useState(emptyVideo)
+  const [videoList, setVideoList] = useState(emptyVideo);
 
   useEffect(() => {
-    getVideoList(6).then((e)=>{
-      setVideoList(e.data.data)
-    })
-  },[videoId])
+    getVideoList(6).then(e => {
+      setVideoList(e.data.data);
+    });
+  }, [videoId]);
 
   return (
     <View style={[styles.container]}>
-      <Button style={styles.userC} onPress={()=>{
-        navigation('/home/user',{state:{userId}})
-      }}>
+      <Button
+        style={styles.userC}
+        onPress={() => {
+          navigation('/home/user', {state: {userId}});
+        }}>
         <Image style={[styles.avatar]} source={{uri: avatar}} />
         <View style={[styles.space]} />
 
@@ -63,7 +67,7 @@ export default function VideoLike() {
             视频数：{videoNum || 0}&nbsp;|&nbsp;获赞数：{likeNum || 0}
           </Text>
         </View>
-      </Button >
+      </Button>
 
       <View style={[styles.detail]}>
         <Text style={[styles.title]}>{title}</Text>
@@ -74,9 +78,16 @@ export default function VideoLike() {
         <Button
           style={styles.threeBtn}
           onPress={() => {
-            setThree([three[0] === t.current[0] ? t.current[0] + 1 : t.current[0], three[1], three[2]]);
+            setThree([
+              three[0] === t.current[0] ? t.current[0] + 1 : t.current[0],
+              three[1],
+              three[2],
+            ]);
           }}>
-          <Like size={6} color={three[0] !== t.current[0] ? basicColor : 'white'} />
+          <Like
+            size={6}
+            color={three[0] !== t.current[0] ? basicColor : 'white'}
+          />
           <Text
             style={[
               styles.threeT,
@@ -89,7 +100,11 @@ export default function VideoLike() {
         <Button
           style={styles.threeBtn}
           onPress={() => {
-            setThree([three[0], three[1] === t.current[1] ? t.current[1] + 1 : t.current[1], three[2]]);
+            setThree([
+              three[0],
+              three[1] === t.current[1] ? t.current[1] + 1 : t.current[1],
+              three[2],
+            ]);
           }}>
           <Star color={three[1] !== t.current[1] ? basicColor : 'white'} />
           <Text
@@ -103,7 +118,8 @@ export default function VideoLike() {
         <Button
           style={styles.threeBtn}
           onPress={() => {
-            setThree([three[0], three[1], three[2] + 1]);
+            dispatch(setVideoId(videoId||''));
+            dispatch(set(true));
           }}>
           <Share />
           <Text style={[styles.threeT]}>{three[2]}&nbsp;</Text>
@@ -127,7 +143,7 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    backgroundColor:'transparent',
+    backgroundColor: 'transparent',
   },
   avatar: {
     width: 60,

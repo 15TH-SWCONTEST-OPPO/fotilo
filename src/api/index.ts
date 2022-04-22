@@ -110,3 +110,7 @@ export const uploadAvatar = (props: {userId: string; imageId: string}) => {
 export const getMyDynamic = (userId: string) => {
   return axios.get(`${env}/dynamic/getUserDynamic`,{params:{userId}})
 };
+
+export const search = (searchKey: string,num:number) => {
+  return axios.get(`${env}/video/search`,{params:{searchKey,num}})
+};
