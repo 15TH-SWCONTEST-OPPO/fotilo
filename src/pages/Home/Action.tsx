@@ -202,7 +202,6 @@ export default function Action() {
       <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
         <Button
           onPress={() => {
-            setLoading(true);
             launchImageLibrary({mediaType: 'photo'}, e => {
               if (e.assets) {
                 image.current.imageExt = e.assets[0].type!.split(

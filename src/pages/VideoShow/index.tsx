@@ -100,7 +100,7 @@ export default function VideoShow() {
               {user.username !== '' ? (
                 <Image
                   source={
-                    user.avatar
+                    user.avatar!==''
                       ? {uri: user.avatar}
                       : require('../../static/img/defaultAvatar.png')
                   }
