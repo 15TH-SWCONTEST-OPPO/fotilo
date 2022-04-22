@@ -145,6 +145,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#3a3838',
     padding: 8,
+    width:'100%'
   },
   authAvatar: {
     width: 60,

@@ -17,9 +17,11 @@ import {set as setMe} from '../../store/features/userSlice';
 import {set} from '../../store/features/imgCSlice';
 import Input from '../../components/Input';
 import {defaultColor} from '../../static/color';
-import {changeInfo, getUser, logout} from '../../api';
+import {changeInfo, getMyDynamic, getUser, logout} from '../../api';
 import {emptyUser} from '../../config/user';
 import {HamburgerIcon} from 'native-base';
+import DynamicCard, { basicDynamic } from '../../components/DynamicCard';
+import uuid from 'uuid';
 
 const AvatarSize = 160;
 
@@ -44,6 +46,7 @@ export default function User() {
   // description 修改
   const [des, setDes] = useState<string>(user.description || '');
   const [cDes, setCDes] = useState<boolean>(false);
+  const[dynamic,setDynamic]=useState<Array<basicDynamic>>([])
   const nowDes = useRef(user.description);
   useEffect(() => {
     getUser(userId === uID, uID, 'BOTH')
@@ -60,7 +63,7 @@ export default function User() {
         );
       })
       .catch(e => {
-        console.log('user Error',e);
+        console.log('user Error', e);
       });
   }, [uID]);
 
@@ -91,8 +94,14 @@ export default function User() {
     }).start();
   };
 
+  useEffect(() => {
+    getMyDynamic(uID).then(e=>{
+      setDynamic(e.data.data)
+    })
+  },[])
+
   return (
-    <>
+    <View style={{height:'100%'}}>
       <ImageBackground
         style={{...styles.background}}
         source={require('../../static/img/Ubackground.png')}
@@ -118,7 +127,7 @@ export default function User() {
                     navigation('/startP');
                   })
                   .catch(e => {
-                    console.log('User logout Error',e);
+                    console.log('User logout Error', e);
                   });
               }}
               style={styles.drawerBtn}>
@@ -214,7 +223,7 @@ export default function User() {
                     console.log(e);
                   })
                   .catch(e => {
-                    console.log('user change error',e);
+                    console.log('user change error', e);
                   });
                 setCDes(false);
               }}
@@ -226,15 +235,33 @@ export default function User() {
             </Text>
           )}
         </Button>
-        <ScrollView>
-          
+        <View>
+
+        <ScrollView style={styles.scrollView}>
+          {dynamic.map(d => {
+            return (
+              <View style={{width:'100%',overflow: 'hidden'}} key={uuid.v4()}>
+                <DynamicCard {...d} />
+                <View style={styles.space} />
+              </View>
+            );
+          })}
+          <View style={styles.space} />
+          <View style={{width:20,height:200}}/>
         </ScrollView>
+          </View>
       </View>
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollView: {
+  },
+  space: {
+    width: 20,
+    height: 30,
+  },
   avatarC: {
     height: AvatarSize,
     width: '100%',
@@ -248,12 +275,12 @@ const styles = StyleSheet.create({
     borderRadius: AvatarSize / 2,
   },
   background: {
-    height: 200 + AvatarSize / 2,
+    height: 100 + AvatarSize / 2,
     width: '100%',
     position: 'absolute',
   },
   backgroundSpace: {
-    height: 200,
+    height: 100,
   },
   avatarAround: {
     alignItems: 'center',

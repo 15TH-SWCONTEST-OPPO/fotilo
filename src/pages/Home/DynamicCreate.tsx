@@ -57,7 +57,7 @@ export default function DynamicCrate(props: {
   const content = useRef('');
 
   useEffect(() => {
-    AliyunVodFileUploadEmitter.addListener(
+    const s=AliyunVodFileUploadEmitter.addListener(
       'OnUploadProgress',
       (result: any) => {
         console.log(Math.floor(result.progress * 100) + '%');
@@ -112,9 +112,9 @@ export default function DynamicCrate(props: {
         }
       },
     );
-    AliyunVodFileUploadEmitter.addListener('onUploadSucceed', (result: any) => {
-      console.log('[succeed]', result);
-    });
+    return ()=>{
+      s.remove()
+    }
   }, []);
 
   return (

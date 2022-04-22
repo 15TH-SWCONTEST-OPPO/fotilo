@@ -360,6 +360,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
               minValue={0}
               maxValue={duration || 1}
               value={progress}
+              
               accessibilityLabel="hello world"
               step={1}>
               <Slider.Track>

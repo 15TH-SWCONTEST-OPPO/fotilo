@@ -22,6 +22,7 @@ import {
   AliyunVodFileUpload,
   AliyunVodFileUploadEmitter,
 } from '../utils/aliyun-vod-payload';
+import { useNavigate } from 'react-router-native';
 
 interface ImageChooseProps extends ViewProps {}
 
@@ -60,18 +61,23 @@ export default function ImageChoose(props: ImageChooseProps) {
   const user = useAppSelector(s => s.user);
   const {userId} = user;
 
+  const navigation=useNavigate()
+
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    AliyunVodFileUploadEmitter.addListener(
+   const s= AliyunVodFileUploadEmitter.addListener(
       'OnUploadProgress',
       (result: any) => {
-        if (result.progress === 1) {
+        if (result.progress === 1&&show) {
           finishUpload(imageId.current).then(()=>{
             uploadAvatar({userId: userId || '', imageId: imageId.current})
               .then(e => {
                 console.log(e);
                 dispatch(setUser({...user, avatar: e.data.data.avatar}));
+                dispatch(set({show: false}));
+                navigation('/startP');
+
               })
               .catch(e => {
                 console.log(e);
@@ -80,6 +86,9 @@ export default function ImageChoose(props: ImageChooseProps) {
         }
       },
     );
+    return ()=>{
+      s.remove()
+    }
   }, []);
 
   return (
@@ -105,11 +114,10 @@ export default function ImageChoose(props: ImageChooseProps) {
           onPress={() => {
             launchImageLibrary({mediaType: 'photo'}, e => {
               if (e.assets) {
-                dispatch(set({show: false}));
-                dispatch(setUser({avatar: e.assets[0].uri}));
                 const title = userId + '-avatar';
                 const imageExt: 'png' | 'jpg' | 'jpeg' | 'gif' =
                   e.assets[0].type!.split(/\//)[1] as any;
+                  dispatch(setUser({avatar: e.assets[0].uri}));
                 uploadImg({
                   title,
                   imageType: 'DEFAULT',

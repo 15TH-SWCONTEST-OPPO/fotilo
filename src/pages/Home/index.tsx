@@ -11,8 +11,7 @@ import Upload from '../../components/Upload';
 import ShowImg from '../../components/ShowImg';
 
 export default function Home() {
-
-  const {show}=useAppSelector(s=>s.imgChoose)
+  const {show} = useAppSelector(s => s.imgChoose);
 
   /* 
     上边栏切入
@@ -35,6 +34,8 @@ export default function Home() {
     }).start();
   };
 
+  const {show: imgC} = useAppSelector(store => store.imgC);
+
   let location = useLocation();
   useEffect(() => {
     const loc = getLoc(location, 2);
@@ -44,8 +45,8 @@ export default function Home() {
   return (
     <View style={styles.container}>
       <StatusBarSpace />
-      <ImageChoose/>
-      {show&&<ShowImg />}
+      {imgC && <ImageChoose />}
+      {show && <ShowImg />}
       <Animated.View style={[{overflow: 'hidden'}, {height: cutAnim}]}>
         <TopBar />
       </Animated.View>

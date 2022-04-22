@@ -14,7 +14,7 @@ import {getDynamicList} from '../../api';
 import DynamicCrate from './DynamicCreate';
 import {ArrowBackIcon} from 'native-base';
 import {useAppSelector} from '../../store/hooks';
-import uuid from 'uuid'
+import uuid from 'uuid';
 
 export default function Dynamic() {
   const [dynamic, setDynamic] = useState<Array<basicDynamic>>([]);
@@ -62,7 +62,7 @@ export default function Dynamic() {
   });
 
   useEffect(() => {
-    getDynamicList(3,user.userId)
+    getDynamicList(12, user.userId)
       .then(e => {
         setDynamic(e.data.data);
       })
@@ -93,7 +93,13 @@ export default function Dynamic() {
             }}>
             <ArrowBackIcon style={{color: 'white'}} />
           </TouchableHighlight>
-          <DynamicCrate isEdit={isEdit} setIsEdit={setIsEdit} userId={user.userId||''}/>
+          {isEdit && (
+            <DynamicCrate
+              isEdit={isEdit}
+              setIsEdit={setIsEdit}
+              userId={user.userId || ''}
+            />
+          )}
         </View>
       </Animated.View>
       <ScrollView style={styles.scrollView}>
@@ -108,7 +114,7 @@ export default function Dynamic() {
         <View style={styles.space} />
       </ScrollView>
 
-      {user.userId!=='' && (
+      {user.userId !== '' && (
         <Animated.View style={{opacity: fade}}>
           <Button
             style={styles.addBtn}

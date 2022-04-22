@@ -50,8 +50,23 @@ export const getVideo = (videoId: string) => {
   return axios.get(`${env}/video/getVideoInfo`, {params: {videoId}});
 };
 
-export const getDynamicList = (recommendNum: number,userId?:string) => {
-  return axios.get(`${env}/dynamic/recommendList`, {params: {recommendNum,userId}});
+export const getDynamicList = (recommendNum: number, userId?: string) => {
+  return axios.get(`${env}/dynamic/recommendList`, {
+    params: {recommendNum, userId},
+  });
+};
+
+export const uploadVideo = (props: {
+  title: string;
+  coverURL?: string;
+  fileName: string;
+  tags?: string;
+  description?: string;
+}) => {
+  return axios.post(`${env}/video/upload/auth`, {
+    ...props,
+    action: 'CreateUploadVideo',
+  });
 };
 
 export const setDynamic = (props: {
@@ -61,30 +76,37 @@ export const setDynamic = (props: {
 }) => {
   return axios.post(`${env}/dynamic/create`, {...props});
 };
+export const finishUploadV = (videoId: string) => {
+  return axios.get(`${env}/video/upload/complete`, {params:{videoId}});
+};
 
+export const uploadImg = (props: {
+  title: string;
+  imageType: 'DEFAULT' | 'COVER';
+  imageExt: 'png' | 'jpg' | 'jpeg' | 'gif';
+  tags?: Array<string>;
+  description?: string;
+}) => {
+  const {tags} = props;
+  let strTags: string = (tags && tags[0]) || '';
+  tags &&
+    tags.map(tag => {
+      strTags = strTags + ',' + tag;
+    });
+  return axios.post(`${env}/image/upload/auth`, {
+    ...props,
+    tags: strTags,
+    action: 'CreateUploadImage',
+  });
+};
+export const finishUpload = (imageId: string) => {
+  return axios.post(`${env}/image/upload/complete`, {imageId});
+};
 
-export const uploadImg= (props:{
-  title:string,
-  imageType:'DEFAULT'|'COVER',
-  imageExt:'png'|'jpg'|'jpeg'|'gif',
-  tags?:Array<string>,
-  description?:string,
-})=>{
-  const{tags}=props
-  let strTags:string=(tags&&tags[0])||''
-  tags&&tags.map(tag => {
-    strTags=strTags+','+tag;
-  })
-  return axios.post(`${env}/image/upload/auth`,{...props,tags:strTags,action:'CreateUploadImage'})
-   
-} 
-export const finishUpload= (
-  imageId:string,
-)=>{
-  return axios.post(`${env}/image/upload/complete`,{imageId})
-   
-} 
+export const uploadAvatar = (props: {userId: string; imageId: string}) => {
+  return axios.post(`${env}/user/avatar/upload`, {...props});
+};
 
-export const uploadAvatar=(props:{userId:string,imageId:string})=>{
-  return axios.post(`${env}/user/avatar/upload`,{...props})
-}
+export const getMyDynamic = (userId: string) => {
+  return axios.get(`${env}/dynamic/getUserDynamic`,{params:{userId}})
+};
