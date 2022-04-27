@@ -13,6 +13,7 @@ import ImageChoose from '../../components/ImageChoose';
 import {useAppSelector} from '../../store/hooks';
 import Upload from '../../components/Upload';
 import ShowImg from '../../components/ShowImg';
+import VideoPlayer from '../../components/VideoPlayer';
 
 const wait = (timeout:number) => {
   return new Promise(resolve => setTimeout(resolve, timeout));

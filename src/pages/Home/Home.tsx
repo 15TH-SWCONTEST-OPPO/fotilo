@@ -13,10 +13,6 @@ import {getVideoList} from '../../api';
 import {useAppSelector} from '../../store/hooks';
 import {basicColor} from '../../static/color';
 
-const wait = (timeout: number) => {
-  return new Promise(resolve => setTimeout(resolve, timeout));
-};
-
 export default function Home() {
   const {videos: searchV} = useAppSelector(s => s.search);
   const [videos, setVideos] = useState(searchV);
@@ -40,9 +36,35 @@ export default function Home() {
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    wait(8000).then(() => setRefreshing(false));
+    getVideoList(6)
+      .then(e => {
+        setVideos(e.data.data);
+        setRefreshing(false);
+      })
+      .catch(e => {
+        console.log('home Error', e);
+      });
   }, []);
-  // const tltheight
+  // 懒加载
+  const lazyload = (e: any) => {
+    const val = e.nativeEvent;
+    if (
+      Math.abs(
+        val.contentOffset.y +
+          val.layoutMeasurement.height -
+          val.contentSize.height,
+      ) < 1e-3
+    ) {
+      getVideoList(6)
+        .then(e => {
+          setVideos([...videos, ...e.data.data]);
+          setRefreshing(false);
+        })
+        .catch(e => {
+          console.log('home Error', e);
+        });
+    }
+  };
 
   return (
     <ScrollView
@@ -53,18 +75,7 @@ export default function Home() {
           colors={[basicColor]}
         />
       }
-      onScroll={e => {
-        const val = e.nativeEvent;
-        if (
-          Math.abs(
-            val.contentOffset.y +
-              val.layoutMeasurement.height -
-              val.contentSize.height,
-          ) < 1e-3
-        ) {
-          console.log('lazyload');
-        }
-      }}>
+      onScroll={lazyload}>
       <View style={[styles.container]}>
         {videos.map(video => {
           return <VideoCard key={video.videoId} {...video} />;

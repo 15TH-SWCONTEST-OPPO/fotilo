@@ -65,6 +65,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
 
   // 播放暂停
   const [pause, setPause] = useState(false);
+  const rPause = useRef(false);
 
   // 音量
   const [audio, setAudio] = useState(0.3);
@@ -81,46 +82,13 @@ export default function VideoPlayer(props: VideoPlayerProps) {
 
   // 进度
   const [progress, setProgress] = useState(0);
+  const durationF = useRef(0);
 
   // 全屏
   const [full, setFull] = useState(false);
 
   // 视频标题
   const {title, videoUrl, lastUrl} = props;
-
-  
-
-  /* 
-  倍速扩展框
-   */
-  // 组件
-  const RateDrawers = () => (
-    <View style={{width: 40, height: 130, justifyContent: 'center'}}>
-      <View
-        style={{
-          width: 40,
-          backgroundColor: 'rgba(0,0,0,.5)',
-          borderRadius: 2,
-          alignItems: 'center',
-        }}>
-        {rates.map(e => {
-          return (
-            <Button
-              key={uuid.v4()}
-              style={{height: 25}}
-              onPress={() => {
-                setRate(parseFloat(e));
-              }}>
-              <Text
-                style={{color: setPoint(rate) === e ? basicColor : 'white'}}>
-                {e}&nbsp;
-              </Text>
-            </Button>
-          );
-        })}
-      </View>
-    </View>
-  );
 
   /* 
     点击动画
@@ -154,7 +122,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
   };
 
   // 判断当前点击状态
-  const [showControl, setShowControl] = useState<boolean>(false);
+  const nowClick = useRef(true);
 
   const [size, setSize] = useState({
     height: props.style?.height || 0,
@@ -167,8 +135,10 @@ export default function VideoPlayer(props: VideoPlayerProps) {
 
   //设置是否拖拽
   const [drag, setDrag] = useState(false);
-  const [dx, setDx] = useState(0);
   const [dy, setDy] = useState(0);
+  const [dx, setDx] = useState(0);
+  const xChange = useRef(false);
+  const yChange = useRef(false);
 
   useEffect(() => {
     const daudio = dy === 0 ? 0 : dy < 0 ? -0.1 : 0.1;
@@ -177,35 +147,91 @@ export default function VideoPlayer(props: VideoPlayerProps) {
     setAudio(volume - daudio);
   }, [dy]);
 
-  useEffect(() => {}, [dx]);
+  useEffect(() => {
+    const dpro = dx === 0 ? 0 : dx < 0 ? 2 : -2;
+    const nowP = progress;
+    myVideo.current?.seek(Math.min(Math.max(nowP - dpro, 0), duration));
+    setProgress(Math.min(Math.max(nowP - dpro, 0), duration));
+  }, [dx]);
 
+  /* 
+    延时
+  */
+  //  长按
+  const timer = useRef<NodeJS.Timer | null>();
+  //  单击
+  const clickT = useRef<NodeJS.Timer | null>();
+  // 正在加速
+  const isSpeeding = useRef(false);
+
+  // 手势操作
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: (event, b) => {
         return true;
       },
-      onMoveShouldSetPanResponder: (a,b) => {
-        if((Math.abs(b.dx) > 5) || (Math.abs(b.dy) > 5)){
-          return true
-        }else{
-          return false
+      onMoveShouldSetPanResponder: (a, b) => {
+        if (Math.abs(b.dx) > 5 || Math.abs(b.dy) > 5) {
+          return true;
+        } else {
+          return false;
         }
       },
       onPanResponderGrant: () => {
         setDrag(true);
+
+        timer.current = setTimeout(() => {
+          setRate(3);
+          isSpeeding.current = true;
+        }, 1000);
       },
       onPanResponderMove: (_, b) => {
-        setDx(b.dx);
-        setDy(
-          Math.floor(
-            (b.dy / ((full ? windowWidth : size.height) as number)) * 10,
-          ),
-        );
+        if (clickT.current != null) {
+          clearTimeout(clickT.current);
+          clickT.current = null;
+        }
+        if (Math.abs(b.dx) > 5 && !yChange.current) {
+          xChange.current = true;
+          setDx(b.dx / ((full ? windowHeight : size.width) as number));
+        }
+
+        isSpeeding.current = true;
+        if (Math.abs(b.dy) > 5 && !xChange.current) {
+          yChange.current = true;
+          setDy(
+            Math.floor(
+              (b.dy / ((full ? windowWidth : size.height) as number)) * 10,
+            ),
+          );
+        }
       },
       onPanResponderRelease: () => {
+        if (clickT.current && clickT.current != null) {
+          clearTimeout(clickT.current);
+          clickT.current = null;
+          rPause.current = !rPause.current;
+          setPause(rPause.current);
+        } else if (!isSpeeding.current) {
+          clickT.current = setTimeout(() => {
+            nowClick.current = !nowClick.current;
+            if (nowClick.current) cutOut();
+            else {
+              cutIn();
+            }
+            clickT.current = null;
+          }, 300);
+        }
+        if (timer.current && timer.current !== null) {
+          clearTimeout(timer.current);
+          timer.current = null;
+          setRate(1);
+        }
+        isSpeeding.current = false;
         setDrag(false);
-        setDx(0);
         setDy(0);
+        setDx(0);
+        xChange.current = false;
+        yChange.current = false;
       },
     }),
   ).current;
@@ -216,6 +242,17 @@ export default function VideoPlayer(props: VideoPlayerProps) {
     loading 设置
   */
   const [isLoading, setIsLoading] = useState(false);
+
+  /* 
+    进度条拖动
+  */
+  const [isDP, setIsDP] = useState(false);
+
+  /* 
+    右边栏展示
+  */
+  const [showR,setShowR]=useState(false);
+  const rWidth=useRef(new Animated.Value(0)).current
 
   return (
     <View
@@ -230,10 +267,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
           height: full ? windowWidth : size.height,
           width: full ? windowHeight - statusH : size.width,
         },
-      ]}
-      {...panResponder.panHandlers}
-      >
-      
+      ]}>
       {/* 
           滚动判断
         */}
@@ -254,7 +288,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
       {/* 
         头部条
       */}
-      
+
       <Animated.View style={[styles.header, {top: inAnim}]}>
         <LinearGradient
           style={styles.linear}
@@ -277,30 +311,25 @@ export default function VideoPlayer(props: VideoPlayerProps) {
           <View />
         </LinearGradient>
       </Animated.View>
+      {/* 右侧栏 */}
 
       {/* 视频 */}
-      <Button
-        onPress={() => {
-          if (showControl) cutOut();
-          else {
-            cutIn();
-          }
-          setShowControl(!showControl);
-        }}>
-          {isLoading && (
-        <View
-          style={[
-            styles.loading,
-            {
-              height: full ? windowWidth : size.height,
-              width: full ? windowHeight - statusH : size.width,
-            },
-          ]}>
-          <Loading size={10} />
-          <Text style={[styles.loadingT]}>Loading...&nbsp;</Text>
-        </View>
-      )}
+      <View>
+        {isLoading && (
+          <View
+            style={[
+              styles.loading,
+              {
+                height: full ? windowWidth : size.height,
+                width: full ? windowHeight - statusH : size.width,
+              },
+            ]}>
+            <Loading size={10} />
+            <Text style={[styles.loadingT]}>Loading...&nbsp;</Text>
+          </View>
+        )}
         <Video
+          {...panResponder.panHandlers}
           source={{
             uri: videoUrl,
           }}
@@ -320,10 +349,11 @@ export default function VideoPlayer(props: VideoPlayerProps) {
           }}
           onLoad={e => {
             setDuration(Math.floor(e.duration));
+            durationF.current = Math.floor(e.duration);
             setIsLoading(false);
           }}
         />
-      </Button>
+      </View>
 
       {/* 底部条 */}
       <Animated.View style={[styles.footer, {bottom: inAnim}]}>
@@ -334,6 +364,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
           <Button
             onPress={() => {
               setPause(!pause);
+              rPause.current = rPause.current;
             }}
             style={{alignItems: 'center', justifyContent: 'center'}}>
             <Progress size={8} />
@@ -352,39 +383,65 @@ export default function VideoPlayer(props: VideoPlayerProps) {
           </Button>
 
           {/*进度条  */}
-          <View style={styles.progressBar}>
+          <View
+            style={{
+              flexGrow: 1,
+              flexShrink: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexDirection: 'row',
+            }}>
             <Slider
+              onChange={e => {
+                myVideo.current?.seek(e);
+                setProgress(e);
+              }}
               w="3/5"
-              maxW="300"
-              defaultValue={0}
+              defaultValue={progress}
               minValue={0}
               maxValue={duration || 1}
-              value={progress}
-              
+              value={isDP ? undefined : progress}
               accessibilityLabel="hello world"
               step={1}>
-              <Slider.Track>
+              <Slider.Track
+                onStartShouldSetResponder={a => {
+                  setIsDP(true);
+                  console.log(progress);
+
+                  return true;
+                }}
+                onResponderRelease={a => {
+                  console.log(progress);
+                  setIsDP(false);
+                }}>
                 <Slider.FilledTrack />
               </Slider.Track>
-              <Slider.Thumb />
+              <Slider.Thumb
+                onStartShouldSetResponder={a => {
+                  setIsDP(true);
+                  console.log(progress);
+
+                  return true;
+                }}
+                onResponderRelease={a => {
+                  console.log(progress);
+                  setIsDP(false);
+                }}
+              />
             </Slider>
             <Text style={{color: 'white'}}>
               {getTime(progress)}/{getTime(duration)}&nbsp;&nbsp;&nbsp;
             </Text>
-            <View />
           </View>
+          <View />
 
           {full ? (
             <>
               {/* 
               倍速
             */}
-              <Drawer
-                showDrawer={showControl}
-                position="top"
-                drawers={<RateDrawers />}>
-                <Text style={{color: 'white'}}>{setPoint(rate)}&nbsp;</Text>
-              </Drawer>
+
+              <Text style={{color: 'white'}}>{setPoint(rate)}&nbsp;</Text>
             </>
           ) : (
             <>

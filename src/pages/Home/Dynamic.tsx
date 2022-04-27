@@ -16,12 +16,7 @@ import DynamicCrate from './DynamicCreate';
 import {ArrowBackIcon} from 'native-base';
 import {useAppSelector} from '../../store/hooks';
 import uuid from 'uuid';
-import { basicColor } from '../../static/color';
-
-
-const wait = (timeout: number) => {
-  return new Promise(resolve => setTimeout(resolve, timeout));
-};
+import {basicColor} from '../../static/color';
 
 export default function Dynamic() {
   const [dynamic, setDynamic] = useState<Array<basicDynamic>>([]);
@@ -29,7 +24,7 @@ export default function Dynamic() {
   const user = useAppSelector(s => s.user);
 
   /* 
-    动画
+    创建动态动画
   */
   const fade = useRef(new Animated.Value(1)).current;
   const cut = useRef(new Animated.Value(0)).current;
@@ -69,7 +64,7 @@ export default function Dynamic() {
   });
 
   useEffect(() => {
-    getDynamicList(12, user.userId)
+    getDynamicList(10, user.userId)
       .then(e => {
         setDynamic(e.data.data);
       })
@@ -92,8 +87,41 @@ export default function Dynamic() {
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    wait(8000).then(() => setRefreshing(false));
-  }, []);
+    getDynamicList(10, user.userId)
+      .then(e => {
+        setDynamic(e.data.data);
+        setRefreshing(false);
+      })
+      .catch(e => {
+        console.log('dynamic Error', e);
+      });
+    }, []);
+    
+    // 懒加载
+    const lazyLoad=(e:any)=>{
+      const val = e.nativeEvent;
+      if (
+        Math.abs(
+          val.contentOffset.y +
+            val.layoutMeasurement.height -
+            val.contentSize.height,
+            ) < 1e-3
+            ) {
+              getDynamicList(10, user.userId)
+                .then(e => {
+                  setDynamic([...dynamic,...e.data.data]);
+                  setRefreshing(false);
+                })
+                .catch(e => {
+                  console.log('dynamic Error', e);
+                });
+            }
+          }
+
+  /* 
+    头部栏
+  */
+  const [isStar, setIsStar] = useState(false);
 
   return (
     <View style={styles.container}>
@@ -116,27 +144,57 @@ export default function Dynamic() {
           )}
         </View>
       </Animated.View>
+      <View
+        style={{
+          width: '100%',
+          height: 40,
+          flexDirection: 'row',
+          alignItems: 'flex-end',
+          justifyContent: 'space-evenly',
+        }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'flex-end',
+            justifyContent: 'space-between',
+            width: 200,
+          }}>
+          <Button
+            style={{
+              ...styles.topBtn,
+              borderBottomColor: isStar ? 'white' : basicColor,
+            }}
+            onPress={() => {
+              setIsStar(false);
+            }}>
+            <Text style={[styles.topT, {color: isStar ? 'white' : basicColor}]}>
+              看看世界
+            </Text>
+          </Button>
+          <Button
+            onPress={() => {
+              setIsStar(true);
+            }}
+            style={{
+              ...styles.topBtn,
+              borderBottomColor: isStar ? basicColor : 'white',
+            }}>
+            <Text style={[styles.topT, {color: isStar ? basicColor : 'white'}]}>
+              我的关注
+            </Text>
+          </Button>
+        </View>
+      </View>
       <ScrollView
-       refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          colors={[basicColor]}
-        />
-      }
-      onScroll={e => {
-        const val = e.nativeEvent;
-        if (
-          Math.abs(
-            val.contentOffset.y +
-              val.layoutMeasurement.height -
-              val.contentSize.height,
-          ) < 1e-3
-        ) {
-          console.log('lazyload');
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[basicColor]}
+          />
         }
-      }}
-      style={styles.scrollView}>
+        onScroll={lazyLoad}
+        style={styles.scrollView}>
         {dynamic.map(d => {
           return (
             <View key={uuid.v4()}>
@@ -147,7 +205,6 @@ export default function Dynamic() {
         })}
         <View style={styles.space} />
       </ScrollView>
-
       {user.userId !== '' && (
         <Animated.View style={{opacity: fade}}>
           <Button
@@ -177,7 +234,6 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   container: {
-    // backgroundColor:'blue',
     width: '100%',
     height: '100%',
   },
@@ -189,5 +245,15 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     overflow: 'hidden',
+  },
+  topT: {
+    color: 'white',
+    fontSize: 18,
+  },
+  topBtn: {
+    backgroundColor: 'transparent',
+    borderBottomWidth: 2,
+    borderBottomColor: basicColor,
+    paddingBottom: 2,
   },
 });

@@ -7,6 +7,8 @@ import {AppState, StatusBar, View} from 'react-native';
 import {Provider} from 'react-redux';
 import store from './src/store';
 import Orientation from 'react-native-orientation-locker';
+import { LogBox,} from 'react-native';
+LogBox.ignoreAllLogs();
 
 const App = () => {
 

@@ -2,7 +2,7 @@ import {userType, codeLoginType, loginType} from '../static/types';
 import axios from 'axios';
 import {TEST_ENV, ENV_URL} from './backend';
 
-const env = TEST_ENV;
+const env = ENV_URL;
 
 export const test = () => {
   return axios.get(`${env}/user/test`);
