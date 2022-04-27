@@ -5,6 +5,7 @@ import {
   ScrollView,
   Animated,
   TouchableHighlight,
+  RefreshControl,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {Add, Loading} from '../../static/myIcon';
@@ -15,6 +16,12 @@ import DynamicCrate from './DynamicCreate';
 import {ArrowBackIcon} from 'native-base';
 import {useAppSelector} from '../../store/hooks';
 import uuid from 'uuid';
+import { basicColor } from '../../static/color';
+
+
+const wait = (timeout: number) => {
+  return new Promise(resolve => setTimeout(resolve, timeout));
+};
 
 export default function Dynamic() {
   const [dynamic, setDynamic] = useState<Array<basicDynamic>>([]);
@@ -81,6 +88,13 @@ export default function Dynamic() {
     }
   }, [isEdit]);
 
+  // 刷新
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    wait(8000).then(() => setRefreshing(false));
+  }, []);
+
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.createD, {height: cutAnim}]}>
@@ -102,7 +116,27 @@ export default function Dynamic() {
           )}
         </View>
       </Animated.View>
-      <ScrollView style={styles.scrollView}>
+      <ScrollView
+       refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          colors={[basicColor]}
+        />
+      }
+      onScroll={e => {
+        const val = e.nativeEvent;
+        if (
+          Math.abs(
+            val.contentOffset.y +
+              val.layoutMeasurement.height -
+              val.contentSize.height,
+          ) < 1e-3
+        ) {
+          console.log('lazyload');
+        }
+      }}
+      style={styles.scrollView}>
         {dynamic.map(d => {
           return (
             <View key={uuid.v4()}>

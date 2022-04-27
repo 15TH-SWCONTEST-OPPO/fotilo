@@ -20,7 +20,7 @@ import {defaultColor} from '../../static/color';
 import {changeInfo, getMyDynamic, getUser, logout} from '../../api';
 import {emptyUser} from '../../config/user';
 import {HamburgerIcon} from 'native-base';
-import DynamicCard, { basicDynamic } from '../../components/DynamicCard';
+import DynamicCard, {basicDynamic} from '../../components/DynamicCard';
 import uuid from 'uuid';
 
 const AvatarSize = 160;
@@ -46,7 +46,7 @@ export default function User() {
   // description 修改
   const [des, setDes] = useState<string>(user.description || '');
   const [cDes, setCDes] = useState<boolean>(false);
-  const[dynamic,setDynamic]=useState<Array<basicDynamic>>([])
+  const [dynamic, setDynamic] = useState<Array<basicDynamic>>([]);
   const nowDes = useRef(user.description);
   useEffect(() => {
     getUser(userId === uID, uID, 'BOTH')
@@ -95,18 +95,18 @@ export default function User() {
   };
 
   useEffect(() => {
-    getMyDynamic(uID).then(e=>{
-      setDynamic(e.data.data)
-    })
-  },[])
+    getMyDynamic(uID).then(e => {
+      setDynamic(e.data.data);
+    });
+  }, []);
 
   return (
-    <View style={{height:'100%'}}>
+    <View style={{height: '100%'}}>
       <ImageBackground
         style={{...styles.background}}
         source={require('../../static/img/Ubackground.png')}
       />
-      {userId === uID && (
+      {userId === uID && uID !== '' && (
         <View style={[styles.settingC]}>
           <Button
             style={styles.setting}
@@ -181,6 +181,7 @@ export default function User() {
           </Text>
         </View>
       </View>
+
       <View style={{...styles.userN}}>
         <Button style={styles.userNTB} onPress={() => {}}>
           {cName ? (
@@ -209,7 +210,7 @@ export default function User() {
               setCDes(true);
             }
           }}>
-          {cDes ? (
+          {cDes&&uID!=='' ? (
             <Input
               textStyle={styles.cnameT}
               iconSide="none"
@@ -235,29 +236,27 @@ export default function User() {
             </Text>
           )}
         </Button>
-        <View>
-
-        <ScrollView style={styles.scrollView}>
-          {dynamic.map(d => {
-            return (
-              <View style={{width:'100%',overflow: 'hidden'}} key={uuid.v4()}>
-                <DynamicCard {...d} />
-                <View style={styles.space} />
-              </View>
-            );
-          })}
-          <View style={styles.space} />
-          <View style={{width:20,height:200}}/>
-        </ScrollView>
-          </View>
+        <View style={{width:'100%',height:'100%'}}>
+          <ScrollView>
+            {dynamic.map(d => {
+              return (
+                <View
+                  style={{width: '100%', overflow: 'hidden'}}
+                  key={uuid.v4()}>
+                  <DynamicCard {...d} />
+                  <View style={styles.space} />
+                </View>
+              );
+            })}
+            <View style={{width: 20, height: 300}} />
+          </ScrollView>
+        </View>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
-  },
   space: {
     width: 20,
     height: 30,
@@ -293,6 +292,7 @@ const styles = StyleSheet.create({
   userN: {
     width: '100%',
     padding: 20,
+    marginTop:10,
     alignItems: 'center',
     justifyContent: 'center',
   },

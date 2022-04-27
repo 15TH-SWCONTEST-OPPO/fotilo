@@ -1,4 +1,8 @@
-import {View, Text, StyleSheet, Animated, ScrollView} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Animated,
+} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import StatusBarSpace from '../../components/StatusBarSpace';
 import TopBar from '../../components/TopBar';
@@ -9,6 +13,10 @@ import ImageChoose from '../../components/ImageChoose';
 import {useAppSelector} from '../../store/hooks';
 import Upload from '../../components/Upload';
 import ShowImg from '../../components/ShowImg';
+
+const wait = (timeout:number) => {
+  return new Promise(resolve => setTimeout(resolve, timeout));
+}
 
 export default function Home() {
   const {show} = useAppSelector(s => s.imgChoose);
@@ -50,9 +58,10 @@ export default function Home() {
       <Animated.View style={[{overflow: 'hidden'}, {height: cutAnim}]}>
         <TopBar />
       </Animated.View>
-      <ScrollView style={{...styles.center}}>
+      <View
+        style={{...styles.center}}>
         <Outlet />
-      </ScrollView>
+      </View>
       <BottomBar />
       <Upload />
     </View>
