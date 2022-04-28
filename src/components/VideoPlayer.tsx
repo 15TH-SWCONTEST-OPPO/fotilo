@@ -72,6 +72,12 @@ export default function VideoPlayer(props: VideoPlayerProps) {
   SystemSetting.getVolume().then(volume => {
     setAudio(volume);
   });
+  const nowA = useRef<number[]>([]);
+  useEffect(() => {
+    for (let i = 1; i <= 10; i++) {
+      nowA.current.push(i);
+    }
+  }, []);
 
   // 倍速
   const [rate, setRate] = useState(1);
@@ -136,15 +142,26 @@ export default function VideoPlayer(props: VideoPlayerProps) {
   //设置是否拖拽
   const [drag, setDrag] = useState(false);
   const [dy, setDy] = useState(0);
+  const lastDy = useRef(0);
   const [dx, setDx] = useState(0);
   const xChange = useRef(false);
   const yChange = useRef(false);
 
   useEffect(() => {
-    const daudio = dy === 0 ? 0 : dy < 0 ? -0.1 : 0.1;
-    const volume = audio;
-    SystemSetting.setVolume(audio - daudio);
-    setAudio(volume - daudio);
+    if (!isSpeeding.current) {
+      const daudio =
+        lastDy.current - dy === 0 ? 0 : (lastDy.current - dy > 0) ? -0.1 : 0.1;
+      lastDy.current = dy;
+      const volume = audio;
+      SystemSetting.setVolume(audio - daudio);
+      setAudio(volume - daudio);
+    } else {
+      const daudio =
+        lastDy.current - dy === 0 ? 0 :( lastDy.current - dy > 0) ? -0.25 : 0.25;
+      lastDy.current = dy;
+      const volume = rate;
+      setRate(Math.max(0.25, volume - daudio));
+    }
   }, [dy]);
 
   useEffect(() => {
@@ -163,14 +180,19 @@ export default function VideoPlayer(props: VideoPlayerProps) {
   const clickT = useRef<NodeJS.Timer | null>();
   // 正在加速
   const isSpeeding = useRef(false);
+  //  正在滑动
+  const isGragging = useRef(false);
 
   // 手势操作
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: (event, b) => {
+        // 单击去除右边栏
+        aCutOut();
         return true;
       },
       onMoveShouldSetPanResponder: (a, b) => {
+        // 按压大小判断
         if (Math.abs(b.dx) > 5 || Math.abs(b.dy) > 5) {
           return true;
         } else {
@@ -178,26 +200,46 @@ export default function VideoPlayer(props: VideoPlayerProps) {
         }
       },
       onPanResponderGrant: () => {
+        //
         setDrag(true);
 
+        // 加速延时器
         timer.current = setTimeout(() => {
-          setRate(3);
+          setRate(2);
           isSpeeding.current = true;
         }, 1000);
       },
       onPanResponderMove: (_, b) => {
+        // 判断点击效果，如果移动，点击取消
         if (clickT.current != null) {
           clearTimeout(clickT.current);
           clickT.current = null;
         }
-        if (Math.abs(b.dx) > 5 && !yChange.current) {
+
+        // 横向移动
+        if (Math.abs(b.dx) > 5 && !yChange.current && !isSpeeding.current) {
+          timer.current && clearTimeout(timer.current);
+          timer.current = null;
           xChange.current = true;
           setDx(b.dx / ((full ? windowHeight : size.width) as number));
+          isGragging.current = true;
         }
 
-        isSpeeding.current = true;
-        if (Math.abs(b.dy) > 5 && !xChange.current) {
+        // 纵向移动
+        if (Math.abs(b.dy) > 5 && !xChange.current && !isSpeeding.current) {
+          timer.current && clearTimeout(timer.current);
+          timer.current = null;
           yChange.current = true;
+          setDy(
+            Math.floor(
+              (b.dy / ((full ? windowWidth : size.height) as number)) * 10,
+            ),
+          );
+          isGragging.current = true;
+        }
+
+        // 加速横向移动
+        if (Math.abs(b.dy) > 2 && isSpeeding.current) {
           setDy(
             Math.floor(
               (b.dy / ((full ? windowWidth : size.height) as number)) * 10,
@@ -205,13 +247,16 @@ export default function VideoPlayer(props: VideoPlayerProps) {
           );
         }
       },
+
       onPanResponderRelease: () => {
+        // 双击判断
         if (clickT.current && clickT.current != null) {
           clearTimeout(clickT.current);
           clickT.current = null;
           rPause.current = !rPause.current;
           setPause(rPause.current);
-        } else if (!isSpeeding.current) {
+        } else if (!isSpeeding.current && !isGragging.current) {
+          // 单击判断
           clickT.current = setTimeout(() => {
             nowClick.current = !nowClick.current;
             if (nowClick.current) cutOut();
@@ -221,15 +266,19 @@ export default function VideoPlayer(props: VideoPlayerProps) {
             clickT.current = null;
           }, 300);
         }
+
+        // 清除加速定时器
         if (timer.current && timer.current !== null) {
           clearTimeout(timer.current);
           timer.current = null;
-          setRate(1);
+          if (isSpeeding.current) setRate(1);
         }
         isSpeeding.current = false;
+        isGragging.current = false;
         setDrag(false);
         setDy(0);
         setDx(0);
+        lastDy.current = 0;
         xChange.current = false;
         yChange.current = false;
       },
@@ -251,8 +300,22 @@ export default function VideoPlayer(props: VideoPlayerProps) {
   /* 
     右边栏展示
   */
-  const [showR,setShowR]=useState(false);
-  const rWidth=useRef(new Animated.Value(0)).current
+  const rates = useRef([2, 1.5, 1.25, 1, 0.5]).current;
+  const rWidth = useRef(new Animated.Value(0)).current;
+  const aCutIn = () => {
+    Animated.timing(rWidth, {
+      toValue: 200,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  };
+  const aCutOut = () => {
+    Animated.timing(rWidth, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  };
 
   return (
     <View
@@ -269,20 +332,46 @@ export default function VideoPlayer(props: VideoPlayerProps) {
         },
       ]}>
       {/* 
-          滚动判断
+          音量icon
         */}
-      {dy !== 0 && (
+      {dy !== 0 && isGragging.current && (
         <View
           style={{
             position: 'absolute',
             zIndex: 99,
-            left: ((full ? windowHeight - statusH : size.width) as number) / 2,
-            top: ((full ? windowWidth : size.height) as number) / 2,
-            backgroundColor: 'black',
-            opacity: 0.5,
+            left:
+              (((full ? windowHeight - statusH : size.width) as number) - 55) /
+              2,
+            top: (((full ? windowWidth : size.height) as number) - 55) / 2,
+            backgroundColor: '#00000080',
             borderRadius: 10,
+            width: 100,
+            height: 100,
+            alignItems: 'center',
+            justifyContent: 'center',
           }}>
           <Audio />
+          <View style={{width: 20, height: 20}} />
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'stretch',
+            }}>
+            {nowA.current.map(a => {
+              return (
+                <View
+                  style={{
+                    width: 8,
+                    marginHorizontal: 1,
+                    height: 4,
+                    backgroundColor:
+                      1 + Math.floor(audio * 10) >= a ? 'white' : '#ffffff40',
+                  }}
+                />
+              );
+            })}
+          </View>
         </View>
       )}
       {/* 
@@ -312,6 +401,42 @@ export default function VideoPlayer(props: VideoPlayerProps) {
         </LinearGradient>
       </Animated.View>
       {/* 右侧栏 */}
+      <Animated.View
+        style={[
+          {
+            position: 'absolute',
+            height: '100%',
+            width: 180,
+            backgroundColor: 'black',
+            zIndex: 99999,
+            right: 0,
+            justifyContent: 'space-evenly',
+            alignItems: 'center',
+          },
+          {width: rWidth},
+        ]}>
+        {rates.map(r => {
+          let text;
+          if (r === 1 || r === 2) {
+            text = r + '.0';
+          } else text = r + '';
+          return (
+            <Button
+              onPress={() => {
+                setRate(r);
+              }}
+              style={{...styles.speedBtn}}>
+              <Text
+                style={[
+                  styles.speedT,
+                  {color: rate === r ? basicColor : 'white'},
+                ]}>
+                {text}x&nbsp;
+              </Text>
+            </Button>
+          );
+        })}
+      </Animated.View>
 
       {/* 视频 */}
       <View>
@@ -396,7 +521,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
                 myVideo.current?.seek(e);
                 setProgress(e);
               }}
-              w="3/5"
+              style={{width: '80%'}}
               defaultValue={progress}
               minValue={0}
               maxValue={duration || 1}
@@ -411,7 +536,6 @@ export default function VideoPlayer(props: VideoPlayerProps) {
                   return true;
                 }}
                 onResponderRelease={a => {
-                  console.log(progress);
                   setIsDP(false);
                 }}>
                 <Slider.FilledTrack />
@@ -419,8 +543,6 @@ export default function VideoPlayer(props: VideoPlayerProps) {
               <Slider.Thumb
                 onStartShouldSetResponder={a => {
                   setIsDP(true);
-                  console.log(progress);
-
                   return true;
                 }}
                 onResponderRelease={a => {
@@ -429,20 +551,23 @@ export default function VideoPlayer(props: VideoPlayerProps) {
                 }}
               />
             </Slider>
-            <Text style={{color: 'white'}}>
-              {getTime(progress)}/{getTime(duration)}&nbsp;&nbsp;&nbsp;
-            </Text>
           </View>
+          <Text style={{color: 'white'}}>
+            {getTime(progress)}/{getTime(duration)}&nbsp;&nbsp;&nbsp;
+          </Text>
           <View />
-
+          <View style={{width: 20, height: 20}} />
           {full ? (
-            <>
+            <Button
+              onPress={() => {
+                aCutIn();
+              }}>
               {/* 
               倍速
             */}
 
               <Text style={{color: 'white'}}>{setPoint(rate)}&nbsp;</Text>
-            </>
+            </Button>
           ) : (
             <>
               {/* 全屏 */}
@@ -512,6 +637,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loadingT: {
+    color: 'white',
+  },
+  speedBtn: {},
+  speedT: {
     color: 'white',
   },
 });
