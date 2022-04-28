@@ -43,3 +43,11 @@ export type commentType={
     username:string;
     avatar?:string;
 }
+
+export type bulletScreenType=Array<
+{
+    content:string;
+    duration:number;
+    color:string
+}
+>

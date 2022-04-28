@@ -29,6 +29,7 @@ import {basicColor} from '../static/color';
 
 // 系统设置
 import SystemSetting from 'react-native-system-setting';
+import BulletScreen from './BulletScreen';
 
 interface VideoPlayerProps {
   style?: ViewStyle;
@@ -150,14 +151,14 @@ export default function VideoPlayer(props: VideoPlayerProps) {
   useEffect(() => {
     if (!isSpeeding.current) {
       const daudio =
-        lastDy.current - dy === 0 ? 0 : (lastDy.current - dy > 0) ? -0.1 : 0.1;
+        lastDy.current - dy === 0 ? 0 : lastDy.current - dy > 0 ? -0.1 : 0.1;
       lastDy.current = dy;
       const volume = audio;
       SystemSetting.setVolume(audio - daudio);
       setAudio(volume - daudio);
     } else {
       const daudio =
-        lastDy.current - dy === 0 ? 0 :( lastDy.current - dy > 0) ? -0.25 : 0.25;
+        lastDy.current - dy === 0 ? 0 : lastDy.current - dy > 0 ? -0.25 : 0.25;
       lastDy.current = dy;
       const volume = rate;
       setRate(Math.max(0.25, volume - daudio));
@@ -331,6 +332,10 @@ export default function VideoPlayer(props: VideoPlayerProps) {
           width: full ? windowHeight - statusH : size.width,
         },
       ]}>
+      {/*
+        弹幕
+      */}
+
       {/* 
           音量icon
         */}
@@ -338,7 +343,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
         <View
           style={{
             position: 'absolute',
-            zIndex: 99,
+            zIndex: 999,
             left:
               (((full ? windowHeight - statusH : size.width) as number) - 55) /
               2,
@@ -366,7 +371,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
                     marginHorizontal: 1,
                     height: 4,
                     backgroundColor:
-                      1 + Math.floor(audio * 10) >= a ? 'white' : '#ffffff40',
+                       Math.ceil(audio * 10) >= a ? 'white' : '#ffffff40',
                   }}
                 />
               );
@@ -396,7 +401,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
             }}>
             <ArrowBackIcon style={{color: 'white'}} />
           </Button>
-          {full && <Text style={{color: 'white'}}>{title}</Text>}
+          {full && <Text style={{color: 'white'}}>{title}&nbsp;&nbsp;&nbsp;&nbsp;</Text>}
           <View />
         </LinearGradient>
       </Animated.View>
@@ -438,7 +443,18 @@ export default function VideoPlayer(props: VideoPlayerProps) {
         })}
       </Animated.View>
 
+      <BulletScreen now={progress} duration={duration} />
       {/* 视频 */}
+      <View
+        style={{
+          width: '100%',
+          height: '100%',
+          position: 'absolute',
+          zIndex: 99,
+        }}
+        {...panResponder.panHandlers}
+      />
+
       <View>
         {isLoading && (
           <View
@@ -454,11 +470,10 @@ export default function VideoPlayer(props: VideoPlayerProps) {
           </View>
         )}
         <Video
-          {...panResponder.panHandlers}
+          style={{backgroundColor: 'black', width: '100%', height: '100%'}}
           source={{
             uri: videoUrl,
           }}
-          style={{backgroundColor: 'black', width: '100%', height: '100%'}}
           resizeMode="contain"
           repeat
           rate={rate}
