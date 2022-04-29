@@ -7,6 +7,7 @@ import {
   Image,
   Animated,
   PanResponder,
+  KeyboardAvoidingView,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import StatusBarSpace from '../../components/StatusBarSpace';
@@ -96,7 +97,6 @@ export default function VideoShow() {
       });
   }, [videoId]);
 
-  const {show: sshow} = useAppSelector(s => s.share);
 
   /* 
     颜色选择器
@@ -162,14 +162,17 @@ export default function VideoShow() {
   ).current;
 
   useEffect(() => {
-    isCustom.current&&setBcolor(customColor);
-  },[customColor])
+    isCustom.current && setBcolor(customColor);
+  }, [customColor]);
 
   return (
     <View style={styles.background}>
       <StatusBarSpace />
 
-      <Animated.View
+      {/* 
+        颜色选择器
+      */}
+      <KeyboardAvoidingView
         style={[
           {
             position: 'absolute',
@@ -177,112 +180,115 @@ export default function VideoShow() {
             width: '100%',
             backgroundColor: 'black',
             zIndex: 9,
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            overflow: 'hidden',
           },
-          {height: cbHeight},
-        ]}>
-        <View style={{width: 20, height: 5}} />
-        {/* 
+        ]}
+        behavior="padding">
+        <Animated.View
+          style={[
+            {
+              width: '100%',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              overflow: 'hidden',
+            },
+            {height: cbHeight},
+          ]}>
+          <View style={{width: 20, height: 5}} />
+          {/* 
             供选择的颜色
           */}
-        <View
-          style={{
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            width: '60%',
-          }}>
-          {bulletColors.map((c, index) => {
-            return (
-              <View style={{padding: 3}}>
-                <Button
-                  style={{
-                    width: 30,
-                    height: 30,
-                    borderRadius: 15,
-                    backgroundColor: c,
-                    borderWidth: 2,
-                    borderColor: colorIndex === index ? 'white' : '#ab9b9b',
-                  }}
-                  onPress={() => {
-                    setColorIndex(index);
-                    setBcolor(colorSelect[index]);
-                    isCustom.current = false;
-                  }}
-                />
-              </View>
-            );
-          })}
-        </View>
-        {/* 
+          <View
+            style={{
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              width: '60%',
+            }}>
+            {bulletColors.map((c, index) => {
+              return (
+                <View style={{padding: 3}}>
+                  <Button
+                    style={{
+                      width: 30,
+                      height: 30,
+                      borderRadius: 15,
+                      backgroundColor: c,
+                      borderWidth: 2,
+                      borderColor: colorIndex === index ? 'white' : '#ab9b9b',
+                    }}
+                    onPress={() => {
+                      setColorIndex(index);
+                      setBcolor(colorSelect[index]);
+                      isCustom.current = false;
+                    }}
+                  />
+                </View>
+              );
+            })}
+          </View>
+          {/* 
           自定义颜色
         */}
-        <View
-          {...panResponder.panHandlers}
-          style={{
-            flexDirection: 'row',
-            width: '60%',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}>
-          <Button
-            onPress={() => {
-              setColorIndex(-1);
-              isCustom.current = true;
-              setBcolor(customColor);
-            }}
+          <View
+            {...panResponder.panHandlers}
             style={{
-              width: 30,
-              height: 30,
-              borderRadius: 15,
-              backgroundColor: customColor,
-              borderWidth: 2,
-              borderColor: isCustom.current ? 'white' : '#ab9b9b',
-            }}
-          />
-          <View style={{width: '85%', justifyContent: 'center'}}>
-            <LinearGradient
-              start={{x: 0, y: 0}}
-              end={{x: 1, y: 1}}
-              style={{width: colorBarWidth, height: 5}}
-              colors={['#ff0000', '#00ff00', '#0000ff', '#ff0000']}
-            />
-            <Animated.View
-              onLayout={e => {
-                setCustomColor(selectC(e.nativeEvent.layout.x));
+              flexDirection: 'row',
+              width: '80%',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <Button
+              onPress={() => {
+                setColorIndex(-1);
+                isCustom.current = true;
+                setBcolor(customColor);
               }}
-              style={[
-                {
-                  width: 10,
-                  height: 10,
-                  backgroundColor: 'white',
-                  position: 'absolute',
-                },
-                {left: dx},
-              ]}
+              style={{
+                width: 30,
+                height: 30,
+                borderRadius: 15,
+                backgroundColor: customColor,
+                borderWidth: 2,
+                borderColor: isCustom.current ? 'white' : '#ab9b9b',
+              }}
+            />
+            <View style={{width: 30, height: 1}} />
+            <View style={{width: '70%', justifyContent: 'center'}}>
+              <LinearGradient
+                start={{x: 0, y: 0}}
+                end={{x: 1, y: 1}}
+                style={{width: colorBarWidth, height: 5}}
+                colors={['#ff0000', '#00ff00', '#0000ff', '#ff0000']}
+              />
+              <Animated.View
+                onLayout={e => {
+                  setCustomColor(selectC(e.nativeEvent.layout.x));
+                }}
+                style={[
+                  {
+                    width: 10,
+                    height: 10,
+                    backgroundColor: 'white',
+                    position: 'absolute',
+                  },
+                  {left: dx},
+                ]}
+              />
+            </View>
+
+            <Input
+              defaultValue={customColor}
+              containerStyle={{width: 80, borderColor: 'transparent'}}
+              onChangeText={e => {
+                setCustomColor(e);
+              }}
+              iconSide="none"
+              textStyle={{color: 'white'}}
             />
           </View>
-        </View>
-        {/* 
-          确定按钮
-          */}
-        <View
-          style={{
-            flexDirection: 'row',
-            width: '70%',
-            justifyContent: 'space-between',
-          }}>
-          <Button style={styles.csBtn}>
-            <Text style={styles.csT}>取消</Text>
-          </Button>
-          <Button style={styles.csBtn}>
-            <Text style={styles.csT}>确认</Text>
-          </Button>
-        </View>
-      </Animated.View>
+        </Animated.View>
+      </KeyboardAvoidingView>
 
-      {sshow && <Share />}
+      <Share />
 
       {/* 视频播放 */}
       <VideoPlayer
@@ -290,6 +296,7 @@ export default function VideoShow() {
         videoUrl={videoURL}
         title={title}
         style={{width: windowWidth, height: windowWidth * scale}}
+        videoId={videoId}
       />
 
       {

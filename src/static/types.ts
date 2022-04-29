@@ -44,10 +44,12 @@ export type commentType={
     avatar?:string;
 }
 
-export type bulletScreenType=Array<
+export type bulletScreenType=
 {
     content:string;
     duration:number;
-    color:string
+    color:string;
+    userId:string;
+    videoId:number;
+    [key:string]:any
 }
->

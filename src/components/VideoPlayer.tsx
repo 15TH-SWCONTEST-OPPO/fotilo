@@ -30,12 +30,14 @@ import {basicColor} from '../static/color';
 // 系统设置
 import SystemSetting from 'react-native-system-setting';
 import BulletScreen from './BulletScreen';
+import { useAppSelector } from '../store/hooks';
 
 interface VideoPlayerProps {
   style?: ViewStyle;
   title?: string;
   videoUrl: string;
   lastUrl: string;
+  videoId:string
 }
 
 // 屏幕长宽
@@ -52,6 +54,9 @@ const barColor = 'rgba(0,0,0,0.5)';
 const rates = ['2.0x', '1.5x', '1.25x', '1.0x', '0.5x'];
 
 export default function VideoPlayer(props: VideoPlayerProps) {
+
+  const {userId}=useAppSelector(s=>s.user)
+
   const navigate = useNavigate();
 
   /* 
@@ -95,7 +100,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
   const [full, setFull] = useState(false);
 
   // 视频标题
-  const {title, videoUrl, lastUrl} = props;
+  const {title, videoUrl, lastUrl,videoId} = props;
 
   /* 
     点击动画
@@ -443,7 +448,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
         })}
       </Animated.View>
 
-      <BulletScreen now={progress} duration={duration} />
+      <BulletScreen videoId={videoId} now={progress} duration={duration} userId={userId||''}/>
       {/* 视频 */}
       <View
         style={{

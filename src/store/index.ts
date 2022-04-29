@@ -5,6 +5,7 @@ import imgDrawerReducer from './features/imgDrawerSlice';
 import imgChooseReducer from './features/imgChooseSlice';
 import shareReducer from './features/shareSlice';
 import searchReducer from './features/searchSlice';
+import bulletScreenReducer from './features/bulletScreenSlice';
 const store = configureStore({
     reducer: {
         user:userReducer,
@@ -12,7 +13,8 @@ const store = configureStore({
         imgDrawer:imgDrawerReducer,
         imgChoose:imgChooseReducer,
         share:shareReducer,
-        search:searchReducer
+        search:searchReducer,
+        bulletScreen:bulletScreenReducer,
     },
 }); 
 

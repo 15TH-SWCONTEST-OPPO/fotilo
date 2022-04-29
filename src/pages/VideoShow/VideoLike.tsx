@@ -74,6 +74,9 @@ export default function VideoLike() {
         <Text style={[styles.description]}>{description}</Text>
       </View>
 
+        {/* 
+          三连
+        */}
       <View style={[styles.three]}>
         <Button
           style={styles.threeBtn}
