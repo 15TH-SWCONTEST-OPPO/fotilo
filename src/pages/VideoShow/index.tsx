@@ -5,6 +5,8 @@ import {
   Dimensions,
   ScrollView,
   Image,
+  Animated,
+  PanResponder,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import StatusBarSpace from '../../components/StatusBarSpace';
@@ -13,19 +15,65 @@ import VideoPlayer from '../../components/VideoPlayer';
 import {Outlet, useLocation, useNavigate} from 'react-router-native';
 import Button from '../../components/Button';
 import getLoc from '../../utils/getLoc';
-import {basicColor} from '../../static/color';
+import {basicColor, bulletColors} from '../../static/color';
 import {useAppSelector} from '../../store/hooks';
 
 import uuid from 'uuid';
 import Input from '../../components/Input';
-import {Send} from '../../static/myIcon';
+import {Bullet, Send} from '../../static/myIcon';
 import {getVideo} from '../../api';
 import Share from '../../components/Share';
+import LinearGradient from 'react-native-linear-gradient';
 
 const windowWidth = Dimensions.get('screen').width;
 
 // 视频横纵比
 const scale = 2.8 / 5;
+// 选择器长度
+const colorBarWidth = 198;
+
+// 转16进制
+const toHStr = (val: number) => {
+  if (Math.floor(val / 16) == 0) return '0' + val.toString(16);
+  else return val.toString(16);
+};
+
+// 颜色选择
+const selectC = (val: number): string => {
+  let res = '#';
+  const num =
+    Math.ceil(val / (colorBarWidth / 6)) - 1 === -1
+      ? 0
+      : Math.ceil(val / (colorBarWidth / 6)) - 1;
+
+  const hex = Math.floor(
+    ((val % (colorBarWidth / 6)) / (colorBarWidth / 6)) * 256,
+  );
+  switch (num) {
+    case 0:
+      res += 'ff' + toHStr(hex) + '00';
+      break;
+    case 1:
+      res += toHStr(256 - hex) + 'ff' + '00';
+      break;
+    case 2:
+      res += '00' + 'ff' + toHStr(hex);
+      break;
+    case 3:
+      res += '00' + toHStr(256 - hex) + 'ff';
+      break;
+    case 4:
+      res += toHStr(hex) + '00' + 'ff';
+      break;
+    case 5:
+      res += 'ff' + '00' + toHStr(256 - hex);
+      break;
+    case 6:
+      res += 'ff0000';
+      break;
+  }
+  return res;
+};
 
 export default function VideoShow() {
   const {state, pathname} = useLocation();
@@ -50,19 +98,247 @@ export default function VideoShow() {
 
   const {show: sshow} = useAppSelector(s => s.share);
 
+  /* 
+    颜色选择器
+  */
+  // 供选择的索引
+  const [colorIndex, setColorIndex] = useState(11);
+  // 供选择的颜色
+  const colorSelect = useRef(bulletColors).current;
+  //  是否是自定义
+  const isCustom = useRef(false);
+  // 自选颜色
+  const [customColor, setCustomColor] = useState('#ff0000');
+  // 当前颜色
+  const [bColor, setBcolor] = useState('#000000');
+  // 颜色选择器展示判断
+  const colorIsShow = useRef(false);
+  // 选择器动画
+  const cbHeight = useRef(new Animated.Value(0)).current;
+  const cbCutIn = () => {
+    Animated.timing(cbHeight, {
+      duration: 300,
+      useNativeDriver: false,
+      toValue: 200,
+    }).start();
+    colorIsShow.current = true;
+  };
+  const cbCutOut = () => {
+    Animated.timing(cbHeight, {
+      duration: 300,
+      useNativeDriver: false,
+      toValue: 0,
+    }).start();
+    colorIsShow.current = false;
+  };
+  // 横向偏移量
+  const dx = useRef(new Animated.Value(0)).current;
+  // 累计位移
+  const simulateX = useRef(0);
+  // 颜色拖动
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: (a, b) => {
+        return true;
+      },
+      onMoveShouldSetPanResponder: (a, b) => {
+        return true;
+      },
+      onPanResponderGrant: () => {},
+      onPanResponderMove: (a, b) => {
+        dx.setValue(
+          Math.min(Math.max(b.dx + simulateX.current, 0), colorBarWidth),
+        );
+      },
+      onPanResponderRelease: (a, b) => {
+        simulateX.current = Math.min(
+          Math.max(b.dx + simulateX.current, 0),
+          colorBarWidth,
+        );
+
+        dx.flattenOffset();
+      },
+    }),
+  ).current;
+
+  useEffect(() => {
+    isCustom.current&&setBcolor(customColor);
+  },[customColor])
+
   return (
     <View style={styles.background}>
       <StatusBarSpace />
+
+      <Animated.View
+        style={[
+          {
+            position: 'absolute',
+            bottom: 0,
+            width: '100%',
+            backgroundColor: 'black',
+            zIndex: 9,
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            overflow: 'hidden',
+          },
+          {height: cbHeight},
+        ]}>
+        <View style={{width: 20, height: 5}} />
+        {/* 
+            供选择的颜色
+          */}
+        <View
+          style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            width: '60%',
+          }}>
+          {bulletColors.map((c, index) => {
+            return (
+              <View style={{padding: 3}}>
+                <Button
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: 15,
+                    backgroundColor: c,
+                    borderWidth: 2,
+                    borderColor: colorIndex === index ? 'white' : '#ab9b9b',
+                  }}
+                  onPress={() => {
+                    setColorIndex(index);
+                    setBcolor(colorSelect[index]);
+                    isCustom.current = false;
+                  }}
+                />
+              </View>
+            );
+          })}
+        </View>
+        {/* 
+          自定义颜色
+        */}
+        <View
+          {...panResponder.panHandlers}
+          style={{
+            flexDirection: 'row',
+            width: '60%',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}>
+          <Button
+            onPress={() => {
+              setColorIndex(-1);
+              isCustom.current = true;
+              setBcolor(customColor);
+            }}
+            style={{
+              width: 30,
+              height: 30,
+              borderRadius: 15,
+              backgroundColor: customColor,
+              borderWidth: 2,
+              borderColor: isCustom.current ? 'white' : '#ab9b9b',
+            }}
+          />
+          <View style={{width: '85%', justifyContent: 'center'}}>
+            <LinearGradient
+              start={{x: 0, y: 0}}
+              end={{x: 1, y: 1}}
+              style={{width: colorBarWidth, height: 5}}
+              colors={['#ff0000', '#00ff00', '#0000ff', '#ff0000']}
+            />
+            <Animated.View
+              onLayout={e => {
+                setCustomColor(selectC(e.nativeEvent.layout.x));
+              }}
+              style={[
+                {
+                  width: 10,
+                  height: 10,
+                  backgroundColor: 'white',
+                  position: 'absolute',
+                },
+                {left: dx},
+              ]}
+            />
+          </View>
+        </View>
+        {/* 
+          确定按钮
+          */}
+        <View
+          style={{
+            flexDirection: 'row',
+            width: '70%',
+            justifyContent: 'space-between',
+          }}>
+          <Button style={styles.csBtn}>
+            <Text style={styles.csT}>取消</Text>
+          </Button>
+          <Button style={styles.csBtn}>
+            <Text style={styles.csT}>确认</Text>
+          </Button>
+        </View>
+      </Animated.View>
+
       {sshow && <Share />}
 
+      {/* 视频播放 */}
       <VideoPlayer
         lastUrl={location}
         videoUrl={videoURL}
         title={title}
         style={{width: windowWidth, height: windowWidth * scale}}
       />
+
       {
         <>
+          {/* 编辑弹幕 */}
+          <View
+            style={{
+              width: '100%',
+              height: 50,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-evenly',
+              marginVertical: 5,
+            }}>
+            <Button
+              style={{
+                width: 40,
+                height: 40,
+                backgroundColor: bColor,
+                borderRadius: 20,
+                borderWidth: 2,
+                borderColor: '#ab9b9b',
+              }}
+              onPress={() => {
+                colorIsShow.current ? cbCutOut() : cbCutIn();
+              }}
+            />
+
+            <Input
+              placeholderTextColor="white"
+              placeholder="发一条弹幕吧~"
+              textStyle={{color: 'white'}}
+              iconSide={'right'}
+              icon={<Bullet />}
+            />
+            <Button
+              style={{
+                borderWidth: 1,
+                borderColor: 'white',
+                backgroundColor: 'transparent',
+                height: '90%',
+                padding: 10,
+              }}>
+              <Text style={{color: 'white', fontSize: 20}}>发布</Text>
+            </Button>
+          </View>
+          {/* 
+            切换topbar
+          */}
           <View style={[styles.changeBar]}>
             <Button
               style={{
@@ -95,12 +371,13 @@ export default function VideoShow() {
               </Text>
             </Button>
           </View>
+          {/* 发表评论 */}
           {loc === 'comment' && (
             <View style={[styles.setC]}>
               {user.username !== '' ? (
                 <Image
                   source={
-                    user.avatar!==''
+                    user.avatar !== ''
                       ? {uri: user.avatar}
                       : require('../../static/img/defaultAvatar.png')
                   }
@@ -146,9 +423,10 @@ export default function VideoShow() {
               </Button>
             </View>
           )}
-          <ScrollView alwaysBounceVertical={false} style={styles.scrollView}>
+          {/* 视频列表/评论列表 */}
+          <View style={styles.scrollView}>
             <Outlet />
-          </ScrollView>
+          </View>
         </>
       }
     </View>
@@ -165,6 +443,8 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     padding: 10,
+    flexGrow: 1,
+    flexShrink: 1,
   },
   changeBar: {
     flexDirection: 'row',
@@ -206,5 +486,16 @@ const styles = StyleSheet.create({
   avatarT: {
     fontSize: 14,
     color: 'white',
+  },
+  csBtn: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: 'white',
+    padding: 3,
+    width: 100,
+  },
+  csT: {
+    color: 'white',
+    fontSize: 20,
   },
 });

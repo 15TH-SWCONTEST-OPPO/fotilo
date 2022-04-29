@@ -29,7 +29,7 @@ export default function BulletScreen(props: bulletScreenProps) {
 
   useEffect(() => {
     for (let i = 0; i < bs.length; i++) {
-      tops.current.push(Math.random() * 100 + '%');
+      tops.current.push(Math.random() * 50 + '%');
     }
   }, []);
   useEffect(() => {

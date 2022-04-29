@@ -118,7 +118,7 @@ export default function VideoLike() {
         <Button
           style={styles.threeBtn}
           onPress={() => {
-            dispatch(setVideoId(videoId||''));
+            dispatch(setVideoId(videoId || ''));
             dispatch(set(true));
           }}>
           <Share />
@@ -126,10 +126,21 @@ export default function VideoLike() {
         </Button>
       </View>
 
-      <ScrollView style={{width: '100%'}}>
+      <ScrollView
+      onScrollEndDrag={()=>{
+        getVideoList(6)
+        .then(e => {
+          setVideoList([...videoList, ...e.data.data]);
+        })
+        .catch(e => {
+          console.log('home Error', e);
+        });
+      }}
+        style={{width: '100%',flexGrow:1,flexShrink:1}}>
         {videoList.map(v => {
           return <VideoCardL key={v.videoId} location={location} {...v} />;
         })}
+        <View style={{width:20,height:180}}/>
       </ScrollView>
     </View>
   );
