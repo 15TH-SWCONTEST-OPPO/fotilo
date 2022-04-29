@@ -1,8 +1,8 @@
 import {Easing, Text, ViewProps, Animated} from 'react-native';
-import React, {useEffect, useRef} from 'react';
-import {bs} from '../config/bs';
+import React, {useEffect, useRef, useState} from 'react';
+import {bs as emptybs} from '../config/bs';
 import uuid from 'uuid';
-import { useAppSelector } from '../store/hooks';
+import {useAppSelector} from '../store/hooks';
 
 interface bulletScreenProps extends ViewProps {
   now: number;
@@ -29,19 +29,21 @@ export default function BulletScreen(props: bulletScreenProps) {
     inputRange: [0, duration],
     outputRange: ['0%', -(duration + 10) * 10 + '%'],
   });
-  const mybs=useAppSelector(s=>s.bulletScreen)
+  const [bs, setBs] = useState(emptybs);
+  const mybs = useAppSelector(s => s.bulletScreen);
 
   useEffect(() => {
     for (let i = 0; i < bs.length; i++) {
       tops.current.push(Math.random() * 50 + '%');
     }
   }, []);
-
-  useEffect(() => {
-    console.log(123);
-    
-  },[bs])
   
+  useEffect(() => {
+    console.log(mybs);
+    setBs([...bs, mybs]);
+    tops.current.push(Math.random() * 50 + '%');
+  }, [mybs]);
+
   useEffect(() => {
     if (now === lastS.current + 1) {
       rollStart(now);
@@ -70,9 +72,7 @@ export default function BulletScreen(props: bulletScreenProps) {
           left: rollNow,
         },
       ]}>
-      {bs.map((b:any, index:number) => {
-        console.log(videoId,b.videoId);
-        
+      {bs.map((b: any, index: number) => {
         return (
           videoId === b.videoId && (
             <Text
@@ -80,7 +80,7 @@ export default function BulletScreen(props: bulletScreenProps) {
               style={{
                 color: b.color,
                 position: 'absolute',
-                left: (b.duration / duration) * 100 + '%',
+                left: ((b.duration +10)/ duration) * 100 + '%',
                 top: tops.current[index],
                 fontSize: 20,
               }}>

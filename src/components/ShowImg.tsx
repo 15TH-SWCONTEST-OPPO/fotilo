@@ -19,7 +19,6 @@ export default function ShowImg() {
   }, [show]);
 
   useEffect(() => {
-    console.log(pics);
   }, []);
 
   const panResponder = useRef(

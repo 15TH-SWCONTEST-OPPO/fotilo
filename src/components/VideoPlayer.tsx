@@ -37,7 +37,8 @@ interface VideoPlayerProps {
   title?: string;
   videoUrl: string;
   lastUrl: string;
-  videoId:string
+  videoId:string;
+  onProgress?:(e:any)=>any
 }
 
 // 屏幕长宽
@@ -100,7 +101,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
   const [full, setFull] = useState(false);
 
   // 视频标题
-  const {title, videoUrl, lastUrl,videoId} = props;
+  const {title, videoUrl, lastUrl,videoId,onProgress} = props;
 
   /* 
     点击动画
@@ -322,6 +323,10 @@ export default function VideoPlayer(props: VideoPlayerProps) {
       useNativeDriver: false,
     }).start();
   };
+
+  useEffect(()=>{
+    onProgress&&onProgress(progress)
+  },[progress])
 
   return (
     <View
@@ -551,8 +556,6 @@ export default function VideoPlayer(props: VideoPlayerProps) {
               <Slider.Track
                 onStartShouldSetResponder={a => {
                   setIsDP(true);
-                  console.log(progress);
-
                   return true;
                 }}
                 onResponderRelease={a => {
@@ -566,7 +569,6 @@ export default function VideoPlayer(props: VideoPlayerProps) {
                   return true;
                 }}
                 onResponderRelease={a => {
-                  console.log(progress);
                   setIsDP(false);
                 }}
               />

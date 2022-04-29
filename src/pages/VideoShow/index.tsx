@@ -17,7 +17,7 @@ import {Outlet, useLocation, useNavigate} from 'react-router-native';
 import Button from '../../components/Button';
 import getLoc from '../../utils/getLoc';
 import {basicColor, bulletColors} from '../../static/color';
-import {useAppSelector} from '../../store/hooks';
+import {useAppSelector, useAppDispatch} from '../../store/hooks';
 
 import uuid from 'uuid';
 import Input from '../../components/Input';
@@ -25,6 +25,7 @@ import {Bullet, Send} from '../../static/myIcon';
 import {getVideo} from '../../api';
 import Share from '../../components/Share';
 import LinearGradient from 'react-native-linear-gradient';
+import {set} from '../../store/features/bulletScreenSlice';
 
 const windowWidth = Dimensions.get('screen').width;
 
@@ -79,9 +80,13 @@ const selectC = (val: number): string => {
 export default function VideoShow() {
   const {state, pathname} = useLocation();
   const {videoURL, title, location, videoId} = state as any;
+  const dispatch = useAppDispatch();
+  const bullet = useAppSelector(s => s.bulletScreen);
 
   const [loc, setLoc] = useState(getLoc(pathname, 2));
   const navigation = useNavigate();
+
+  const progress = useRef(0);
   useEffect(() => {
     setLoc(getLoc(pathname, 2));
   }, [pathname]);
@@ -97,6 +102,10 @@ export default function VideoShow() {
       });
   }, [videoId]);
 
+  /* 
+    弹幕内容
+  */
+  const bsContent = useRef('');
 
   /* 
     颜色选择器
@@ -164,6 +173,9 @@ export default function VideoShow() {
   useEffect(() => {
     isCustom.current && setBcolor(customColor);
   }, [customColor]);
+
+  // 清空input
+  const [clear, setClear] = useState<string | undefined>(undefined);
 
   return (
     <View style={styles.background}>
@@ -297,6 +309,9 @@ export default function VideoShow() {
         title={title}
         style={{width: windowWidth, height: windowWidth * scale}}
         videoId={videoId}
+        onProgress={e => {
+          progress.current = e;
+        }}
       />
 
       {
@@ -331,8 +346,27 @@ export default function VideoShow() {
               textStyle={{color: 'white'}}
               iconSide={'right'}
               icon={<Bullet />}
+              value={clear}
+              onChangeText={e => {
+                bsContent.current = e;
+              }}
             />
             <Button
+              onPress={() => {
+                setClear('');
+                setTimeout(() => {
+                  setClear(undefined);
+                }, 300);
+                dispatch(
+                  set({
+                    duration: progress.current,
+                    userId: user.userId || '',
+                    content: bsContent.current,
+                    color: bColor,
+                    videoId: videoId,
+                  }),
+                );
+              }}
               style={{
                 borderWidth: 1,
                 borderColor: 'white',
