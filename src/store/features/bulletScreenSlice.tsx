@@ -2,6 +2,7 @@ import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {RootState} from '..';
 import {bulletScreenType} from '../../static/types';
 
+
 const initialState: bulletScreenType = {
   userId: '',
   content: '',

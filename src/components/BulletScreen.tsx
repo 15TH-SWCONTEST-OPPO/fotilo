@@ -3,11 +3,12 @@ import React, {useEffect, useRef, useState} from 'react';
 import {bs as emptybs} from '../config/bs';
 import uuid from 'uuid';
 import {useAppSelector} from '../store/hooks';
+import {getBS} from '../api';
 
 interface bulletScreenProps extends ViewProps {
   now: number;
   duration: number;
-  videoId: string;
+  videoId: number;
   userId: string;
 }
 
@@ -33,13 +34,23 @@ export default function BulletScreen(props: bulletScreenProps) {
   const mybs = useAppSelector(s => s.bulletScreen);
 
   useEffect(() => {
+    console.log(videoId);
+    getBS(videoId)
+      .then(e => {
+        setBs([...e.data.data]);
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  }, [videoId]);
+
+  useEffect(() => {
     for (let i = 0; i < bs.length; i++) {
       tops.current.push(Math.random() * 50 + '%');
     }
   }, []);
-  
+
   useEffect(() => {
-    console.log(mybs);
     setBs([...bs, mybs]);
     tops.current.push(Math.random() * 50 + '%');
   }, [mybs]);
@@ -80,11 +91,12 @@ export default function BulletScreen(props: bulletScreenProps) {
               style={{
                 color: b.color,
                 position: 'absolute',
-                left: ((b.duration +10)/ duration) * 100 + '%',
+                left: ((b.duration + 10) / duration) * 100 + '%',
                 top: tops.current[index],
                 fontSize: 20,
+                textDecorationLine: b.userId == userId ? 'underline' : 'none',
               }}>
-              {b.content}
+              {b.content}&nbsp;&nbsp;
             </Text>
           )
         );

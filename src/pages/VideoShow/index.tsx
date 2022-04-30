@@ -16,13 +16,13 @@ import VideoPlayer from '../../components/VideoPlayer';
 import {Outlet, useLocation, useNavigate} from 'react-router-native';
 import Button from '../../components/Button';
 import getLoc from '../../utils/getLoc';
-import {basicColor, bulletColors} from '../../static/color';
+import {acceptColor, basicColor, bulletColors} from '../../static/color';
 import {useAppSelector, useAppDispatch} from '../../store/hooks';
 
 import uuid from 'uuid';
 import Input from '../../components/Input';
-import {Bullet, Send} from '../../static/myIcon';
-import {getVideo} from '../../api';
+import {Bullet, No, Send, Yes} from '../../static/myIcon';
+import {getVideo, setBS} from '../../api';
 import Share from '../../components/Share';
 import LinearGradient from 'react-native-linear-gradient';
 import {set} from '../../store/features/bulletScreenSlice';
@@ -92,15 +92,6 @@ export default function VideoShow() {
   }, [pathname]);
   const user = useAppSelector(s => s.user);
   const myComment = useRef('');
-  useEffect(() => {
-    getVideo(videoId)
-      .then(e => {
-        console.log(e);
-      })
-      .catch(e => {
-        console.log('videoshow error', e);
-      });
-  }, [videoId]);
 
   /* 
     弹幕内容
@@ -176,6 +167,9 @@ export default function VideoShow() {
 
   // 清空input
   const [clear, setClear] = useState<string | undefined>(undefined);
+
+  // 弹幕展示
+  const [showBs, setShowBs] = useState(true);
 
   return (
     <View style={styles.background}>
@@ -309,6 +303,10 @@ export default function VideoShow() {
         title={title}
         style={{width: windowWidth, height: windowWidth * scale}}
         videoId={videoId}
+        bss={showBs}
+        onShowChange={e=>{
+          setShowBs(e);
+        }}
         onProgress={e => {
           progress.current = e;
         }}
@@ -345,7 +343,27 @@ export default function VideoShow() {
               placeholder="发一条弹幕吧~"
               textStyle={{color: 'white'}}
               iconSide={'right'}
-              icon={<Bullet />}
+              icon={
+                <Button onPress={() =>{
+                  setShowBs(!showBs)
+                }}style={{backgroundColor: 'transparent'}}>
+                  <Bullet />
+                  <View
+                    style={{
+                      position: 'absolute',
+                      backgroundColor: 'black',
+                      borderRadius: 20,
+                      right: 0,
+                      bottom: 0,
+                    }}>
+                    {showBs ? (
+                      <Yes size={4} color={'white'} />
+                    ) : (
+                      <No size={4} color={'white'} />
+                    )}
+                  </View>
+                </Button>
+              }
               value={clear}
               onChangeText={e => {
                 bsContent.current = e;
@@ -366,6 +384,18 @@ export default function VideoShow() {
                     videoId: videoId,
                   }),
                 );
+                setBS({
+                  content: bsContent.current,
+                  color: bColor,
+                  duration: progress.current,
+                  videoId: videoId,
+                })
+                  .then(e => {
+                    console.log(e);
+                  })
+                  .catch(e => {
+                    console.log(e);
+                  });
               }}
               style={{
                 borderWidth: 1,

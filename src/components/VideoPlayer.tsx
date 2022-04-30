@@ -11,34 +11,47 @@ import {
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import Video from 'react-native-video';
-import {useLocation, useNavigate} from 'react-router-native';
+import {useNavigate} from 'react-router-native';
 // 渐变
 import LinearGradient from 'react-native-linear-gradient';
-import {Begin, Progress, Pause, Full, Audio, Loading} from '../static/myIcon';
-import {ArrowBackIcon, Slider} from 'native-base';
-import uuid from 'uuid';
+import {
+  Begin,
+  Progress,
+  Pause,
+  Full,
+  Audio,
+  Loading,
+  Bullet,
+} from '../static/myIcon';
+import {ArrowBackIcon, Slider, Switch} from 'native-base';
 
 // 屏幕旋转
 import Orientation from 'react-native-orientation-locker';
 
 import getTime from '../utils/getTime';
 import setPoint from '../utils/setPoint';
-import Drawer from './Drawer';
-
-import {basicColor} from '../static/color';
+import {basicColor, bulletColors} from '../static/color';
 
 // 系统设置
 import SystemSetting from 'react-native-system-setting';
 import BulletScreen from './BulletScreen';
-import { useAppSelector } from '../store/hooks';
+import {useAppSelector, useAppDispatch} from '../store/hooks';
+import {set} from '../store/features/bulletScreenSlice';
+import Input from './Input';
+import {setBS} from '../api';
 
 interface VideoPlayerProps {
   style?: ViewStyle;
   title?: string;
   videoUrl: string;
   lastUrl: string;
-  videoId:string;
-  onProgress?:(e:any)=>any
+  videoId: number;
+  // 当前播放时间
+  onProgress?: (e: any) => any;
+  // 弹幕展示
+  onShowChange?: (e: any) => any;
+  // 弹幕展示
+  bss: boolean;
 }
 
 // 屏幕长宽
@@ -51,12 +64,55 @@ const statusH = StatusBar.currentHeight || 0;
 // 上下bar的颜色
 const barColor = 'rgba(0,0,0,0.5)';
 
-// 倍速的数组
-const rates = ['2.0x', '1.5x', '1.25x', '1.0x', '0.5x'];
+const colorBarWidth = 198;
+
+// 转16进制
+const toHStr = (val: number) => {
+  if (Math.floor(val / 16) == 0) return '0' + val.toString(16);
+  else return val.toString(16);
+};
+
+// 颜色选择
+const selectC = (val: number): string => {
+  let res = '#';
+  const num =
+    Math.ceil(val / (colorBarWidth / 6)) - 1 === -1
+      ? 0
+      : Math.ceil(val / (colorBarWidth / 6)) - 1;
+
+  const hex = Math.floor(
+    ((val % (colorBarWidth / 6)) / (colorBarWidth / 6)) * 256,
+  );
+  switch (num) {
+    case 0:
+      res += 'ff' + toHStr(hex) + '00';
+      break;
+    case 1:
+      res += toHStr(256 - hex) + 'ff' + '00';
+      break;
+    case 2:
+      res += '00' + 'ff' + toHStr(hex);
+      break;
+    case 3:
+      res += '00' + toHStr(256 - hex) + 'ff';
+      break;
+    case 4:
+      res += toHStr(hex) + '00' + 'ff';
+      break;
+    case 5:
+      res += 'ff' + '00' + toHStr(256 - hex);
+      break;
+    case 6:
+      res += 'ff0000';
+      break;
+  }
+  return res;
+};
 
 export default function VideoPlayer(props: VideoPlayerProps) {
+  const dispatch = useAppDispatch();
 
-  const {userId}=useAppSelector(s=>s.user)
+  const {userId} = useAppSelector(s => s.user);
 
   const navigate = useNavigate();
 
@@ -101,7 +157,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
   const [full, setFull] = useState(false);
 
   // 视频标题
-  const {title, videoUrl, lastUrl,videoId,onProgress} = props;
+  const {title, videoUrl, lastUrl, videoId, onProgress} = props;
 
   /* 
     点击动画
@@ -292,7 +348,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
     }),
   ).current;
 
-  const {style} = props;
+  const {style, onShowChange, bss} = props;
 
   /* 
     loading 设置
@@ -307,6 +363,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
   /* 
     右边栏展示
   */
+  const [isBullet, setIsBullet] = useState(false);
   const rates = useRef([2, 1.5, 1.25, 1, 0.5]).current;
   const rWidth = useRef(new Animated.Value(0)).current;
   const aCutIn = () => {
@@ -324,9 +381,63 @@ export default function VideoPlayer(props: VideoPlayerProps) {
     }).start();
   };
 
-  useEffect(()=>{
-    onProgress&&onProgress(progress)
-  },[progress])
+  useEffect(() => {
+    onProgress && onProgress(progress);
+  }, [progress]);
+
+  /* 
+    颜色选择器
+  */
+  // 供选择的索引
+  const [colorIndex, setColorIndex] = useState(11);
+  // 供选择的颜色
+  const colorSelect = useRef(bulletColors).current;
+  //  是否是自定义
+  const isCustom = useRef(false);
+  // 自选颜色
+  const [customColor, setCustomColor] = useState('#ff0000');
+  // 当前颜色
+  const [bColor, setBcolor] = useState('#000000');
+  // 横向偏移量
+  const colordx = useRef(new Animated.Value(0)).current;
+  // 累计位移
+  const simulateX = useRef(0);
+  // 颜色拖动
+  const colorResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: (a, b) => {
+        return true;
+      },
+      onMoveShouldSetPanResponder: (a, b) => {
+        return true;
+      },
+      onPanResponderGrant: () => {},
+      onPanResponderMove: (a, b) => {
+        colordx.setValue(
+          Math.min(Math.max(b.dx + simulateX.current, 0), colorBarWidth),
+        );
+      },
+      onPanResponderRelease: (a, b) => {
+        simulateX.current = Math.min(
+          Math.max(b.dx + simulateX.current, 0),
+          colorBarWidth,
+        );
+
+        colordx.flattenOffset();
+      },
+    }),
+  ).current;
+
+  useEffect(() => {
+    isCustom.current && setBcolor(customColor);
+  }, [customColor]);
+
+  const bulletT = useRef('');
+  const [dValue, setDValue] = useState<undefined | string>(undefined);
+  const [showBs, setShowBs] = useState(true);
+  useEffect(() => {
+    setShowBs(bss);
+  }, [bss]);
 
   return (
     <View
@@ -342,10 +453,6 @@ export default function VideoPlayer(props: VideoPlayerProps) {
           width: full ? windowHeight - statusH : size.width,
         },
       ]}>
-      {/*
-        弹幕
-      */}
-
       {/* 
           音量icon
         */}
@@ -381,7 +488,7 @@ export default function VideoPlayer(props: VideoPlayerProps) {
                     marginHorizontal: 1,
                     height: 4,
                     backgroundColor:
-                       Math.ceil(audio * 10) >= a ? 'white' : '#ffffff40',
+                      Math.ceil(audio * 10) >= a ? 'white' : '#ffffff40',
                   }}
                 />
               );
@@ -411,7 +518,11 @@ export default function VideoPlayer(props: VideoPlayerProps) {
             }}>
             <ArrowBackIcon style={{color: 'white'}} />
           </Button>
-          {full && <Text style={{color: 'white'}}>{title}&nbsp;&nbsp;&nbsp;&nbsp;</Text>}
+          {full && (
+            <Text style={{color: 'white'}}>
+              {title}&nbsp;&nbsp;&nbsp;&nbsp;
+            </Text>
+          )}
           <View />
         </LinearGradient>
       </Animated.View>
@@ -427,33 +538,208 @@ export default function VideoPlayer(props: VideoPlayerProps) {
             right: 0,
             justifyContent: 'space-evenly',
             alignItems: 'center',
+            overflow: 'hidden',
           },
           {width: rWidth},
         ]}>
-        {rates.map(r => {
-          let text;
-          if (r === 1 || r === 2) {
-            text = r + '.0';
-          } else text = r + '';
-          return (
-            <Button
-              onPress={() => {
-                setRate(r);
-              }}
-              style={{...styles.speedBtn}}>
-              <Text
-                style={[
-                  styles.speedT,
-                  {color: rate === r ? basicColor : 'white'},
-                ]}>
-                {text}x&nbsp;
-              </Text>
-            </Button>
-          );
-        })}
+        {isBullet ? (
+          <View>
+            {/* 
+            颜色选择器
+          */}
+
+            <View
+              style={[
+                {
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  overflow: 'hidden',
+                },
+              ]}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  width: '80%',
+                  justifyContent: 'space-between',
+                }}>
+                <Input
+                  onChangeText={e => {
+                    bulletT.current = e;
+                  }}
+                  value={dValue}
+                  iconSide="none"
+                  placeholder="发一条弹幕吧"
+                  placeholderTextColor="white"
+                  textStyle={{color: 'white'}}
+                  containerStyle={{width: 110, borderRadius: 3, height: 38}}
+                />
+                <View style={{width: 1, height: 2}} />
+                <Button
+                  onPress={() => {
+                    dispatch(
+                      set({
+                        content: bulletT.current,
+                        color: bColor,
+                        duration: progress,
+                        userId: userId || '',
+                        videoId: videoId,
+                      }),
+                    );
+                    setDValue('');
+                    setTimeout(() => {
+                      setDValue(undefined);
+                    });
+                    setBS({
+                      content: bulletT.current,
+                      color: bColor,
+                      duration: progress,
+                      videoId: videoId,
+                    })
+                      .then(e => {
+                        console.log(e);
+                      })
+                      .catch(e => {
+                        console.log(e);
+                      });
+                    aCutOut();
+                  }}
+                  style={{
+                    borderColor: 'white',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    height: 28,
+                  }}>
+                  <Text style={{color: 'white', fontSize: 18}}>发布</Text>
+                </Button>
+              </View>
+              {/* 
+            供选择的颜色
+            */}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                  width: '60%',
+                }}>
+                {bulletColors.map((c, index) => {
+                  return (
+                    <View style={{padding: 3}}>
+                      <Button
+                        style={{
+                          width: 30,
+                          height: 30,
+                          borderRadius: 15,
+                          backgroundColor: c,
+                          borderWidth: 2,
+                          borderColor:
+                            colorIndex === index ? 'white' : '#ab9b9b',
+                        }}
+                        onPress={() => {
+                          setColorIndex(index);
+                          setBcolor(colorSelect[index]);
+                          isCustom.current = false;
+                        }}
+                      />
+                    </View>
+                  );
+                })}
+              </View>
+              {/* 
+              自定义颜色
+             */}
+              <View
+                {...colorResponder.panHandlers}
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  height: 100,
+                  marginTop: 20,
+                }}>
+                <Button
+                  onPress={() => {
+                    setColorIndex(-1);
+                    isCustom.current = true;
+                    setBcolor(customColor);
+                  }}
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: 15,
+                    backgroundColor: customColor,
+                    borderWidth: 2,
+                    borderColor: isCustom.current ? 'white' : '#ab9b9b',
+                  }}
+                />
+                <View style={{width: 30, height: 1}} />
+                <View style={{width: '70%', justifyContent: 'center'}}>
+                  <LinearGradient
+                    start={{x: 0, y: 0}}
+                    end={{x: 1, y: 1}}
+                    style={{width: colorBarWidth, height: 5}}
+                    colors={['#ff0000', '#00ff00', '#0000ff', '#ff0000']}
+                  />
+                  <Animated.View
+                    onLayout={e => {
+                      setCustomColor(selectC(e.nativeEvent.layout.x));
+                    }}
+                    style={[
+                      {
+                        width: 10,
+                        height: 10,
+                        backgroundColor: 'white',
+                        position: 'absolute',
+                      },
+                      {left: colordx},
+                    ]}
+                  />
+                </View>
+
+                <Input
+                  defaultValue={customColor}
+                  containerStyle={{width: 80, borderColor: 'transparent'}}
+                  onChangeText={e => {
+                    setCustomColor(e);
+                  }}
+                  iconSide="none"
+                  textStyle={{color: 'white'}}
+                />
+              </View>
+            </View>
+          </View>
+        ) : (
+          rates.map(r => {
+            let text;
+            if (r === 1 || r === 2) {
+              text = r + '.0';
+            } else text = r + '';
+            return (
+              <Button
+                onPress={() => {
+                  setRate(r);
+                }}
+                style={{...styles.speedBtn}}>
+                <Text
+                  style={[
+                    styles.speedT,
+                    {color: rate === r ? basicColor : 'white'},
+                  ]}>
+                  {text}x&nbsp;
+                </Text>
+              </Button>
+            );
+          })
+        )}
       </Animated.View>
 
-      <BulletScreen videoId={videoId} now={progress} duration={duration} userId={userId||''}/>
+      {showBs && (
+        <BulletScreen
+          videoId={videoId}
+          now={progress}
+          duration={duration}
+          userId={userId || ''}
+        />
+      )}
       {/* 视频 */}
       <View
         style={{
@@ -580,16 +866,36 @@ export default function VideoPlayer(props: VideoPlayerProps) {
           <View />
           <View style={{width: 20, height: 20}} />
           {full ? (
-            <Button
-              onPress={() => {
-                aCutIn();
-              }}>
+            <>
               {/* 
-              倍速
+                倍速
+              */}
+              <Button
+                onPress={() => {
+                  setIsBullet(false);
+                  aCutIn();
+                }}>
+                <Text style={{color: 'white'}}>{setPoint(rate)}&nbsp;</Text>
+              </Button>
+              <View style={{width: 10, height: 1}} />
+              {/* 
+              弹幕
             */}
-
-              <Text style={{color: 'white'}}>{setPoint(rate)}&nbsp;</Text>
-            </Button>
+              <Switch
+                defaultIsChecked={bss}
+                onValueChange={e => {
+                  setShowBs(e);
+                  onShowChange && onShowChange(e);
+                }}
+              />
+              <Button
+                onPress={() => {
+                  setIsBullet(true);
+                  aCutIn();
+                }}>
+                <Bullet />
+              </Button>
+            </>
           ) : (
             <>
               {/* 全屏 */}

@@ -9,6 +9,7 @@ import {basicColor} from '../../static/color';
 import {getVideoList} from '../../api';
 import {useAppDispatch} from '../../store/hooks';
 import {set, setVideoId} from '../../store/features/shareSlice';
+import uuid from 'uuid'
 
 export default function VideoLike() {
   const dispatch = useAppDispatch();
@@ -141,7 +142,7 @@ export default function VideoLike() {
       }}
         style={{width: '100%',flexGrow:1,flexShrink:1}}>
         {videoList.map(v => {
-          return <VideoCardL key={v.videoId} location={location} {...v} />;
+          return <VideoCardL key={uuid.v4()} location={location} {...v} />;
         })}
         <View style={{width:20,height:180}}/>
       </ScrollView>

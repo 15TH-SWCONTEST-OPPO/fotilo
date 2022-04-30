@@ -2,7 +2,7 @@ import {userType, codeLoginType, loginType} from '../static/types';
 import axios from 'axios';
 import {TEST_ENV, ENV_URL} from './backend';
 
-const env = ENV_URL;
+const env = TEST_ENV;
 
 export const test = () => {
   return axios.get(`${env}/user/test`);
@@ -114,3 +114,11 @@ export const getMyDynamic = (userId: string) => {
 export const search = (searchKey: string,num:number) => {
   return axios.get(`${env}/video/search`,{params:{searchKey,num}})
 };
+
+export const getBS=(videoId: number) => {
+  return axios.get(`${env}/bullet/get`,{params:{videoId}})
+}
+
+export const setBS=(props:{videoId:number,content:string,duration:number,color:string})=>{
+  return axios.post(`${env}/bullet/add`, {...props});
+}
