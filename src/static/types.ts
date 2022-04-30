@@ -30,7 +30,7 @@ export type videoType={
     duration:number;
     description?: string;
     watch?:number;
-    like?:number;
+    supportedNum?:number;
     share?:number;
     star?: number;
     comment?:number;
@@ -39,7 +39,7 @@ export type videoType={
 export type commentType={
     userId:string;
     commentId:string;
-    detail:string;
+    content:string;
     username:string;
     avatar?:string;
 }

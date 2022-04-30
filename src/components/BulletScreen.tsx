@@ -96,7 +96,7 @@ export default function BulletScreen(props: bulletScreenProps) {
                 fontSize: 20,
                 textDecorationLine: b.userId == userId ? 'underline' : 'none',
               }}>
-              {b.content}&nbsp;&nbsp;
+              {b.content}
             </Text>
           )
         );

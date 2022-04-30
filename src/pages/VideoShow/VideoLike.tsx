@@ -6,10 +6,10 @@ import {Like, Share, Star} from '../../static/myIcon';
 import {videos, emptyVideo} from '../../config/video';
 import VideoCardL from '../../components/VideoCardL';
 import {basicColor} from '../../static/color';
-import {getVideoList} from '../../api';
+import {getVideoList, isLike, setLike} from '../../api';
 import {useAppDispatch} from '../../store/hooks';
 import {set, setVideoId} from '../../store/features/shareSlice';
-import uuid from 'uuid'
+import uuid from 'uuid';
 
 export default function VideoLike() {
   const dispatch = useAppDispatch();
@@ -21,18 +21,17 @@ export default function VideoLike() {
     avatar,
     username,
     videoNum,
-    likeNum,
+    supportedNum,
     title,
     description,
     star,
-    like,
     share,
     location,
     videoId,
     userId,
   } = state as any;
 
-  const t = useRef([like || 0, star || 0, share || 0]);
+  const t = useRef([supportedNum || 0, star || 0, share || 0]);
 
   const [three, setThree] = useState<[number, number, number]>([
     t.current[0],
@@ -40,9 +39,21 @@ export default function VideoLike() {
     t.current[2],
   ]);
   useEffect(() => {
-    t.current = [like || 0, star || 0, share || 0];
-    setThree([like || 0, star || 0, share || 0]);
+    t.current = [supportedNum || 0, star || 0, share || 0];
+    setThree([supportedNum || 0, star || 0, share || 0]);
   }, [videoId]);
+
+  // 是否点赞
+  const [iLike, setILike] = useState(false);
+  useEffect(() => {
+    isLike(videoId)
+      .then(e => {
+        setILike(e.data.data);
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  }, []);
 
   const [videoList, setVideoList] = useState(emptyVideo);
 
@@ -65,7 +76,7 @@ export default function VideoLike() {
         <View>
           <Text style={[styles.username]}>{username}&nbsp;</Text>
           <Text style={[styles.userdetail]}>
-            视频数：{videoNum || 0}&nbsp;|&nbsp;获赞数：{likeNum || 0}
+            视频数：{videoNum || 0}&nbsp;|&nbsp;获赞数：{supportedNum || 0}
           </Text>
         </View>
       </Button>
@@ -75,29 +86,31 @@ export default function VideoLike() {
         <Text style={[styles.description]}>{description}</Text>
       </View>
 
-        {/* 
+      {/* 
           三连
         */}
       <View style={[styles.three]}>
         <Button
           style={styles.threeBtn}
           onPress={() => {
+            setILike(!iLike);
+            setLike(videoId)
+              .then(e => {
+                console.log(e);
+              })
+              .catch(e => {
+                console.log(e);
+              });
             setThree([
-              three[0] === t.current[0] ? t.current[0] + 1 : t.current[0],
+              three[0] === t.current[0]
+                ? t.current[0] + (iLike ? -1 : 1)
+                : t.current[0],
               three[1],
               three[2],
             ]);
           }}>
-          <Like
-            size={6}
-            color={three[0] !== t.current[0] ? basicColor : 'white'}
-          />
-          <Text
-            style={[
-              styles.threeT,
-              ,
-              {color: three[0] !== t.current[0] ? basicColor : 'white'},
-            ]}>
+          <Like size={6} color={iLike ? basicColor : 'white'} />
+          <Text style={[styles.threeT, {color: iLike ? basicColor : 'white'}]}>
             {three[0]}&nbsp;
           </Text>
         </Button>
@@ -131,20 +144,20 @@ export default function VideoLike() {
       </View>
 
       <ScrollView
-      onScrollEndDrag={()=>{
-        getVideoList(6)
-        .then(e => {
-          setVideoList([...videoList, ...e.data.data]);
-        })
-        .catch(e => {
-          console.log('home Error', e);
-        });
-      }}
-        style={{width: '100%',flexGrow:1,flexShrink:1}}>
+        onScrollEndDrag={() => {
+          getVideoList(6)
+            .then(e => {
+              setVideoList([...videoList, ...e.data.data]);
+            })
+            .catch(e => {
+              console.log('home Error', e);
+            });
+        }}
+        style={{width: '100%', flexGrow: 1, flexShrink: 1}}>
         {videoList.map(v => {
           return <VideoCardL key={uuid.v4()} location={location} {...v} />;
         })}
-        <View style={{width:20,height:180}}/>
+        <View style={{width: 20, height: 180}} />
       </ScrollView>
     </View>
   );

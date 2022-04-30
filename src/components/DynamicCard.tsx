@@ -121,7 +121,7 @@ export default function DynamicCard(props: basicDynamic) {
                 </Button>
               );
             })
-          : videoInfo && <VideoMid video={videoInfo} userId={userId} />}
+          : videoInfo && <VideoMid video={videoInfo} userId={videoInfo.userId} />}
       </View>
 
       <View style={styles.three}>

@@ -22,7 +22,7 @@ import {useAppSelector, useAppDispatch} from '../../store/hooks';
 import uuid from 'uuid';
 import Input from '../../components/Input';
 import {Bullet, No, Send, Yes} from '../../static/myIcon';
-import {getVideo, setBS} from '../../api';
+import {getVideo, setBS, setComment} from '../../api';
 import Share from '../../components/Share';
 import LinearGradient from 'react-native-linear-gradient';
 import {set} from '../../store/features/bulletScreenSlice';
@@ -81,8 +81,6 @@ export default function VideoShow() {
   const {state, pathname} = useLocation();
   const {videoURL, title, location, videoId} = state as any;
   const dispatch = useAppDispatch();
-  const bullet = useAppSelector(s => s.bulletScreen);
-
   const [loc, setLoc] = useState(getLoc(pathname, 2));
   const navigation = useNavigate();
 
@@ -442,6 +440,7 @@ export default function VideoShow() {
               </Text>
             </Button>
           </View>
+          <View style={{width:1,height:2}}/>
           {/* 发表评论 */}
           {loc === 'comment' && (
             <View style={[styles.setC]}>
@@ -476,6 +475,12 @@ export default function VideoShow() {
               <Button
                 unable={user.username === ''}
                 onPress={() => {
+                  setComment(videoId,myComment.current).then(e=>{
+                    console.log("setcomment",e);
+                    
+                  }).catch((e) => {
+                    console.log("setcomment",e);
+                  })
                   navigation('/video/comment', {
                     state: {
                       ...(state as any),
@@ -483,7 +488,7 @@ export default function VideoShow() {
                         username: user.username,
                         userId: user.userId,
                         commentId: uuid.v4(),
-                        detail: myComment.current,
+                        content: myComment.current,
                         avatar: user.avatar,
                       },
                     },
@@ -538,6 +543,7 @@ const styles = StyleSheet.create({
   setC: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   avatar: {
     width: 50,

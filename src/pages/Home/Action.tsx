@@ -8,7 +8,7 @@ import {
   AliyunVodFileUpload,
   AliyunVodFileUploadEmitter,
 } from '../../utils/aliyun-vod-payload';
-import {finishUpload, finishUploadV, uploadImg, uploadVideo} from '../../api';
+import {finishUpload, finishUploadV, setDynamic, uploadImg, uploadVideo} from '../../api';
 import uuid from 'uuid';
 import Input from '../../components/Input';
 import {TextArea} from 'native-base';
@@ -82,7 +82,6 @@ export default function Action() {
           });
         } else if (result.progress === 1) {
           finishUploadV(video.current.videoId).then(e => {
-            console.log('video finish', e);
             setLoading(false);
             navigation('/home')
           });

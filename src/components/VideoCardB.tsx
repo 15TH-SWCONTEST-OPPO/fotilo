@@ -20,7 +20,7 @@ export default function VideoCardB(props: VideoProps) {
     userId: userId,
     description,
     duration,
-    like,
+    supportedNum,
     share,
     comment,
   } = props;
@@ -75,7 +75,7 @@ export default function VideoCardB(props: VideoProps) {
           <View style={[styles.threeBtn]}>
             <View style={[styles.btn]}>
               <Like size={6} />
-              <Text style={[styles.threeT]}>{like || 0}</Text>
+              <Text style={[styles.threeT]}>{supportedNum || 0}</Text>
             </View>
             <View style={[styles.btn]}>
               <Comment size={6} />

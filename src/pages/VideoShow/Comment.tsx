@@ -7,13 +7,24 @@ import {useLocation, useNavigate} from 'react-router-native';
 import {Like, Trash} from '../../static/myIcon';
 import Button from '../../components/Button';
 import {useAppSelector} from '../../store/hooks';
+import { getComments } from '../../api';
 
 export default function Comment() {
   const {state} = useLocation();
   const [cs, setCs] = useState(comments);
   const navigation=useNavigate();
   const user = useAppSelector(s => s.user);
-  const{userId}=state as any
+  const{userId,videoId}=state as any
+  useEffect(() => {
+    getComments(videoId).then(e=>{
+      console.log(e.data.data);
+      
+      setCs([...e.data.data])      
+    }).catch(e=>{
+      console.log(e);
+      
+    })
+  },[])
   useEffect(() => {
     const {comment} = state as any;
     comment && setCs([comment, ...cs]);
@@ -39,7 +50,7 @@ export default function Comment() {
                   &nbsp;&nbsp;{c.username}&nbsp;&nbsp;
                 </Text>
               </Button>
-              <Text style={[styles.detail]}>{c.detail}&nbsp;&nbsp;</Text>
+              <Text style={[styles.detail]}>{c.content}&nbsp;&nbsp;</Text>
 
               {c.userId === user.userId && (
                 <Button

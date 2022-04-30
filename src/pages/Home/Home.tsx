@@ -1,17 +1,15 @@
 import {
   View,
-  Text,
   StyleSheet,
-  PanResponder,
   ScrollView,
   RefreshControl,
 } from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import VideoCard from '../../components/VideoCardB';
-import {emptyVideo} from '../../config/video';
 import {getVideoList} from '../../api';
 import {useAppSelector} from '../../store/hooks';
 import {basicColor} from '../../static/color';
+import uuid from 'uuid'
 
 export default function Home() {
   const {videos: searchV} = useAppSelector(s => s.search);
@@ -57,6 +55,8 @@ export default function Home() {
     ) {
       getVideoList(6)
         .then(e => {
+          console.log(e.data.data);
+          
           setVideos([...videos, ...e.data.data]);
           setRefreshing(false);
         })
@@ -78,7 +78,7 @@ export default function Home() {
       onScroll={lazyload}>
       <View style={[styles.container]}>
         {videos.map(video => {
-          return <VideoCard key={video.videoId} {...video} />;
+          return <VideoCard key={uuid.v4()} {...video} />;
         })}
       </View>
     </ScrollView>

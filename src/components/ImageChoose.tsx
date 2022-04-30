@@ -75,7 +75,7 @@ export default function ImageChoose(props: ImageChooseProps) {
               .then(e => {
                 dispatch(setUser({...user, avatar: e.data.data.avatar}));
                 dispatch(set({show: false}));
-                navigation('/startP');
+                navigation('/home');
 
               })
               .catch(e => {
