@@ -32,14 +32,13 @@ export default function Drawer(props: DrawerProps) {
   };
 
   useEffect(() => {
-    if (!showDrawer) setShow(false);
+    if (showDrawer !== undefined && !showDrawer) setShow(false);
   });
 
   return (
     <View>
       {show && (
-        <Pressable
-          style={{...styles.drawers, ...side[position || 'bottom']}}>
+        <Pressable style={{...styles.drawers, ...side[position || 'bottom']}}>
           {drawers}
         </Pressable>
       )}
@@ -53,6 +52,7 @@ export default function Drawer(props: DrawerProps) {
         style={{...style}}
         onPress={() => {
           setShow(!show);
+          console.log(123);
         }}>
         {children ? (
           typeof children === 'string' ? (
@@ -76,6 +76,6 @@ Drawer.defaultProps = {
 const styles = StyleSheet.create({
   drawers: {
     position: 'absolute',
-    zIndex: 999,
+    zIndex: 99999,
   },
 });

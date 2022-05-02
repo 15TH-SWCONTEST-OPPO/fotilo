@@ -95,17 +95,40 @@ export default function User() {
   };
 
   useEffect(() => {
-    getMyDynamic(uID).then(e => {
+
+    getMyDynamic(uID,uID===userId).then(e => {
+      console.log(e);
       setDynamic(e.data.data);
     });
   }, []);
 
   return (
     <View style={{height: '100%'}}>
+      {/*
+        背景
+       */}
       <ImageBackground
         style={{...styles.background}}
         source={require('../../static/img/Ubackground.png')}
       />
+      {/* 
+        社区
+      */}
+      {userId === uID && uID !== '' && (
+        <Button
+          onPress={() => {
+            navigation('community');
+          }}
+          style={{
+            position: 'absolute',
+            zIndex: 999,
+            right: 0,
+            backgroundColor: 'transparent',
+            margin: 5,
+          }}>
+          <Text style={{color: 'white', fontSize: 20}}>社区</Text>
+        </Button>
+      )}
       {userId === uID && uID !== '' && (
         <View style={[styles.settingC]}>
           <Button
@@ -210,7 +233,7 @@ export default function User() {
               setCDes(true);
             }
           }}>
-          {cDes&&uID!=='' ? (
+          {cDes && uID !== '' ? (
             <Input
               textStyle={styles.cnameT}
               iconSide="none"
@@ -236,7 +259,7 @@ export default function User() {
             </Text>
           )}
         </Button>
-        <View style={{width:'100%',height:'100%'}}>
+        <View style={{width: '100%', height: '100%'}}>
           <ScrollView>
             {dynamic.map(d => {
               return (
@@ -292,7 +315,7 @@ const styles = StyleSheet.create({
   userN: {
     width: '100%',
     padding: 20,
-    marginTop:10,
+    marginTop: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },

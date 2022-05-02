@@ -14,8 +14,9 @@ import Video from './pages/Home/Video';
 import Action from './pages/Home/Action';
 import User from './pages/Home/User';
 import VideoShow from './pages/VideoShow';
-import VideoLike from './pages/VideoShow/VideoLike'
-import Comment from './pages/VideoShow/Comment'
+import VideoLike from './pages/VideoShow/VideoLike';
+import Comment from './pages/VideoShow/Comment';
+import Community from './pages/Community';
 
 const routes: RouteObject[] = [
   {
@@ -58,9 +59,17 @@ const routes: RouteObject[] = [
       },
       {
         path: 'user',
-        element: <User />,
+        children: [
+          {
+            path: 'community',
+            element: <Community />,
+          },{
+            path:'',
+            element: <User />,
+          }
+        ],
       },
-      
+
       {
         path: '',
         element: <Home_Home />,
@@ -73,15 +82,15 @@ const routes: RouteObject[] = [
     children: [
       {
         path: 'comment',
-        element:<Comment/>
+        element: <Comment />,
       },
       {
         path: '',
-        element:<VideoLike/>
+        element: <VideoLike />,
       },
     ],
   },
-  
+
   {
     path: '/',
     element: <Navigate to="startP" />,

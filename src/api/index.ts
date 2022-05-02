@@ -112,9 +112,9 @@ export const setLike = (videoId: number) => {
 };
 
 // 是否点赞
-export const isLike=(videoId: number)=>{
+export const isLike = (videoId: number) => {
   return axios.get(`${env}/video/isSupported`, {params: {videoId}});
-}
+};
 
 /* 
   动态
@@ -136,8 +136,10 @@ export const setDynamic = (props: {
 };
 
 // 获取动态
-export const getMyDynamic = (userId: string) => {
-  return axios.get(`${env}/dynamic/getUserDynamic`, {params: {userId}});
+export const getMyDynamic = (userId: string, isMe: boolean) => {
+  return isMe
+    ? axios.get(`${env}/dynamic/getMyDynamic`)
+    : axios.get(`${env}/dynamic/getUserDynamic`, {params: {userId}});
 };
 
 /* 
