@@ -137,6 +137,9 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    signingConfigs {
+        
+    }
     splits {
         abi {
             reset()
@@ -146,27 +149,35 @@ android {
         }
     }
     signingConfigs {
-        debug {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
+        release {
+                storeFile file("D:/project/fotilo/android/app/android.keystore")
+                storePassword "123456"
+                keyAlias "android.keystore"
+                keyPassword "123456"
         }
+        // debug {
+        //     storeFile file('debug.keystore')
+        //     storePassword 'android'
+        //     keyAlias 'androiddebugkey'
+        //     keyPassword 'android'
+        // }
     }
     buildTypes {
-        debug {
-            signingConfig signingConfigs.debug
-            if (nativeArchitectures) {
-                ndk {
-                    abiFilters nativeArchitectures.split(',')
-                }
-            }
-        }
+        
+        // debug {
+        //     signingConfig signingConfigs.debug
+        //     if (nativeArchitectures) {
+        //         ndk {
+        //             abiFilters nativeArchitectures.split(',')
+        //         }
+        //     }
+        // }
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            // signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
+             signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
