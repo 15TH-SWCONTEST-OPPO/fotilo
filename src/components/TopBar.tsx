@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet, ImageBackground, ViewProps} from 'react-native';
+import {View, Text, StyleSheet, ImageBackground, ViewProps, NativeModules} from 'react-native';
 import React, {useRef} from 'react';
 import {basicColor} from '../static/color';
 import Button from './Button';
@@ -71,7 +71,11 @@ export default function TopBar(props: TopBarProps) {
         }
         containerStyle={{...styles.input}}
       />
-      <Button style={{...styles.iconBtn}}>
+      <Button onPress={() => {
+        NativeModules
+        .IntentMoudle
+        .startActivityFromJS("com.myapp.activity.MainActivity", null);
+      }}style={{...styles.iconBtn}}>
         <Camera />
       </Button>
       <Button style={{...styles.iconBtn}}>
