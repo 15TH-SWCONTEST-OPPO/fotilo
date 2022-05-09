@@ -6,20 +6,21 @@
 
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    tools:context=".activity.ReceiveCameraActivity">
+    tools:context="com.myapp.activity.ReceiveCameraActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        tools:context="wifip2p.wifi.com.wifip2p.activity.ReceiveFileActivity">
+        tools:context="com.myapp.activity.ReceiveFileActivity">
 
         <Button
             android:id="@+id/btn_create"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
-            android:text="创建组群"/>
+            android:text="创建组群" />
+
         <Button
             android:id="@+id/btn_remove"
             android:layout_width="match_parent"
@@ -50,7 +51,7 @@
         <ImageView
             android:id="@+id/camera_photo"
             android:layout_width="match_parent"
-            android:layout_height="200dp" />
+            android:layout_height="173dp" />
 
         <HorizontalScrollView
             android:layout_width="wrap_content"

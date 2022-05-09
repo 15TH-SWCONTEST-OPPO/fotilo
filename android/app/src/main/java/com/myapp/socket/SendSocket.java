@@ -24,9 +24,10 @@ import com.myapp.TransBean;
 public class SendSocket {
 
     public static final String TAG = "SendSocket";
-    public static final int PORT = 10000;
+
     private FileBean mFileBean;
     private String mAddress;
+    private Integer mPort;
     private File mFile;
     private String mText;
     private String mType;
@@ -58,11 +59,12 @@ public class SendSocket {
         }
     };
 
-    public SendSocket(TransBean transBean, String address, ProgressSendListener listener) {
+    public SendSocket(TransBean transBean, String address, String port, ProgressSendListener listener) {
         mAddress = address;
         mlistener = listener;
         mType = transBean.type;
         mTransBean = transBean;
+        mPort = Integer.parseInt(port);
         if(transBean.type.equals(Constant.FILE)){
             mFileBean = transBean.fileBean;
         }
@@ -73,51 +75,6 @@ public class SendSocket {
             case Constant.FILE:
                 sendFile();
                 break;
-            case Constant.TEXT:
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        sendText();
-                    }
-                }).start();
-
-                break;
-            case Constant.CAMERA:
-                sendCamera();
-                break;
-        }
-    }
-
-    private void sendCamera() {
-
-    }
-
-    public void sendVideo(){
-
-    }
-
-    private void sendText() {
-        try {
-            // 创建Socket对象
-            Socket socket = new Socket();
-            InetSocketAddress inetSocketAddress = new InetSocketAddress(mAddress, PORT);
-            // 连接对方
-            socket.connect(inetSocketAddress);
-            // 获得socket对象的输出流
-            OutputStream outputStream = socket.getOutputStream();
-            //创建一个对象输出流
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-            //将fileBean写入其中
-            objectOutputStream.writeObject(mTransBean);
-
-            outputStream.close();
-            objectOutputStream.close();
-            socket.close();
-            mHandler.sendEmptyMessage(20);
-            Log.e(TAG, "文本发送成功");
-        } catch (Exception e) {
-            mHandler.sendEmptyMessage(30);
-            Log.e(TAG, "文本发送异常");
         }
     }
 
@@ -125,7 +82,7 @@ public class SendSocket {
         try {
             // 创建Socket对象
             Socket socket = new Socket();
-            InetSocketAddress inetSocketAddress = new InetSocketAddress(mAddress, PORT);
+            InetSocketAddress inetSocketAddress = new InetSocketAddress(mAddress, mPort);
             // 连接对方
             socket.connect(inetSocketAddress);
             // 获得socket对象的输出流
@@ -182,6 +139,31 @@ public class SendSocket {
 
         //传输失败时
         void onFaliure(File file);
+    }
+
+    private void sendText() {
+        try {
+            // 创建Socket对象
+            Socket socket = new Socket();
+            InetSocketAddress inetSocketAddress = new InetSocketAddress(mAddress, Constant.sendPort);
+            // 连接对方
+            socket.connect(inetSocketAddress);
+            // 获得socket对象的输出流
+            OutputStream outputStream = socket.getOutputStream();
+            //创建一个对象输出流
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+            //将fileBean写入其中
+            objectOutputStream.writeObject(mTransBean);
+
+            outputStream.close();
+            objectOutputStream.close();
+            socket.close();
+            mHandler.sendEmptyMessage(20);
+            Log.e(TAG, "文本发送成功");
+        } catch (Exception e) {
+            mHandler.sendEmptyMessage(30);
+            Log.e(TAG, "文本发送异常");
+        }
     }
 }
 

@@ -2,6 +2,9 @@ package com.myapp.activity;
 
 import android.content.Context;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
@@ -23,13 +26,20 @@ public class BaseActivity extends AppCompatActivity implements Wifip2pActionList
     public Wifip2pReceiver mWifip2pReceiver;
     public WifiP2pInfo mWifiP2pInfo;
 
+    public WifiP2pDevice mWifiP2pDevice;
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //注册WifiP2pManager
         mWifiP2pManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
 
-        mChannel = mWifiP2pManager.initialize(this, getMainLooper(), this);
+        mChannel = mWifiP2pManager.initialize(BaseActivity.this, getMainLooper(), BaseActivity.this);
 
         //注册广播
         mWifip2pReceiver = new Wifip2pReceiver(mWifiP2pManager, mChannel, this);
@@ -59,7 +69,7 @@ public class BaseActivity extends AppCompatActivity implements Wifip2pActionList
         if (wifiP2pInfo != null) {
             mWifiP2pInfo = wifiP2pInfo;
             //Log.d("测试", "在BaseActivity中");
-            Log.e(TAG, "WifiP2pInfo:" + wifiP2pInfo);
+            Log.e(TAG, "啦啦啦啦啦啦啦啦啦啦WifiP2pInfo:" + wifiP2pInfo);
         }
     }
 
@@ -71,6 +81,16 @@ public class BaseActivity extends AppCompatActivity implements Wifip2pActionList
     @Override
     public void onDeviceInfo(WifiP2pDevice wifiP2pDevice) {
         Log.e(TAG, "当前的的设备名称" + wifiP2pDevice.deviceName);
+        Log.e(TAG, "当前的的设备地址" + wifiP2pDevice.deviceAddress);
+//        WifiManager mWifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+//
+//        final String[] macAddresses = mWifiManager.getFactoryMacAddresses();
+//        String macAddress = null;
+//        if (macAddresses != null && macAddresses.length > 0) {
+//            macAddress = macAddresses[0];
+//        }
+//        Log.e(TAG, "当前的的设备地址" + info.getMacAddress());
+        mWifiP2pDevice = wifiP2pDevice;
     }
 
     @Override

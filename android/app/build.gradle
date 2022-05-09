@@ -149,37 +149,37 @@ android {
         }
     }
     signingConfigs {
-        release {
-                storeFile file("D:/project/fotilo/android/app/android.keystore")
-                storePassword "123456"
-                keyAlias "android.keystore"
-                keyPassword "123456"
-        }
-        // debug {
-        //     storeFile file('debug.keystore')
-        //     storePassword 'android'
-        //     keyAlias 'androiddebugkey'
-        //     keyPassword 'android'
+        // release {
+        //         storeFile file("D:/project/fotilo/android/app/android.keystore")
+        //         storePassword "123456"
+        //         keyAlias "android.keystore"
+        //         keyPassword "123456"
         // }
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
     }
     buildTypes {
         
-        // debug {
-        //     signingConfig signingConfigs.debug
-        //     if (nativeArchitectures) {
-        //         ndk {
-        //             abiFilters nativeArchitectures.split(',')
-        //         }
-        //     }
-        // }
-        release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
-            // signingConfig signingConfigs.debug
-            minifyEnabled enableProguardInReleaseBuilds
-             signingConfig signingConfigs.release
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        debug {
+            signingConfig signingConfigs.debug
+            if (nativeArchitectures) {
+                ndk {
+                    abiFilters nativeArchitectures.split(',')
+                }
+            }
         }
+        // release {
+        //     // Caution! In production, you need to generate your own keystore file.
+        //     // see https://reactnative.dev/docs/signed-apk-android.
+        //     // signingConfig signingConfigs.debug
+        //     minifyEnabled enableProguardInReleaseBuilds
+        //      signingConfig signingConfigs.release
+        //     proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        // }
     }
 
     // applicationVariants are e.g. debug, release
@@ -235,6 +235,18 @@ dependencies {
     //testCompile 'junit:junit:4.12'
     implementation 'pub.devrel:easypermissions:1.1.0'
     implementation 'io.netty:netty-all:5.0.0.Alpha2'
+    implementation 'com.google.guava:guava:24.1-jre'
+    implementation 'com.google.zxing:core:3.3.0'
+    //implementation 'com.github.amggg:YXing:V1.1.3'
+    //implementation (name:'CVUnit-release', ext:'aar')
+    //implementation (name:'com.coloros.ocs.base-release-1.0.4-SNAPSHOT', ext:'aar')
+    implementation 'org.apache.commons:commons-lang3:3.11'
+    //implementation "com.android.support:appcompat-v7:28.0.0"
+    //noinspection GradleCompatible
+    implementation 'com.android.support:design:28.0.0'
+    //testCompile 'junit:junit:4.12'
+    implementation 'com.google.android.flexbox:flexbox:3.0.0'
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.24'
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'

@@ -1,22 +1,32 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="com.myapp">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-      <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.BLUETOOTH"/> <!-- 蓝牙权限 -->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.VIBRATE" /> <!-- 震动权限 -->
+    <uses-permission android:name="android.permission.NFC" />
+
+    <uses-feature
+        android:name="android.hardware.nfc"
+        android:required="true" />
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <permission android:name="android.permission.NETWORK_SETTINGS" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <uses-feature android:name="android.hardware.camera.any" />
+
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
 
     <application
@@ -39,11 +49,73 @@
         </intent-filter>
 
       </activity>
-       <activity android:name=".activity.MainActivity"></activity>
-       <activity android:name=".activity.SendCameraActivity"></activity>
-        <activity android:name=".activity.ReceiveCameraActivity"></activity>
-        <activity android:name=".activity.SendFileActivity"></activity>
-        <activity android:name=".activity.ReceiveFileActivity"></activity>
-        <activity android:name=".activity.BaseActivity"></activity>
+        <activity
+            android:name=".activity.MainActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service android:name=".service.Wifip2pService" />
+
+        <activity
+            android:name=".activity.SendCameraActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.nfc.action.TAG_DISCOVERED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.nfc.action.TECH_DISCOVERED" />
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.nfc.action.TECH_DISCOVERED"
+                android:resource="@xml/nfc_tech_filter" />
+        </activity>
+        <activity
+            android:name="com.myapp.activity.ReceiveCameraActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            />
+
+        <activity android:name="com.myapp.activity.SendFileActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"/>
+
+        <activity android:name="com.myapp.activity.ReceiveFileActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"/>
+
+        <activity android:name="com.myapp.activity.BaseActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            />
+
+        <activity android:name=".qrcode.MainActivity"/>
+
+        <activity android:name=".zxing.activity.CaptureActivity"/>
+
+        <activity android:name=".NFC.activity.ReadActivity"/>
+        <activity android:name=".NFC.activity.WritingActivity"/>
+        <activity android:name=".NFC.activity.ReadingWritingActivity"/>
+        <activity android:name="com.myapp.Record.MediaRecordActivity"/>
+
+        <activity android:name=".sendclient.MainActivity"/>
+        <activity android:name=".sendclient.BluetoothActivity"/>
+        <!-- 声明属性 -->
+        <service android:name=".sendclient.MediaRecordService"
+            android:foregroundServiceType="mediaProjection">
+        </service>
     </application>
 </manifest>

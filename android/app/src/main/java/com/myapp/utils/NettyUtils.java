@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import com.myapp.Constant;
@@ -37,17 +38,28 @@ public class NettyUtils {
         nettyClient.run(host, Constant.NETTYPORT);
     }
 
-    public void startService() throws InterruptedException {
+    public void startService(Handler nettyHandler) {
+        Message msg = new Message();
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    nettyServer.run();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    nettyServer.run(nettyHandler);
+//                    msg.what = 0;
+//                    nettyHandler.sendMessage(msg);
+                }catch (Exception e){
+                    msg.what = 1;
+                    nettyHandler.sendMessage(msg);
                 }
+
             }
         }).start();
+    }
+
+    public void stopServer() {
+        if(nettyServer!=null){
+            nettyServer.stop();
+        }
     }
 
     public void sendData(byte[] bytes, String type) {
@@ -56,7 +68,7 @@ public class NettyUtils {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void sendCommand(String selectedName, byte[] bytes, String text) {
-        nettyServer.push(selectedName,bytes,text);
+        nettyServer.push(selectedName, bytes, text);
     }
 
     // 自定义数据接收监听器
@@ -80,6 +92,12 @@ public class NettyUtils {
 
     public void setNettyConnectionListener(NettyUtils.NettyConnectionListener listener) {
         mNettyConnectionListener = listener;
+    }
+
+    public void releaseClient() {
+        if (nettyClient != null) {
+            nettyClient.close();
+        }
     }
 
     @SuppressLint("HandlerLeak")
