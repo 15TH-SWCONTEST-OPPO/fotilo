@@ -5,10 +5,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="#000000"
     android:layout_height="match_parent"
+    android:background="#ff000000"
     android:orientation="vertical"
     tools:context="com.myapp.activity.ReceiveCameraActivity">
+
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar_receive"
@@ -19,56 +20,66 @@
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:title="发现属于你的美" />
 
-    <androidx.drawerlayout.widget.DrawerLayout
-        android:id="@+id/drawer_layout_receive"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="left"
-        android:orientation="vertical">
+        android:background="@android:color/transparent">
+        <!--
+            图片预览
+        -->
 
-        <LinearLayout
+
+        <androidx.drawerlayout.widget.DrawerLayout
+            android:id="@+id/drawer_layout_receive"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="20dp"
-                android:text="相机预览" />
-
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:background="#ffffff"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:id="@+id/ll_group"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
-                </LinearLayout>
-            </HorizontalScrollView>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="20dp"
-                android:text="图片预览"/>
-
-
-            <ImageView
-                android:id="@+id/camera_photo"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-
-        </LinearLayout>
-
-        <com.google.android.material.navigation.NavigationView
-            android:id="@+id/navigation_view_receive"
-            android:layout_width="200dp"
             android:layout_height="match_parent"
             android:layout_gravity="left"
-            app:menu="@menu/menu_receive_navigation" />
+            android:orientation="vertical">
 
-    </androidx.drawerlayout.widget.DrawerLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <!--
+                    相机预览
+                -->
+
+
+                <GridView
+                    android:id="@+id/ll_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#ffffff"
+                    android:numColumns="2"
+                    android:orientation="horizontal"></GridView>
+
+
+            </LinearLayout>
+
+            <com.google.android.material.navigation.NavigationView
+                android:id="@+id/navigation_view_receive"
+                android:layout_width="200dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="left"
+                app:menu="@menu/menu_receive_navigation" />
+
+        </androidx.drawerlayout.widget.DrawerLayout>
+        <LinearLayout
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:rotation="90"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/camera_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#000000"
+
+            />
+        </LinearLayout>
+    </RelativeLayout>
 
 </LinearLayout>

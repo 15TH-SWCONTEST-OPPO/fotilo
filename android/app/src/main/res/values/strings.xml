@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">WifiP2P</string>
+    <string name="app_name">Fotilo</string>
     <string name="client">&#xe614;</string>
     <string name="server">&#xe726;</string>
     <string name="input">&#xe626;</string>
@@ -13,6 +13,12 @@
     <string name="start">&#xe642;</string>
     <string name="end">&#xea6f;</string>
     <string name="phone">&#xeb4d;</string>
+    <string name="circle">&#xe6d0;</string>
+    <string name="record">&#xe60a;</string>
+    <string name="bluetooth">&#xeb63;</string>
+    <string name="pic">&#xe63e;</string>
+    <string name="video">&#xe61e;</string>
+    <string name="exit">&#xe623;</string>
 
 
     <string name="action_settings">Settings</string>

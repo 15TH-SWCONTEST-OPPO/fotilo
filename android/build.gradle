@@ -37,14 +37,17 @@ allprojects {
                 excludeGroup "com.facebook.react"
             }
         }
-        google()
+        maven { url "https://maven.aliyun.com/nexus/content/repositories/releases" }
+        maven { url "https://maven.aliyun.com/repository/central" }
+        maven { url "https://maven.aliyun.com/repository/google" }
+        maven { url "https://maven.aliyun.com/repository/public" }
         maven { url 'https://www.jitpack.io' }
+        google()
         jcenter() {
             content {
                 includeModule("com.yqritc", "android-scalablevideoview")
             }
         }
-        maven { url "https://maven.aliyun.com/nexus/content/repositories/releases" }
         jcenter()
     }
 }

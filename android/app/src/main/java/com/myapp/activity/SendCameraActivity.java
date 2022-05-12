@@ -469,7 +469,11 @@ public class SendCameraActivity extends BaseActivity implements SurfaceHolder.Ca
         }
         try {
             if (mWifiP2pInfo != null) {
-                nettyUtils.connect2Server(mWifiP2pInfo.groupOwnerAddress.getHostAddress());
+                String deviceName = "";
+                if (mWifiP2pDevice != null) {
+                    deviceName = mWifiP2pDevice.deviceName;
+                }
+                nettyUtils.connect2Server(mWifiP2pInfo.groupOwnerAddress.getHostAddress(), deviceName);
                 isNettyConnected = true;
             } else {
                 isNettyConnected = false;
@@ -478,6 +482,10 @@ public class SendCameraActivity extends BaseActivity implements SurfaceHolder.Ca
         } catch (Exception e) {
             isNettyConnected = false;
             System.err.println(e);
+        } finally {
+            if(mDialog!=null){
+                mDialog.dismiss();
+            }
         }
     }
 
@@ -635,7 +643,6 @@ public class SendCameraActivity extends BaseActivity implements SurfaceHolder.Ca
         if (wifiP2pDevice != null) {
             config.deviceAddress = wifiP2pDevice.deviceAddress;
             config.wps.setup = WpsInfo.PBC;
-
             mWifiP2pManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
                 @Override
                 public void onSuccess() {
@@ -651,6 +658,7 @@ public class SendCameraActivity extends BaseActivity implements SurfaceHolder.Ca
                             connect(wifiP2pDevice);
                         }
                     } else {
+                        connectTime = 0;
                         isWifiConnected = true;
                         startNetty();
                         Toast.makeText(SendCameraActivity.this, "连接成功", Toast.LENGTH_SHORT).show();
@@ -661,14 +669,11 @@ public class SendCameraActivity extends BaseActivity implements SurfaceHolder.Ca
                 public void onFailure(int reason) {
                     Log.e(TAG, "连接失败");
                     isWifiConnected = false;
-                    if (connectTime >= 2) {
-                        connectTime = 0;
-                        if (mDialog != null) {
-                            mDialog.dismiss();
-                        }
-                        //Toast.makeText(SendCameraActivity.this, "连接失败", Toast.LENGTH_SHORT).show();
+                    connectTime = 0;
+                    //Toast.makeText(SendCameraActivity.this, "连接失败", Toast.LENGTH_SHORT).show();
+                    if (mDialog != null) {
+                        mDialog.dismiss();
                     }
-
                     Toast.makeText(SendCameraActivity.this, "连接失败", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -714,8 +719,8 @@ public class SendCameraActivity extends BaseActivity implements SurfaceHolder.Ca
                 public void onOpened(CameraDevice camera) {
                     Log.i(TAG, "onOpened");
                     try {
-                        CaptureRequest.Builder builder=camera.createCaptureRequest(CameraDevice.TEMPLATE_RECORD);
-                        builder.set(CaptureRequest.CONTROL_AE_MODE,1);
+                        CaptureRequest.Builder builder = camera.createCaptureRequest(CameraDevice.TEMPLATE_RECORD);
+                        builder.set(CaptureRequest.CONTROL_AE_MODE, 1);
                         builder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
                         Log.d(TAG, "onOpened: builder changed");
                     } catch (CameraAccessException e) {
@@ -812,25 +817,25 @@ public class SendCameraActivity extends BaseActivity implements SurfaceHolder.Ca
         // 创建拍照需要的CaptureRequest.Builder
         //mark = false;
         isPicture = true;
-//        final CaptureRequest.Builder captureRequestBuilder;
-//        try {
-//            captureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
-//            // 将imageReader的surface作为CaptureRequest.Builder的目标
-//            captureRequestBuilder.addTarget(imageReader.getSurface());
-//            // 自动对焦
-//            captureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
-//            // 自动曝光
-//            captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
-//            // 获取手机方向
-//            int rotation = getWindowManager().getDefaultDisplay().getRotation();
-//            // 根据设备方向计算设置照片的方向
-//            captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
-//            //拍照
-//            CaptureRequest mCaptureRequest = captureRequestBuilder.build();
-//            mCameraCaptureSession.capture(mCaptureRequest, null, childHandler);
-//        } catch (CameraAccessException e) {
-//            e.printStackTrace();
-//        }
+        final CaptureRequest.Builder captureRequestBuilder;
+        try {
+            captureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+            // 将imageReader的surface作为CaptureRequest.Builder的目标
+            captureRequestBuilder.addTarget(imageReader.getSurface());
+            // 自动对焦
+            captureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+            // 自动曝光
+            captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
+            // 获取手机方向
+            int rotation = getWindowManager().getDefaultDisplay().getRotation();
+            // 根据设备方向计算设置照片的方向
+            captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
+            //拍照
+            CaptureRequest mCaptureRequest = captureRequestBuilder.build();
+            mCameraCaptureSession.capture(mCaptureRequest, null, childHandler);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     private CamcorderProfile getCamcorderProfile() {
@@ -865,6 +870,23 @@ public class SendCameraActivity extends BaseActivity implements SurfaceHolder.Ca
         }
     };
 
+    /*
+     * 隐藏navigateBar
+     * */
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        View decorView = getWindow().getDecorView();
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            decorView.setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);}
+    }
+
     private void setUpImageReader() {
         imageReader = ImageReader.newInstance(400, 300, ImageFormat.JPEG, 10);
         imageReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
@@ -883,7 +905,6 @@ public class SendCameraActivity extends BaseActivity implements SurfaceHolder.Ca
                     ByteBuffer buffer = image.getPlanes()[0].getBuffer();
                     byte[] bytes = new byte[buffer.capacity()];
                     buffer.get(bytes);
-
                     Message msg = new Message();
                     msg.what = 0;
                     msg.obj = bytes;

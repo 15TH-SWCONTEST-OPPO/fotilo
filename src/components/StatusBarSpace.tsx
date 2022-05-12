@@ -9,7 +9,7 @@ export default function StatusBarSpace() {
 
 const styles = StyleSheet.create({
   space: {
-    height: statusBarH,
+    height: 0,
     width: '100%',
     backgroundColor:'transparent',
   },
